@@ -30,7 +30,7 @@ void TheMasker_v1AudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.drawFittedText ("TheMasker!", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void TheMasker_v1AudioProcessorEditor::resized()

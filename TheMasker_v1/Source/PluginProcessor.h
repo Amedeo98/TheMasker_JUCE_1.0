@@ -9,14 +9,24 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "DynamicEQ.h"
+
+#define PLUGIN_V 1
+
+
+#define NAME_COMP "compAmt"
+#define NAME_EXP  "expAmt"
+#define NAME_ATQ "atqWeight"
+#define NAME_SL "stereoLinked"
+#define NAME_MIX "mix"
+#define NAME_IN "inGain"
+#define NAME_OUT "outGain"
+#define NAME_SC "scGain"
 
 //==============================================================================
 /**
 */
-class TheMasker_v1AudioProcessor  : public juce::AudioProcessor
-                            #if JucePlugin_Enable_ARA
-                             , public juce::AudioProcessorARAExtension
-                            #endif
+class TheMasker_v1AudioProcessor  : public juce::AudioProcessor, public AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -32,25 +42,27 @@ public:
    #endif
 
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void parameterChanged(const String& paramID, float newValue) override;
 
     //==============================================================================
     juce::AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+    bool hasEditor() const override { return true; };
 
     //==============================================================================
-    const juce::String getName() const override;
+    const juce::String getName() const override { return JucePlugin_Name; };
 
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool isMidiEffect() const override;
-    double getTailLengthSeconds() const override;
+
+    bool acceptsMidi() const override { return false; };
+    bool producesMidi() const override { return false; };
+    bool isMidiEffect() const override { return false; };
+    double getTailLengthSeconds() const override { return 0.0; };
 
     //==============================================================================
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+    int getNumPrograms() override { return 1; };
+    int getCurrentProgram() override { return 0; };
+    void setCurrentProgram (int index) override {}
+    const juce::String getProgramName(int index) override { return {}; };
+    void changeProgramName (int index, const juce::String& newName) override {};
 
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
@@ -58,5 +70,8 @@ public:
 
 private:
     //==============================================================================
+    AudioProcessorValueTreeState parameters;
+    DynamicEQ dynEQ;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMasker_v1AudioProcessor)
 };

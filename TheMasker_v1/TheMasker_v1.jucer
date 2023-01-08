@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="v28poa" name="TheMasker_v1" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              cppLanguageStandard="latest">
+<JUCERPROJECT id="v28poa" name="TheMasker_v1" projectType="audioplug" displaySplashScreen="1"
+              jucerFormatVersion="1" cppLanguageStandard="latest" pluginManufacturer="Cinemystics"
+              pluginManufacturerCode="Cmyx">
   <MAINGROUP id="Ceazlg" name="TheMasker_v1">
+    <GROUP id="{76D7196A-F062-9BC5-67A2-90B7A03AD9DA}" name="DSP">
+      <FILE id="fkjbJW" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
+    </GROUP>
     <GROUP id="{0C69285F-DA98-BFA2-E073-091E77A74E3A}" name="Source">
       <FILE id="xMHWeo" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

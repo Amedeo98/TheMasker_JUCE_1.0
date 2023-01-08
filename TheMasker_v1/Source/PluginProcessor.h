@@ -67,11 +67,22 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    std::vector<float> getFrequencies();
+    
 
+    
 private:
     //==============================================================================
     AudioProcessorValueTreeState parameters;
     DynamicEQ dynEQ;
+    
+    int sampleRate = 0;
+
+    Converter conv;
+
+    std::vector<float> frequencies;
+    AudioBuffer<float> auxBuffer;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMasker_v1AudioProcessor)
 };

@@ -44,20 +44,27 @@ TheMasker_v1AudioProcessor::TheMasker_v1AudioProcessor()
 
 TheMasker_v1AudioProcessor::~TheMasker_v1AudioProcessor()
 {
+    //Analyser.stopThread
 }
 
 
 //==============================================================================
-void TheMasker_v1AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void TheMasker_v1AudioProcessor::prepareToPlay (double newSampleRate, int newSamplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    sampleRate = newSampleRate;
+    /*
+    auxBuffer.setSize(1, newSamplesPerBlock);
+    */
+    getFrequencies();
+    conv = Converter();
+    dynEQ.prepareToPlay(frequencies, sampleRate, getTotalNumInputChannels(), getTotalNumOutputChannels(), newSamplesPerBlock, conv);
 }
 
 void TheMasker_v1AudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    dynEQ.releaseResources();
+    //Analyser.stopThread
+    //auxBuffer.setSize(0, 0);
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -95,15 +102,33 @@ void TheMasker_v1AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
+    
+    auto numSamples = buffer.getNumSamples();
+
+    auto mainBuffer = getBusBuffer(buffer, true, 0);
+    //auto scBuffer = getBusBuffer(buffer, true, 1);
+
+    auxBuffer.clear();
+
+    
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+     {
+         /*
+        const AudioBuffer<float>& scSource = scBuffer.getNumChannels() ? scBuffer : mainBuffer;
+        const int numScChannels = scSource.getNumChannels();
 
-        // ..do something to the data...
+        for (int ch = 0; ch < numScChannels; ++ch)
+            auxBuffer.addFrom(0, 0, scSource, ch, 0, numSamples, 1 / numScChannels);
+          */
     }
+    
+ /*   juce::dsp::AudioBlock<float>              ioBuffer(buffer);
+    juce::dsp::ProcessContextReplacing<float> context(ioBuffer);
+    filter.process(context);*/
+
+    //dynEQ.processBlock(mainBuffer, auxBuffer);// ..do something to the data...
 }
 
 //==============================================================================
@@ -115,6 +140,29 @@ juce::AudioProcessorEditor* TheMasker_v1AudioProcessor::createEditor()
 
 void TheMasker_v1AudioProcessor::parameterChanged(const String& paramID, float newValue)
 {
+    if (paramID == NAME_COMP)
+        dynEQ.setComp(newValue);
+
+    if (paramID == NAME_EXP)
+        dynEQ.setExp(newValue);
+
+    if (paramID == NAME_ATQ)
+        dynEQ.setAtq(newValue);
+
+    if (paramID == NAME_SL)
+        dynEQ.setStereoLinked(newValue);
+
+    if (paramID == NAME_MIX)
+        dynEQ.setMix(newValue);
+
+    if (paramID == NAME_IN)
+        dynEQ.setInGain(newValue);
+
+    if (paramID == NAME_OUT)
+        dynEQ.setOutGain(newValue);
+
+    if (paramID == NAME_SC)
+        dynEQ.setScGain(newValue);
 }
 
 //==============================================================================
@@ -132,6 +180,19 @@ void TheMasker_v1AudioProcessor::setStateInformation (const void* data, int size
         if (xmlState->hasTagName(parameters.state.getType()))
             parameters.replaceState(ValueTree::fromXml(*xmlState));
 }
+
+std::vector<float> TheMasker_v1AudioProcessor::getFrequencies() {
+    frequencies.resize(npoints);
+    float maxbark = conv.hz2bark(maxFreq);
+    float minbark = conv.hz2bark(minFreq);
+    float step_bark = (maxbark - minbark) / (npoints - 1);
+    for (int i = 0; i < npoints; ++i){
+        frequencies[i] = conv.bark2hz(minbark + step_bark * i);
+    }
+    return frequencies;
+}
+
+
 
 //==============================================================================
 // This creates new instances of the plugin..

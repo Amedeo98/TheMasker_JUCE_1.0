@@ -48,7 +48,7 @@ public:
         frequencies = _frequencies;
         fCenters = fbank.getFrequencies();
         atq = getATQ(fCenters);
-        spreadingMtx = getSpreadingFunc(maxFreq, spread_exp);
+        //spreadingMtx = getSpreadingFunc(maxFreq, spread_exp);
         fbank.getFilterBank(frequencies);
         fbank.setConverter(conv);
         rel_threshold.getRelativeThreshold(fs, fbank, spreadingMtx);
@@ -188,13 +188,16 @@ private:
         float maxbark = conv.hz2bark(maxF);
         float alphaScaled = spread_exp / 20.f;
         vector<float> spreadFuncBarkdB;
+        
         spreadFuncBarkdB.resize(2 * nfilts);
         spreadingMtx.resize(nfilts, vector<float>(nfilts));
         vector<float> spreadFuncBarkVoltage(spreadFuncBarkdB);
         vector<float> ascendent = conv.linspace(-maxbark * fbdb, -2.5f, nfilts);
-        FloatVectorOperations::add(ascendent.data(), -fadB, nfilts);
         vector<float> descendent = conv.linspace(1.0f ,-maxbark * fbbdb, nfilts);
+        
+        FloatVectorOperations::add(ascendent.data(), -fadB, nfilts);
         FloatVectorOperations::add(descendent.data(), -fadB, nfilts);
+        
         move(ascendent.begin(), ascendent.end(), std::back_inserter(spreadFuncBarkdB));
         move(descendent.begin(), descendent.end(), std::back_inserter(spreadFuncBarkdB));
         FloatVectorOperations::multiply(spreadFuncBarkdB.data(), alphaScaled, nfilts);

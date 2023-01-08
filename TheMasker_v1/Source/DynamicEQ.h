@@ -49,8 +49,8 @@ public:
         fCenters = fbank.getFrequencies();
         atq = getATQ(fCenters);
         //spreadingMtx = getSpreadingFunc(maxFreq, spread_exp);
-        fbank.getFilterBank(frequencies);
-        fbank.setConverter(conv);
+        //fbank.getFilterBank(frequencies);
+        //fbank.setConverter(conv);
         rel_threshold.getRelativeThreshold(fs, fbank, spreadingMtx);
         inSpectrum.prepareToPlay(sampleRate, fbank, spreadingMtx, true, false);
         scSpectrum.prepareToPlay(sampleRate, fbank, spreadingMtx, true, true);

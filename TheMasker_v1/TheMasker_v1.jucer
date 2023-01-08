@@ -4,14 +4,14 @@
               jucerFormatVersion="1" cppLanguageStandard="latest" pluginManufacturer="Cinemystics"
               pluginManufacturerCode="Cmyx">
   <MAINGROUP id="Ceazlg" name="TheMasker_v1">
-    <GROUP id="{76D7196A-F062-9BC5-67A2-90B7A03AD9DA}" name="DSP">
-      <FILE id="UBm1iR" name="Analyser.h" compile="0" resource="0" file="../../(OLD) TheMasker/TheMasker/TheMasker/Source/Analyser.h"/>
-      <FILE id="IkvEKS" name="Converters.h" compile="0" resource="0" file="Source/Converters.h"/>
-      <FILE id="HGF1xH" name="Curve.h" compile="0" resource="0" file="Source/Curve.h"/>
-      <FILE id="fkjbJW" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
-      <FILE id="YDBatj" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>
-    </GROUP>
     <GROUP id="{0C69285F-DA98-BFA2-E073-091E77A74E3A}" name="Source">
+      <GROUP id="{76D7196A-F062-9BC5-67A2-90B7A03AD9DA}" name="DSP">
+        <FILE id="VvW6KC" name="Analyser.h" compile="0" resource="0" file="Source/Analyser.h"/>
+        <FILE id="IkvEKS" name="Converters.h" compile="0" resource="0" file="Source/Converters.h"/>
+        <FILE id="HGF1xH" name="Curve.h" compile="0" resource="0" file="Source/Curve.h"/>
+        <FILE id="fkjbJW" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
+        <FILE id="YDBatj" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>
+      </GROUP>
       <FILE id="xMHWeo" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="gQXSOd" name="PluginProcessor.h" compile="0" resource="0"

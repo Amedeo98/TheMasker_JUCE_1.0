@@ -8,14 +8,13 @@
   ==============================================================================
 */
 
-#pragma once
-
 #define nfilts 32
 #define maxFreq 22000
 #define minFreq 20
 #define npoints 512
 #define blockSize 64
 
+#pragma once
 class Converter {
 
 public:
@@ -41,6 +40,19 @@ public:
         return 20 * log10(amp);
 
     };
+
+    vector<float> mXv_mult(vector<vector<float>> in1, vector<float> in2) {
+        
+        vector<float> res;
+        size_t length = in1.size();
+        res.resize(length);
+        for (int i = 0; ++i < length;) {
+            for (int k = 0; ++k < in2.size();) {
+                res[i] = res[i] + in1[i][k] * in2[k];
+            }
+        }
+        return res;
+    }
 
     template <typename T>
     vector<T> linspace(T a, T b, size_t N) {
@@ -76,5 +88,4 @@ public:
         sidechain
     };
 };
-
 

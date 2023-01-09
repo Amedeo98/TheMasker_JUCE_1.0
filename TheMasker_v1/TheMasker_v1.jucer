@@ -11,6 +11,7 @@
         <FILE id="HGF1xH" name="Curve.h" compile="0" resource="0" file="Source/Curve.h"/>
         <FILE id="fkjbJW" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
         <FILE id="YDBatj" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>
+        <FILE id="uJ9KJk" name="FilterCascade.h" compile="0" resource="0" file="Source/FilterCascade.h"/>
       </GROUP>
       <FILE id="xMHWeo" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

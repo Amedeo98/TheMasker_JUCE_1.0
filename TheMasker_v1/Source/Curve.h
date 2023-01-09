@@ -12,9 +12,8 @@
 #include <JuceHeader.h>
 #include "Converters.h"
 #include "FilterBank.h"
-#include "Analyser.h"
 #include "PluginProcessor.h"
-
+#include "Analyser.h"
 
 
 
@@ -118,23 +117,27 @@ public:
         analyser.addAudioData(mainBuffer, startChannel, numChannels);
         setYValues(analyser.getFD());
 
-        //if (decimated) {
-        //    std::transform(fbank.getValues().begin(), fbank.getValues().end(),
-        //        yValues.begin(), temp.begin(),
-        //        std::multiplies<float>());
-        //    //setDecimated(true);
-        //}
-        //else {
-        //    temp = yValues;
-        //}
+        if (decimated) {
+            vector<vector<float>> fbValues = fbank.getValues();
+            vector<float> _yValues = yValues;
+            temp=conv.mXv_mult(fbank.getValues(),yValues);
+            /*std::transform(fbank.getValues().begin(), fbank.getValues().end(),
+                yValues.begin(), temp.begin(),
+                std::multiplies<float>());*/
+            //setDecimated(true);
+        }
+        else {
+            temp = yValues;
+        }
 
-        //if (spreaded) {
-        //    std::transform(spreadingMtx.begin(), spreadingMtx.end(),
-        //        temp.begin(), temp.begin(),
-        //        std::multiplies<float>());
-        //}
+        if (spreaded) {
+            temp = conv.mXv_mult(spreadingMtx, temp);
+        /*    std::transform(spreadingMtx.begin(), spreadingMtx.end(),
+              temp.begin(), temp.begin(),
+              std::multiplies<float>()); */
+        }
 
-        for (int i = 0; ++i < yValues.size();) {
+        for (int i = 0; ++i < temp.size();) {
             temp[i] = real(conv.amp2db(temp[i]));
         }
         setYValues(temp);

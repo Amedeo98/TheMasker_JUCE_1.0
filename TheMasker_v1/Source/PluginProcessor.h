@@ -10,6 +10,8 @@
 
 #include <JuceHeader.h>
 #include "DynamicEQ.h"
+#include "Converters.h"
+#include "FilterCascade.h"
 
 #define PLUGIN_V 1
 
@@ -68,12 +70,14 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    //==============================================================================
+    
     std::vector<float> getFrequencies();
     
-
+    
+//===========================================================================================
     
 private:
-    //==============================================================================
     AudioProcessorValueTreeState parameters;
     DynamicEQ dynEQ;
     

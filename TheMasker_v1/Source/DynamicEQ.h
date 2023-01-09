@@ -19,6 +19,7 @@ using namespace std;
 #include "Analyser.h"
 
 
+
 #define DEFAULT_COMP 0.0f
 #define DEFAULT_EXP 0.0f
 #define DEFAULT_ATQ 0.0f
@@ -74,7 +75,7 @@ public:
 
         //if (getActiveEditor() != nullptr) {
         inSpectrum.processBlock(mainBuffer, 0, numInChannels);
-        scSpectrum.processBlock(scBuffer, 0, numInChannels);
+        //scSpectrum.processBlock(scBuffer, 0, numInChannels);
         //}
         rel_threshold.update(scSpectrum, atq);
         delta.getDelta(inSpectrum, rel_threshold);
@@ -264,6 +265,3 @@ private:
   
 
 };
-
-
-

@@ -114,14 +114,14 @@ void TheMasker_v1AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
         buffer.clear(i, 0, buffer.getNumSamples());
     }
-     
+    
+    
     const AudioBuffer<float>& scSource = scBuffer.getNumChannels() ? scBuffer : mainBuffer;
     const int numScChannels = scSource.getNumChannels();
 
     for (int ch = 0; ch < numScChannels; ++ch) {
         auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1 / numScChannels);
     }
-    
 
 
     dynEQ.processBlock(mainBuffer, auxBuffer);

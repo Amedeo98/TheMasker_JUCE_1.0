@@ -13,7 +13,7 @@
 TheMasker_v1AudioProcessor::TheMasker_v1AudioProcessor()
      : AudioProcessor (BusesProperties()
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                       //.withInput("SideChain", juce::AudioChannelSet::stereo(), true)
+                       .withInput("SideChain", juce::AudioChannelSet::stereo(), true)
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
      ),
     parameters(*this, nullptr, "TheMaskerCompressor", {
@@ -52,9 +52,9 @@ TheMasker_v1AudioProcessor::~TheMasker_v1AudioProcessor()
 void TheMasker_v1AudioProcessor::prepareToPlay (double newSampleRate, int newSamplesPerBlock)
 {
     sampleRate = newSampleRate;
-    /*
+    
     auxBuffer.setSize(1, newSamplesPerBlock);
-    */
+
     getFrequencies();
     conv = Converter();
     dynEQ.prepareToPlay(frequencies, sampleRate, getTotalNumInputChannels(), getTotalNumOutputChannels(), newSamplesPerBlock, conv);
@@ -64,7 +64,7 @@ void TheMasker_v1AudioProcessor::releaseResources()
 {
     dynEQ.releaseResources();
     //Analyser.stopThread
-    //auxBuffer.setSize(0, 0);
+    auxBuffer.setSize(0, 0);
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -106,30 +106,27 @@ void TheMasker_v1AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto numSamples = buffer.getNumSamples();
 
     auto mainBuffer = getBusBuffer(buffer, true, 0);
-    //auto scBuffer = getBusBuffer(buffer, true, 1);
+    auto scBuffer = getBusBuffer(buffer, true, 1);
 
     auxBuffer.clear();
 
     
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
+        buffer.clear(i, 0, buffer.getNumSamples());
+    }
+     
+    const AudioBuffer<float>& scSource = scBuffer.getNumChannels() ? scBuffer : mainBuffer;
+    const int numScChannels = scSource.getNumChannels();
 
-     {
-         /*
-        const AudioBuffer<float>& scSource = scBuffer.getNumChannels() ? scBuffer : mainBuffer;
-        const int numScChannels = scSource.getNumChannels();
-
-        for (int ch = 0; ch < numScChannels; ++ch)
-            auxBuffer.addFrom(0, 0, scSource, ch, 0, numSamples, 1 / numScChannels);
-          */
+    for (int ch = 0; ch < numScChannels; ++ch) {
+        auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1 / numScChannels);
     }
     
- /*   juce::dsp::AudioBlock<float>              ioBuffer(buffer);
-    juce::dsp::ProcessContextReplacing<float> context(ioBuffer);
-    filter.process(context);*/
 
-    //dynEQ.processBlock(mainBuffer, auxBuffer);// ..do something to the data...
+
+    dynEQ.processBlock(mainBuffer, auxBuffer);
 }
+
 
 //==============================================================================
 juce::AudioProcessorEditor* TheMasker_v1AudioProcessor::createEditor()
@@ -165,13 +162,17 @@ void TheMasker_v1AudioProcessor::parameterChanged(const String& paramID, float n
         dynEQ.setScGain(newValue);
 }
 
+
+
 //==============================================================================
+
 void TheMasker_v1AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = parameters.copyState();
     std::unique_ptr<XmlElement> xml(state.createXml());
     copyXmlToBinary(*xml, destData);
 }
+
 
 void TheMasker_v1AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
@@ -180,6 +181,7 @@ void TheMasker_v1AudioProcessor::setStateInformation (const void* data, int size
         if (xmlState->hasTagName(parameters.state.getType()))
             parameters.replaceState(ValueTree::fromXml(*xmlState));
 }
+
 
 std::vector<float> TheMasker_v1AudioProcessor::getFrequencies() {
     frequencies.resize(npoints);
@@ -191,6 +193,7 @@ std::vector<float> TheMasker_v1AudioProcessor::getFrequencies() {
     }
     return frequencies;
 }
+
 
 
 

@@ -11,14 +11,12 @@
 #pragma once
 using namespace std;
 
-//#include <FilterBank.h>
+
 #include <JuceHeader.h>
 #include "Curve.h"
 #include "FilterBank.h"
 #include "Converters.h"
 #include "Analyser.h"
-#include <iostream>
-
 
 
 #define DEFAULT_COMP 0.0f
@@ -46,11 +44,11 @@ public:
         numInChannels = inCh;
         numOutChannels = outCh;
         frequencies = _frequencies;
-        fCenters = fbank.getFrequencies();
         atq = getATQ(fCenters);
-        //spreadingMtx = getSpreadingFunc(maxFreq, spread_exp);
-        //fbank.getFilterBank(frequencies);
-        //fbank.setConverter(conv);
+        spreadingMtx = getSpreadingFunc(maxFreq, spread_exp);
+        fbank.getFilterBank(frequencies);
+        fCenters = fbank.getFrequencies();
+        fbank.setConverter(conv);
         rel_threshold.getRelativeThreshold(fs, fbank, spreadingMtx);
         inSpectrum.prepareToPlay(sampleRate, fbank, spreadingMtx, true, false);
         scSpectrum.prepareToPlay(sampleRate, fbank, spreadingMtx, true, true);
@@ -187,34 +185,42 @@ private:
         float fbbdb = 26.0;
         float maxbark = conv.hz2bark(maxF);
         float alphaScaled = spread_exp / 20.f;
-        vector<float> spreadFuncBarkdB;
-        
-        spreadFuncBarkdB.resize(2 * nfilts);
+        vector<float> spreadFuncBarkdB(2 * nfilts);
+        //spreadFuncBarkdB->resize(2 * nfilts);
         spreadingMtx.resize(nfilts, vector<float>(nfilts));
-        vector<float> spreadFuncBarkVoltage(spreadFuncBarkdB);
+        vector<float> spreadFuncBarkVoltage(2 * nfilts);
         vector<float> ascendent = conv.linspace(-maxbark * fbdb, -2.5f, nfilts);
-        vector<float> descendent = conv.linspace(1.0f ,-maxbark * fbbdb, nfilts);
-        
         FloatVectorOperations::add(ascendent.data(), -fadB, nfilts);
+        vector<float> descendent = conv.linspace(1.0f ,-maxbark * fbbdb, nfilts);
         FloatVectorOperations::add(descendent.data(), -fadB, nfilts);
-        
-        move(ascendent.begin(), ascendent.end(), std::back_inserter(spreadFuncBarkdB));
-        move(descendent.begin(), descendent.end(), std::back_inserter(spreadFuncBarkdB));
-        FloatVectorOperations::multiply(spreadFuncBarkdB.data(), alphaScaled, nfilts);
+        copy(ascendent.begin(), ascendent.end(), spreadFuncBarkdB.begin());
+        copy(descendent.begin(), descendent.end(), spreadFuncBarkdB.begin() + nfilts ); //
 
-        for (int i = 0; i++ < nfilts;) {
+        FloatVectorOperations::multiply(spreadFuncBarkdB.data(), alphaScaled, 2 * nfilts);
+        for (int i = 0; i < 2*nfilts; i++)
+        {
             spreadFuncBarkVoltage[i] = std::pow(10.0f, spreadFuncBarkdB[i]);
-            spreadFuncBarkVoltage[i+nfilts] = std::pow(10.0f, spreadFuncBarkdB[i+nfilts]);
-            vector<float> temp[nfilts];
-            vector<float>::const_iterator first = spreadFuncBarkVoltage.begin() + nfilts - i - 1;
-            vector<float>::const_iterator last = spreadFuncBarkVoltage.begin() + 2 * nfilts - i - 2;
+            //spreadFuncBarkVoltage[i + nfilts] = std::pow(10.0f, spreadFuncBarkdB[i + nfilts]);
+        }
+        for (int i = 0; i < nfilts; i++) {
+           /* spreadFuncBarkVoltage[i] = std::pow(10.0f, spreadFuncBarkdB[i]);
+            spreadFuncBarkVoltage[i+nfilts] = std::pow(10.0f, spreadFuncBarkdB[i+nfilts]);*/
 
-            temp->assign(first, last);
-            for (int j = 0; j++ < nfilts;)
+            vector<float> temp(nfilts);
+            vector<float>::const_iterator first = spreadFuncBarkVoltage.begin() + nfilts - i - 1;
+            vector<float>::const_iterator last = spreadFuncBarkVoltage.begin()+ 2 * nfilts - i - 2;
+                
+            //temp->assign(first, last);
+            
+            copy(spreadFuncBarkVoltage.begin() + nfilts - i - 1, spreadFuncBarkVoltage.begin() + 2 * nfilts - i - 1, temp.begin()); //
+
+            /*for (int j = 0; j < nfilts; j++)
             {
-                spreadingMtx[j,i] = temp[j];
-            }
-            temp->clear();
+                spreadingMtx[i] = temp;
+            }*/
+            //copy(temp.begin(), temp.end(), spreadingMtx.begin()+i); //
+            spreadingMtx[i] = temp;
+            //temp.~vector;
         }
 
 
@@ -258,5 +264,6 @@ private:
   
 
 };
+
 
 

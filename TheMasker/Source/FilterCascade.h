@@ -12,6 +12,7 @@
 #include <JuceHeader.h>
 #include "Converters.h"
 #include "SimpleFilter.h"
+#include "DynamicEQ.h"
 
 
 
@@ -23,16 +24,23 @@ public:
     void prepareToPlay(double sampleRate, int samplesPerBlock, int numChannels, vector<float> freqs) {
         
         filters.resize(nfilts);
+        outputBlock.resize(nfilts);
         for (int f = 0; f < nfilts; f++) {
-            filters[f].prepareToPlay(sampleRate, samplesPerBlock, numChannels);
+            filters[f].prepareToPlay(sampleRate, samplesPerBlock, numChannels, freqs[f]);
         }
     }
 
     void updateGains(vector<float>& delta){
-
+        for (int f = 0; f < nfilts; f++) {
+            filters[f].updateGain(delta[f]);
+        }
     }
 
-    void filterBlock(AudioBuffer<float>& mainBuffer) {
+    void filterBlock(juce::dsp::ProcessContextReplacing<float>& context) {
+        for (int f = 0; f < nfilts; f++) {
+            filters[f].process(context);
+        }
+       
 
     }
 
@@ -41,6 +49,9 @@ public:
             filters[f].reset();
         }
     }
+
 private:
 vector<Filter> filters;
+vector<juce::dsp::AudioBlock<float>> outputBlock;
+
 };

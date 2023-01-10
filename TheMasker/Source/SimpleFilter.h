@@ -18,23 +18,35 @@ public:
     void reset() {
     }
 
-    void prepareToPlay(double sampleRate, int samplesPerBlock, int numChannels) {
+    void prepareToPlay(double sampleRate, int samplesPerBlock, int numChannels, float freq) {
         filter.reset();
-
         juce::dsp::ProcessSpec spec;
         spec.maximumBlockSize = samplesPerBlock;
         spec.sampleRate = sampleRate;
         spec.numChannels = numChannels;
-        filter.prepare(spec);
         filter.setType(juce::dsp::StateVariableTPTFilterType::bandpass);
+        filter.setCutoffFrequency(freq);
+        filter.setResonance(1 / sqrt(2));
+        filter.prepare(spec);
+
     }
 
-    void updateGain() {
-
+    void updateGain(float g) {
+        gain = Decibels::decibelsToGain(g);
     }
+
+    void process(juce::dsp::ProcessContextReplacing<float>& c) {
+        filter.process(c);
+        outputBlock = c.getOutputBlock();
+        outputBlock.multiplyBy(gain);
+    }
+
 
     using F = juce::dsp::StateVariableTPTFilter<float>;
     F filter;
 
 private:
+    float gain;
+    juce::dsp::AudioBlock<float> outputBlock;
+
 };

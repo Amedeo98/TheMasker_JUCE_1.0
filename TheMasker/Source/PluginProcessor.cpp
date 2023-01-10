@@ -61,7 +61,7 @@ TheMaskerAudioProcessor::~TheMaskerAudioProcessor()
 
 void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSamplesPerBlock)
 {
-    sampleRate = newSampleRate;
+    sampleRate = static_cast<int> (newSampleRate);
     
     auxBuffer.setSize(2, newSamplesPerBlock);
     
@@ -121,7 +121,7 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1.0f / numScChannels); //rimettere il gain a 1?
     }
     
-
+   
 
     dynEQ.processBlock(mainBuffer, auxBuffer);
 }

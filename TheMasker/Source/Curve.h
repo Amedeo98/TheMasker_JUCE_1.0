@@ -90,11 +90,11 @@ private:
 class AudioFD : public Curve {
 public:
 
-    void prepareToPlay(float sampleRate, FilterBank& filterbank, vector<vector<float>>& spreadingMatrix, vector<float> freqs, bool decim, bool spread){
+    void prepareToPlay(int sampleRate, FilterBank& filterbank, vector<vector<float>>& spreadingMatrix, vector<float> freqs, bool decim, bool spread){
         setDecimated(decim);
         setXValues(freqs);
         spreaded = spread;
-        analyser.setupAnalyser(int(sampleRate), float(sampleRate), fbank, spreadingMtx);
+        analyser.setupAnalyser(sampleRate, float(sampleRate), fbank, spreadingMtx);
         fbank = filterbank;
         spreadingMtx = spreadingMatrix;
         setConverter(fbank.getConverter());

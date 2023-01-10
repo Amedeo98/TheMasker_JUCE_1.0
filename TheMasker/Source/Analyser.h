@@ -45,7 +45,7 @@ public:
         waitForData.signal();
     }
 
-    void setupAnalyser(int audioFifoSize, Type sampleRateToUse, FilterBank filterBank, vector<vector<float>> spreadingMatrix)
+    void setupAnalyser(int audioFifoSize, int sampleRateToUse, FilterBank filterBank, vector<vector<float>> spreadingMatrix)
     {
         sampleRate = sampleRateToUse;
         audioFifo.setSize(1, audioFifoSize);
@@ -151,7 +151,7 @@ private:
     juce::WaitableEvent waitForData;
     juce::CriticalSection pathCreationLock;
 
-    Type sampleRate{};
+    int sampleRate=0;
 
 
   

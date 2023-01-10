@@ -93,8 +93,12 @@ public:
             wasBypassed = false;
         }
 
-        //filters.updateGains(delta.yValues);
-        //filters.filterBlock(mainBuffer);
+       juce::dsp::AudioBlock<float>              ioBuffer(mainBuffer);
+       juce::dsp::ProcessContextReplacing<float> context(ioBuffer);
+
+
+        filters.updateGains(delta.yValues);
+        //filters.filterBlock(context);
         applyGain(mainBuffer, outGain);
         //if (getActiveEditor() != nullptr)
         outSpectrum.processBlock(mainBuffer, 0, numOutChannels);
@@ -206,7 +210,6 @@ private:
             vector<float>::const_iterator last = spreadFuncBarkVoltage.begin()+ 2 * nfilts - i - 2;
             copy(spreadFuncBarkVoltage.begin() + nfilts - i - 1, spreadFuncBarkVoltage.begin() + 2 * nfilts - i - 1, temp.begin()); //
             spreadingMtx[i] = temp;
-            //temp.~vector;
         }
 
 
@@ -225,7 +228,7 @@ private:
 
     vector<float> frequencies;
     vector<float> fCenters;
-    long fs;
+    int16 fs = 0;
     int numInChannels = 2;
     int numOutChannels = 2;
     float spread_exp = 0.6f;

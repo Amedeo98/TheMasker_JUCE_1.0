@@ -14,11 +14,11 @@
 //==============================================================================
 /**
 */
-class TheMasker_v1AudioProcessorEditor  : public juce::AudioProcessorEditor
+class TheMaskerAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
-    TheMasker_v1AudioProcessorEditor (TheMasker_v1AudioProcessor&);
-    ~TheMasker_v1AudioProcessorEditor() override;
+    TheMaskerAudioProcessorEditor (TheMaskerAudioProcessor&);
+    ~TheMaskerAudioProcessorEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -27,7 +27,7 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    TheMasker_v1AudioProcessor& audioProcessor;
+    TheMaskerAudioProcessor& audioProcessor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMasker_v1AudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMaskerAudioProcessorEditor)
 };

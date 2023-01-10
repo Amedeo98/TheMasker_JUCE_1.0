@@ -11,22 +11,34 @@
 
 
 TheMaskerAudioProcessor::TheMaskerAudioProcessor()
-     : AudioProcessor (BusesProperties()
-                       .withInput   ("Input",  juce::AudioChannelSet::stereo(), true)
-                       .withOutput  ("Output", juce::AudioChannelSet::stereo(), true)
-                       .withInput("SideChain", juce::AudioChannelSet::stereo(), false)
-     ),
-parameters(*this, nullptr, "TheMaskerCompressor", {
-    std::make_unique<AudioParameterFloat>(ParameterID {NAME_COMP, PLUGIN_V}, "Comp", -1.0f, 1.0f, DEFAULT_COMP),
-    std::make_unique<AudioParameterFloat>(ParameterID {NAME_EXP, PLUGIN_V}, "Exp", -1.0f, 1.0f, DEFAULT_EXP),
-    std::make_unique<AudioParameterFloat>(ParameterID {NAME_ATQ, PLUGIN_V}, "CleanUp", 0.0f, 1.0f, DEFAULT_ATQ),
-    std::make_unique<AudioParameterFloat>(ParameterID {NAME_SL, PLUGIN_V}, "StereoLinked", 0.0f, 1.0f, DEFAULT_SL),
-    std::make_unique<AudioParameterFloat>(ParameterID {NAME_MIX, PLUGIN_V}, "Mix", 0.0f, 1.0f, DEFAULT_MIX),
-    std::make_unique<AudioParameterFloat>(ParameterID {NAME_IN, PLUGIN_V}, "Input (dB)", -40.0f, 20.0f, DEFAULT_IN),
-    std::make_unique<AudioParameterFloat>(ParameterID {NAME_OUT, PLUGIN_V}, "Output (dB)", -40.0f, 20.0f, DEFAULT_OUT),
-    std::make_unique<AudioParameterFloat>(ParameterID {NAME_SC, PLUGIN_V},"Sidechain (dB)", -40.0f, 20.0f, DEFAULT_SC)
-    })
-
+    : AudioProcessor(BusesProperties()
+        .withInput("Input", juce::AudioChannelSet::stereo(), true)
+        .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+        .withInput("SideChain", juce::AudioChannelSet::stereo(), false)
+    ),
+#if JucePlugin_Build_VST3
+    parameters(*this, nullptr, "TheMaskerCompressor", {
+        std::make_unique<AudioParameterFloat>(NAME_COMP, "Comp", -1.0f, 1.0f, DEFAULT_COMP),
+        std::make_unique<AudioParameterFloat>(NAME_EXP, "Exp", -1.0f, 1.0f, DEFAULT_EXP),
+        std::make_unique<AudioParameterFloat>(NAME_ATQ, "CleanUp", 0.0f, 1.0f, DEFAULT_ATQ),
+        std::make_unique<AudioParameterFloat>(NAME_SL, "StereoLinked", 0.0f, 1.0f, DEFAULT_SL),
+        std::make_unique<AudioParameterFloat>(NAME_MIX, "Mix", 0.0f, 1.0f, DEFAULT_MIX),
+        std::make_unique<AudioParameterFloat>(NAME_IN, "Input (dB)", -40.0f, 20.0f, DEFAULT_IN),
+        std::make_unique<AudioParameterFloat>(NAME_OUT, "Output (dB)", -40.0f, 20.0f, DEFAULT_OUT),
+        std::make_unique<AudioParameterFloat>(NAME_SC, "Sidechain (dB)", -40.0f, 20.0f, DEFAULT_SC)
+        })
+#elif JucePlugin_Build_AU
+    parameters(*this, nullptr, "TheMaskerCompressor", {
+        std::make_unique<AudioParameterFloat>(ParameterID {NAME_COMP, PLUGIN_V}, "Comp", -1.0f, 1.0f, DEFAULT_COMP),
+        std::make_unique<AudioParameterFloat>(ParameterID {NAME_EXP, PLUGIN_V}, "Exp", -1.0f, 1.0f, DEFAULT_EXP),
+        std::make_unique<AudioParameterFloat>(ParameterID {NAME_ATQ, PLUGIN_V}, "CleanUp", 0.0f, 1.0f, DEFAULT_ATQ),
+        std::make_unique<AudioParameterFloat>(ParameterID {NAME_SL, PLUGIN_V}, "StereoLinked", 0.0f, 1.0f, DEFAULT_SL),
+        std::make_unique<AudioParameterFloat>(ParameterID {NAME_MIX, PLUGIN_V}, "Mix", 0.0f, 1.0f, DEFAULT_MIX),
+        std::make_unique<AudioParameterFloat>(ParameterID {NAME_IN, PLUGIN_V}, "Input (dB)", -40.0f, 20.0f, DEFAULT_IN),
+        std::make_unique<AudioParameterFloat>(ParameterID {NAME_OUT, PLUGIN_V}, "Output (dB)", -40.0f, 20.0f, DEFAULT_OUT),
+        std::make_unique<AudioParameterFloat>(ParameterID {NAME_SC, PLUGIN_V},"Sidechain (dB)", -40.0f, 20.0f, DEFAULT_SC)
+        })
+#endif
 {
     parameters.addParameterListener(NAME_COMP, this);
     parameters.addParameterListener(NAME_EXP, this);
@@ -37,7 +49,7 @@ parameters(*this, nullptr, "TheMaskerCompressor", {
     parameters.addParameterListener(NAME_OUT, this);
     parameters.addParameterListener(NAME_SC, this);
 
-    //state.state = juce::ValueTree(JucePlugin_Name);
+    parameters.state = juce::ValueTree(JucePlugin_Name);
 
 }
 

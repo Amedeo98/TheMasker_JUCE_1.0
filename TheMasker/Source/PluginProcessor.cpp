@@ -123,6 +123,8 @@ juce::AudioProcessorEditor* TheMaskerAudioProcessor::createEditor()
     //return new juce::GenericAudioProcessorEditor(*this);
 }
 
+
+
 void TheMaskerAudioProcessor::parameterChanged(const String& paramID, float newValue)
 {
     if (paramID == NAME_COMP)

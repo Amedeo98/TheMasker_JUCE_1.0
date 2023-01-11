@@ -65,17 +65,7 @@ public:
         return xs;
     };
 
-    template <typename T>
-    void printVector(vector<T> input) {
 
-        size_t n = sizeof(input) / sizeof(input[0]);
-        std::cout << "vector printing : ";
-        // loop through the array elements
-        for (size_t i = 0; i < n; i++) {
-            std::cout << input[i] << ' ';
-        }
-
-    }
 
     
 };

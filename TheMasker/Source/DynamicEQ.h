@@ -238,7 +238,6 @@ private:
      
     AbsoluteThreshold atq;
     RelativeThreshold rel_threshold;
-    RelativeThreshold threshold;
     Delta delta;
 
     AudioFD inSpectrum;

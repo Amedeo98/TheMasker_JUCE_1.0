@@ -118,7 +118,8 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
 juce::AudioProcessorEditor* TheMaskerAudioProcessor::createEditor()
 {
-    return new TheMaskerAudioProcessorEditor (*this);
+    //return new TheMaskerAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 void TheMaskerAudioProcessor::parameterChanged(const String& paramID, float newValue)

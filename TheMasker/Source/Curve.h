@@ -25,12 +25,11 @@ public:
 
     ~Curve() {}
 
-    //using enum domain;
-    //using enum scale;
-
     std::vector<float> yValues;
     std::vector<float> xValues;
     int curveSize;
+    Converter conv;
+
 
     void setYValues(std::vector<float> newY) {
         curveSize = newY.size();
@@ -54,7 +53,6 @@ public:
     std::vector<float> getYValues() {
        return yValues;
     }
-    Converter conv;
 
 };
 
@@ -94,7 +92,7 @@ public:
         setDecimated(decim);
         setXValues(freqs);
         spreaded = spread;
-        analyser.setupAnalyser(sampleRate, float(sampleRate), fbank, spreadingMtx);
+        analyser.setupAnalyser(sampleRate, float(sampleRate), fbank, spreadingMtx, decim);
         fbank = filterbank;
         spreadingMtx = spreadingMatrix;
         setConverter(fbank.getConverter());
@@ -184,21 +182,18 @@ public:
 
 
 private:
-    //int fs;
-    //vector<vector<float>> spreadingMtx;
-    //FilterBank fbank;
 
 };
 
 class Delta : public Curve {
 public:
-    Delta getDelta(AudioFD& input, RelativeThreshold& rel_thresh) {
+    void getDelta(AudioFD& input, RelativeThreshold& rel_thresh) {
         std::vector<float> newValues = input.yValues;
         std::vector<float> threshValues = rel_thresh.yValues;
         FloatVectorOperations::subtract(newValues.data(), threshValues.data(), threshValues.size());
         setYValues(newValues);
         setXValues(input.xValues);
-        return *this;
+        //return *this;
     }
 
     void clipDelta(RelativeThreshold& threshold) {

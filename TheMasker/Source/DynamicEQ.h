@@ -196,7 +196,7 @@ private:
         vector<float> descendent = conv.linspace(1.0f ,-maxbark * fbbdb, nfilts);
         FloatVectorOperations::add(descendent.data(), -fadB, nfilts);
         copy(ascendent.begin(), ascendent.end(), spreadFuncBarkdB.begin());
-        copy(descendent.begin(), descendent.end(), spreadFuncBarkdB.begin() + nfilts ); //
+        copy(descendent.begin(), descendent.end(), spreadFuncBarkdB.begin() + nfilts );
 
         FloatVectorOperations::multiply(spreadFuncBarkdB.data(), alphaScaled, 2 * nfilts);
         for (int i = 0; i < 2*nfilts; i++) 
@@ -208,7 +208,7 @@ private:
             vector<float> temp(nfilts);
             vector<float>::const_iterator first = spreadFuncBarkVoltage.begin() + nfilts - i - 1;
             vector<float>::const_iterator last = spreadFuncBarkVoltage.begin()+ 2 * nfilts - i - 2;
-            copy(spreadFuncBarkVoltage.begin() + nfilts - i - 1, spreadFuncBarkVoltage.begin() + 2 * nfilts - i - 1, temp.begin()); //
+            copy(spreadFuncBarkVoltage.begin() + nfilts - i - 1, spreadFuncBarkVoltage.begin() + 2.0f * nfilts - i - 1, temp.begin());
             spreadingMtx[i] = temp;
         }
 
@@ -228,7 +228,7 @@ private:
 
     vector<float> frequencies;
     vector<float> fCenters;
-    int16 fs = 0;
+    int fs = 0;
     int numInChannels = 2;
     int numOutChannels = 2;
     float spread_exp = 0.6f;

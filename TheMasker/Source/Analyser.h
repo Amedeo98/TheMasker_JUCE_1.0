@@ -45,21 +45,15 @@ public:
         waitForData.signal();
     }
 
-    void setupAnalyser(int audioFifoSize, int sampleRateToUse, FilterBank filterBank, vector<vector<float>> spreadingMatrix)
+    void setupAnalyser(int audioFifoSize, int sampleRateToUse, FilterBank filterBank, vector<vector<float>> spreadingMatrix, bool decim)
     {
         sampleRate = sampleRateToUse;
         audioFifo.setSize(1, audioFifoSize);
         abstractFifo.setTotalSize(audioFifoSize);
         fbank = filterBank;
         spreadingMtx = spreadingMatrix;
-        conv = fbank.getConverter();
-        magnitudes.resize(fft.getSize());
-
-       // magnitudes_curve.setXValues(fbank.getFrequencies());
-
-        magnitudes_decim.resize(nfilts);
-        //magnitudes_curve_decim.setXValues(fbank.centerF);
-        //magnitudes_curve_decim.setDecimated(true);
+        //conv = fbank.getConverter();
+        decim ? magnitudes.resize(nfilts) : magnitudes.resize(fft.getSize()) ;
         startThread();
     }
 
@@ -156,11 +150,10 @@ private:
 
   
     vector<float> magnitudes;
-    vector<float> magnitudes_decim;
 
     FilterBank fbank;
     vector<vector<float>> spreadingMtx;
-    Converter conv;
+    //Converter conv;
 
     juce::dsp::FFT fft{ static_cast<int>(floor(log2(npoints)))};
     juce::dsp::WindowingFunction<Type> windowing{ size_t(fft.getSize()), juce::dsp::WindowingFunction<Type>::hann, true };

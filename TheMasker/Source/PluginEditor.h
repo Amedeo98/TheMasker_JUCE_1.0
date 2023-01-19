@@ -31,20 +31,29 @@ public:
 
     //==============================================================================
     void paint (juce::Graphics&) override;
-    void resized() override;
+     void resized() override;
 
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     TheMaskerAudioProcessor& audioProcessor;
     
-    CustomRotarySlider
-    inSlider,
-    outSlider,
-    scSlider,
-    compSlider,
-    expSlider,
-    cleanUpSlider;
+    CustomRotarySlider  inSlider,
+                        outSlider,
+                        scSlider,
+                        compSlider,
+                        expSlider,
+                        cleanUpSlider;
+      
+    using APVTS = juce::AudioProcessorValueTreeState;
+    using Attachment = APVTS::SliderAttachment;
+    
+    Attachment  inSliderAttachment,
+                outSliderAttachment,
+                scSliderAttachment,
+                compSliderAttachment,
+                expSliderAttachment,
+                cleanUpSliderAttachment;
     
     std::vector<juce::Component*> getComponents();
 

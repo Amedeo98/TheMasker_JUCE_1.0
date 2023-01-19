@@ -11,7 +11,14 @@
 
 //==============================================================================
 TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p),
+    inSliderAttachment(audioProcessor.parameters, NAME_IN, inSlider),
+    outSliderAttachment(audioProcessor.parameters, NAME_OUT, outSlider),
+    scSliderAttachment(audioProcessor.parameters, NAME_SC, scSlider),
+    compSliderAttachment(audioProcessor.parameters, NAME_COMP, compSlider),
+    expSliderAttachment(audioProcessor.parameters, NAME_EXP, expSlider),
+    cleanUpSliderAttachment(audioProcessor.parameters, NAME_ATQ, cleanUpSlider)
+
 {
     for(auto* comp : getComponents())
     {

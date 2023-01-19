@@ -25,7 +25,6 @@
 #define NAME_SC "scGain"
 
 
-
 class TheMaskerAudioProcessor : public juce::AudioProcessor, public AudioProcessorValueTreeState::Listener
 
 {
@@ -70,14 +69,11 @@ public:
     void setStateInformation(const void* data, int sizeInBytes) override;
 
     //==============================================================================
+    AudioProcessorValueTreeState parameters;
     std::vector<float> getFrequencies();
-
     
 
-
-
 private:
-    AudioProcessorValueTreeState parameters;
     DynamicEQ dynEQ;
     
     int sampleRate = 0;

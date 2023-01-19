@@ -26,6 +26,7 @@ public:
         filters.resize(nfilts);
         outputBlock.resize(nfilts);
         for (int f = 0; f < nfilts; f++) {
+            filters[f].reset();
             filters[f].prepareToPlay(sampleRate, samplesPerBlock, numChannels, freqs[f]);
         }
     }

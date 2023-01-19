@@ -52,7 +52,6 @@ public:
         abstractFifo.setTotalSize(audioFifoSize);
         fbank = filterBank;
         spreadingMtx = spreadingMatrix;
-        //conv = fbank.getConverter();
         decim ? magnitudes.resize(nfilts) : magnitudes.resize(fft.getSize()) ;
         startThread();
     }

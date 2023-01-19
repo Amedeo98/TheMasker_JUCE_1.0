@@ -16,10 +16,10 @@ public:
     ~Filter() {}
 
     void reset() {
+        filter.reset();
     }
 
     void prepareToPlay(double sampleRate, int samplesPerBlock, int numChannels, float freq) {
-        filter.reset();
         juce::dsp::ProcessSpec spec;
         spec.maximumBlockSize = samplesPerBlock;
         spec.sampleRate = sampleRate;

@@ -43,6 +43,7 @@ public:
         }
         abstractFifo.finishedWrite(block1 + block2);
         waitForData.signal();
+
     }
 
     void setupAnalyser(int audioFifoSize, int sampleRateToUse, FilterBank filterBank, vector<vector<float>> spreadingMatrix, bool decim)
@@ -52,7 +53,8 @@ public:
         abstractFifo.setTotalSize(audioFifoSize);
         fbank = filterBank;
         spreadingMtx = spreadingMatrix;
-        decim ? magnitudes.resize(nfilts) : magnitudes.resize(fft.getSize()) ;
+        //decim ? magnitudes.resize(nfilts) : 
+            magnitudes.resize(fft.getSize()) ;
         startThread();
     }
 
@@ -118,7 +120,7 @@ public:
 
     vector<float> getFD() {
         const auto* fftData = averager.getReadPointer(0);
-        for (int i = 0; ++i < averager.getNumSamples();)
+        for (int i = 0; i < averager.getNumSamples(); ++i)
             magnitudes[i] = fftData[i];
         return magnitudes;
     }

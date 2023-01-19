@@ -113,17 +113,13 @@ public:
     }
 
     void processBlock(AudioBuffer<float>& mainBuffer, int startChannel, int numChannels) {
-        analyser.addAudioData(mainBuffer, startChannel, numChannels);
+        //analyser.addAudioData(mainBuffer, startChannel, numChannels);
         setYValues(analyser.getFD());
 
         if (decimated) {
             vector<vector<float>> fbValues = fbank.getValues();
             vector<float> _yValues = yValues;
             temp=conv.mXv_mult(fbank.getValues(),yValues);
-            /*std::transform(fbank.getValues().begin(), fbank.getValues().end(),
-                yValues.begin(), temp.begin(),
-                std::multiplies<float>());*/
-            //setDecimated(true);
         }
         else {
             temp = yValues;
@@ -131,9 +127,6 @@ public:
 
         if (spreaded) {
             temp = conv.mXv_mult(spreadingMtx, temp);
-        /*    std::transform(spreadingMtx.begin(), spreadingMtx.end(),
-              temp.begin(), temp.begin(),
-              std::multiplies<float>()); */
         }
 
         for (int i = 0; i < temp.size(); i++) {

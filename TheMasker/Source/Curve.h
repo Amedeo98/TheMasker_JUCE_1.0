@@ -197,6 +197,7 @@ public:
         for (int i = 0; i < threshold.curveSize; i++) {
             THclip[i] = (1.0f + tanh((threshold.yValues[i] - gateThresh) / gateKnee)) / 2.0f;
         }
+        //conv.mXv_mult(yValues, THclip);
         std::transform(yValues.begin(), yValues.end(),
             THclip.begin(), newValues.data(), 
             std::multiplies<float>()); 
@@ -210,8 +211,8 @@ public:
             //monoValues = mean(yValues);
             //temp = UIsl * monoValues + (1-UIsl) * temp;
             temp = temp > 0.0f ? temp * UIcomp : temp * UIexp;
-            temp = temp * UImix;
-            tanh(temp / maxGain)* maxGain;
+            temp = temp * UImix; 
+            temp = tanh(temp / maxGain)* maxGain;
         }
     }
 

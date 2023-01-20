@@ -68,7 +68,6 @@ public:
 
     void processBlock(AudioBuffer<float>& mainBuffer, AudioBuffer<float>& scBuffer)
     {
-        atq.scale(atqWeight);
         applyGain(mainBuffer, inGain);
         applyGain(scBuffer, scGain);
 
@@ -78,23 +77,17 @@ public:
         //}
         rel_threshold.update(scSpectrum, atq);
         delta.getDelta(inSpectrum, rel_threshold);
+        delta.modulateDelta(compAmount, expAmount, stereoLinkAmt, mixAmount);
         delta.clipDelta(rel_threshold);
-        delta.modulateDelta(compAmount,expAmount, stereoLinkAmt, mixAmount);
         
-
-
-
-
-
-
         
-       if (wasBypassed) {
+        if (wasBypassed) {
             filters.reset();
             wasBypassed = false;
         }
 
-       juce::dsp::AudioBlock<float>              ioBuffer(mainBuffer);
-       juce::dsp::ProcessContextReplacing<float> context(ioBuffer);
+        juce::dsp::AudioBlock<float>              ioBuffer(mainBuffer);
+        juce::dsp::ProcessContextReplacing<float> context(ioBuffer);
 
 
         filters.updateGains(delta.yValues);
@@ -116,6 +109,7 @@ public:
 
     void setAtq(float newValue) {
         atqWeight = newValue;
+        atq.scale(atqWeight);
     }
 
     void setStereoLinked(float newValue) {

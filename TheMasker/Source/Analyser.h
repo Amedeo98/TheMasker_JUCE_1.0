@@ -12,7 +12,7 @@
 
 #include <juce_dsp/juce_dsp.h>
 #include <juce_gui_basics/juce_gui_basics.h>
-#include "Curve.h"
+//#include "Curve.h"
 
 template<typename Type>
 class Analyser : public juce::Thread

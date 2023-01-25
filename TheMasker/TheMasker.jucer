@@ -7,9 +7,16 @@
   <MAINGROUP id="EtDrka" name="TheMasker">
     <GROUP id="{D0F8B5F3-955C-44AC-04A3-B12E30F491D6}" name="Source">
       <GROUP id="{224B1F6F-B4C2-67BA-F881-EA7DFDFCB85F}" name="DSP">
+        <FILE id="esf6Zn" name="OverlappingFFTProcessor.h" compile="0" resource="0"
+              file="Source/OverlappingFFTProcessor.h"/>
+        <FILE id="UG6aRi" name="PSY.h" compile="0" resource="0" file="Source/PSY.h"/>
+        <FILE id="D9wx9s" name="StereoLinked.h" compile="0" resource="0" file="Source/StereoLinked.h"/>
+        <FILE id="pUsKut" name="DeltaScaler.h" compile="0" resource="0" file="Source/DeltaScaler.h"/>
+        <FILE id="XW6qMd" name="FT.h" compile="0" resource="0" file="Source/FT.h"/>
+        <FILE id="Ev0KdW" name="MultiBandMod.h" compile="0" resource="0" file="Source/MultiBandMod.h"/>
         <FILE id="MOlVV6" name="Analyser.h" compile="0" resource="0" file="Source/Analyser.h"/>
         <FILE id="rTJopX" name="Converters.h" compile="0" resource="0" file="Source/Converters.h"/>
-        <FILE id="r8g3ud" name="Curve.h" compile="0" resource="0" file="Source/Curve.h"/>
+        <FILE id="r8g3ud" name="Delta.h" compile="0" resource="0" file="Source/Delta.h"/>
         <FILE id="LHzZCJ" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
         <FILE id="J5e9Rp" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>
         <FILE id="hJdanS" name="FilterCascade.h" compile="0" resource="0" file="Source/FilterCascade.h"/>

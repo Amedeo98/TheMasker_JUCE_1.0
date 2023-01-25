@@ -80,6 +80,8 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     
     g.setColour(Colours::white);
     g.strokePath(responseCurve, PathStrokeType(2.f));
+
+
 }
 
 

@@ -13,12 +13,14 @@
 #include "Converters.h"
 #include "FilterBank.h"
 #include "PluginProcessor.h"
-#include "Analyser.h"
+#include "FT.h"
+#include "PSY.h"
 
 
 
-class Curve {
+class Delta {
 
+/*
 public:
 
     Curve() {}
@@ -176,10 +178,111 @@ public:
 
 private:
 
+};*/
+
+
+public:
+    auto getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, int ch) {
+        inFT = ft_in.getFT(in, ch);
+        scFT = ft_sc.getFT(sc, ch);
+
+        scFT = psy.spread(scFT);
+
+        conv.toMagnitudeDb(inFT);
+        conv.toMagnitudeDb(scFT);
+
+        scFT = psy.compareWithAtq(scFT, current_atq);
+        scFT = difference(inFT, scFT);
+        return result{ scFT, inFT };
+    }
+
+    void setATQ(float UIatqWeight) {
+            current_atq = atq;
+            juce::FloatVectorOperations::multiply(current_atq.data(), UIatqWeight+1, nfilts);
+            juce::FloatVectorOperations::multiply(current_atq.data(), atqLift, nfilts);
+            juce::FloatVectorOperations::add(current_atq.data(), minDBFS, nfilts);
+            FloatVectorOperations::clip(current_atq.data(), current_atq.data(), minDBFS, 0.0f, nfilts);
+    }
+
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters) {
+        scFT.resize(nfilts);
+        inFT.resize(nfilts);
+        atq.resize(nfilts);
+        current_atq.resize(nfilts);
+        fCenters.resize(nfilts);
+        atq = getATQ(fCenters);
+        psy.getSpreadingMtx();
+        ft_in.prepare(sampleRate, samplesPerBlock, 1, 1, fb);
+        ft_sc.prepare(sampleRate, samplesPerBlock, 1, 1, fb);
+        ft_in.setFBank(fb);
+        ft_sc.setFBank(fb);
+        setATQ(atqW);
+
+
+
+    }
+
+    void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds){
+        ft_in.drawFrame(g, bounds);
+    }
+
+
+private:
+    //Delta properties
+    FT ft_sc;
+    FT ft_in;
+
+    PSY psy; 
+    Converter conv;
+
+    vector<float> inFT, scFT, current_atq, atq, fCenters;
+
+    float atqWeight;
+
+    struct result { vector<float> delta;  vector<float> threshold;};
+
+    size_t numChannels;
+
+    //Delta properties
+    float maxGain = 20;
+    int gateThresh = -40;
+    int gateKnee = 10;
+
+    //ATQ properties
+    int minDBFS = -64;
+    float atqLift = 1.6;
+
+    vector<float> difference(vector<float> input, vector<float> rel_thresh) {
+        //for (int i = 0; i < input.size(); i++)
+            //input[i] = input[i] - rel_thresh[i];
+        FloatVectorOperations::subtract(input.data(), rel_thresh.data(), rel_thresh.size());
+        return input;
+
+    }
+
+    vector<float> getATQ(vector<float>& f)
+    {
+        vector<float> values(f.size());
+        for (int i = 0; i < f.size(); i++)
+        {
+            //   matlab function: absThresh=3.64*(f./1000).^-0.8-6.5*exp(-0.6*(f./1000-3.3).^2)+.00015*(f./1000).^4; % edited function (reduces the threshold in high freqs)
+            values[i] = 3.64 * pow((f[i] / 1000), -0.8) - 6.5 * exp(-0.6 * pow(f[i] / 1000 - 3.3, 2)) + 0.00015 * pow(f[i] / 1000, 4);
+        }
+        float minimum = FloatVectorOperations::findMinimum(values.data(), values.size());
+        FloatVectorOperations::add(values.data(), -minimum, values.size());
+
+        juce::FloatVectorOperations::multiply(values.data(), atqLift, nfilts);
+        juce::FloatVectorOperations::add(values.data(), minDBFS, nfilts);
+        FloatVectorOperations::clip(values.data(), values.data(), minDBFS, 0.0f, nfilts);
+        return values;
+
+    }
+
 };
 
-class Delta : public Curve {
-public:
+
+
+/*public:
     void getDelta(AudioFD& input, RelativeThreshold& rel_thresh) {
         std::vector<float> newValues = input.yValues;
         std::vector<float> threshValues = rel_thresh.yValues;
@@ -199,8 +302,8 @@ public:
         }
         //conv.mXv_mult(yValues, THclip);
         std::transform(yValues.begin(), yValues.end(),
-            THclip.begin(), newValues.data(), 
-            std::multiplies<float>()); 
+            THclip.begin(), newValues.data(),
+            std::multiplies<float>());
         setYValues(newValues);
     }
 
@@ -211,18 +314,7 @@ public:
             //monoValues = mean(yValues);
             //temp = UIsl * monoValues + (1-UIsl) * temp;
             temp = temp > 0.0f ? temp * UIcomp : temp * UIexp;
-            temp = temp * UImix; 
-            temp = tanh(temp / maxGain)* maxGain;
+            temp = temp * UImix;
+            temp = tanh(temp / maxGain) * maxGain;
         }
-    }
-
-
-private:
-    //Delta properties
-    float maxGain = 20;
-    int gateThresh = -40;
-    int gateKnee = 10;
-};
-
-
-
+    }*/

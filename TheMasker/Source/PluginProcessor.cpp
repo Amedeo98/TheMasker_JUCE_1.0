@@ -171,6 +171,7 @@ void TheMaskerAudioProcessor::setStateInformation (const void* data, int sizeInB
     
 }
 
+DynamicEQ& TheMaskerAudioProcessor::getDynEQ() { return dynEQ; }
 
 
 std::vector<float> TheMaskerAudioProcessor::getFrequencies() {

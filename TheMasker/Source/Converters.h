@@ -11,8 +11,10 @@
 #define nfilts 32
 #define maxFreq 22000
 #define minFreq 20
+#define _fftOrder 10
 #define npoints 512
 #define blockSize 64
+#define hopSizeDividerAsPowOf2 1
 
 #pragma once
 class Converter {
@@ -40,6 +42,13 @@ public:
         return 20 * log10(amp);
 
     };
+
+    void toMagnitudeDb(vector<float>& res) {
+        for (int i = 0; i < res.size(); i++) {
+            res[i] = abs(res[i]);
+            res[i] = amp2db(res[i]);
+        }
+    }
 
     vector<float> mXv_mult(vector<vector<float>> in1, vector<float> in2) {
         

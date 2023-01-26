@@ -50,10 +50,6 @@ public:
 
     FilterBank getFilterBank(vector<float> freqs) {
         const int memorySize = npoints / nfilts;
-        //auto interp = GenericInterpolator< LinearInterpolator, memorySize >::GenericInterpolator();
-        //LagrangeInterpolator interp;
-
-        //int npts = freqs->size();
         frequencies = freqs;
         centerF.resize(nfilts);
         values.resize(nfilts,vector<float>(npoints));
@@ -64,7 +60,6 @@ public:
         centerF = conv.linspace(1.f, (float)nfilts, nfilts);
         FloatVectorOperations::multiply(centerF.data(), bw, nfilts);
         FloatVectorOperations::add(centerF.data(), low, nfilts);
-       // FloatVectorOperations::multiply(centerF.data(), 100, nfilts);
 
 
         vector<float> infr = centerF;
@@ -81,15 +76,7 @@ public:
         infr[0] = (float) frequencies.at(0);
         supr[supr.size()-1] = (float) frequencies.at(npoints-1);
         int m = 1;
-        //vector<float> frequencies = (vector<float>) *frequencies.data();
-
         for (int b = 0; b < nfilts; b++) {
-
-       /*     interp.process(memorySize,
-                frequencies.data(),
-                values[b,].data(),
-                values[b].size());*/
-
             vector<float> xw = {infr[b], centerF[b], supr[b]};
             vector<float> yw = { (b==0 ? 1.0f : 0.0f), 1.0f, (b==(nfilts-1) ? 1.0f : 0.0f) };
             int il = findx(frequencies, infr[b]);
@@ -101,26 +88,11 @@ public:
             for (int i = 0; i < n; i++) {
                 partOfFreqs[i] = frequencies[il + i];
             }
-            //copy(frequencies.at(il), frequencies.at(ih), partOfFreqs);
             buffer = interpolateYvector(xw, yw, partOfFreqs, 0);
             vector<float> ptr = values.at(b);
             copy(buffer.begin(), buffer.end(), values.at(b).begin()+il);
-            //values[b] = buffer;
-            //copy(buffer.at(0), buffer.at(nfilts-1), std::back_inserter(values[b][]));
-
-
-          /* 
-            for (int i = il; ++i <= ih;) {
-                    interp.process( memorySize,
-                        frequencies.data(),
-                        buffer.data(), 
-                        buffer.size())
-                    ;
-                    //values[b - 1, il:ih] = buffer;
-            }*/
         }
 
-        //values = newValues;
 
         return *this;
     }
@@ -168,7 +140,6 @@ private:
             float dydx = (yR - yL) / (xR - xL);                                    // gradient
 
             y_int.push_back(yL + dydx * (x - xL));
-            //cout << y_int.back() << endl;
         }
 
         return y_int;

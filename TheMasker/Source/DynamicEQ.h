@@ -20,6 +20,7 @@ using namespace std;
 #include "Analyser.h"
 #include "StereoLinked.h"
 #include "DeltaScaler.h"
+#include "MultiBandMod.h"
 
 
 
@@ -47,12 +48,12 @@ public:
         numInChannels = inCh;
         numOutChannels = outCh;
         frequencies = _frequencies;
+        delta_L.resize(nfilts);
         fbank.getFilterBank(frequencies);
         fCenters = fbank.getFrequencies();
         deltaGetter_L.prepareToPlay(sampleRate, samplesPerBlock, fbank, atqWeight, fCenters);
         deltaScaler_L.prepareToPlay();
-        delta_L.resize(nfilts);
-        //filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, fCenters);
+        filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, fCenters);
 
     }
 
@@ -75,13 +76,13 @@ public:
         delta_L = deltaScaler_L.clip(delta_L, threshold_L);
 
 
-        juce::dsp::AudioBlock<float>              ioBuffer(mainBuffer);
-        juce::dsp::ProcessContextReplacing<float> context(ioBuffer);
+        
 
 
-        //filters.updateGains(delta.yValues);
-        //filters.filterBlock(context);
-
+        for (int ch = 0; ch < numOutChannels; ch++)
+        {
+            filters.filterBlock(mainBuffer, delta_L, ch);
+        }
         mainBuffer.applyGain(outGain);
 
         //if (getActiveEditor() != nullptr)
@@ -158,7 +159,7 @@ private:
     DeltaScaler deltaScaler_L;
 
 
-    FilterCascade filters;
+    MultiBandMod filters;
 
 
 

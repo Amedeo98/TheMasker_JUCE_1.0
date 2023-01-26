@@ -7,6 +7,8 @@
   <MAINGROUP id="EtDrka" name="TheMasker">
     <GROUP id="{D0F8B5F3-955C-44AC-04A3-B12E30F491D6}" name="Source">
       <GROUP id="{224B1F6F-B4C2-67BA-F881-EA7DFDFCB85F}" name="DSP">
+        <FILE id="PrmF30" name="LinkwitzRileyFilters.h" compile="0" resource="0"
+              file="Source/LinkwitzRileyFilters.h"/>
         <FILE id="esf6Zn" name="OverlappingFFTProcessor.h" compile="0" resource="0"
               file="Source/OverlappingFFTProcessor.h"/>
         <FILE id="UG6aRi" name="PSY.h" compile="0" resource="0" file="Source/PSY.h"/>

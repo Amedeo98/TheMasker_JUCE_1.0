@@ -56,6 +56,8 @@ void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSample
     getFrequencies();
     conv = Converter();
     dynEQ.prepareToPlay(frequencies, sampleRate, getTotalNumInputChannels(), getTotalNumOutputChannels(), newSamplesPerBlock, conv);
+
+    setLatencySamples(pow(2, _fftOrder));
 }
 
 void TheMaskerAudioProcessor::releaseResources()
@@ -111,6 +113,7 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
 
     dynEQ.processBlock(mainBuffer, auxBuffer);
+
 }
 
 

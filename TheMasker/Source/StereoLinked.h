@@ -18,29 +18,30 @@ public:
         UIsl = sl;
     }
 
-    auto process(vector<float> l, vector<float> r) {
-        getMono(l,r, monoValues);
-        scaleChannel(l, newL);
-        scaleChannel(r, newR);
-        return result{ newL, newR };
+    void process(vector<float>& l, vector<float>& r) {
+        getMono(l, r);
+        scaleChannel(l);
+        scaleChannel(r);
+    }
+
+
+    void prepareToPlay() {
+        monoValues.resize(nfilts);
     }
 private:
     vector<float> monoValues;
-    vector<float> newL;
-    vector<float> newR;
     float UIsl;  
-    struct result { vector<float> left;  vector<float> right; };
-
-    void scaleChannel(vector<float>& in, vector<float>& dest) {
+    
+    void scaleChannel(vector<float>& in) {
         for (int i = 0; i < in.size(); i++) {
-            dest[i] = UIsl * monoValues[i] + (1 - UIsl) * in[i];
+            in[i] = UIsl * monoValues[i] + (1 - UIsl) * in[i];
         }
     }
 
-    void  getMono(vector<float> const& l, vector<float> const& r, vector<float>& dest) {
-        dest.clear();
-        FloatVectorOperations::addWithMultiply(dest.data(), l.data(), 2.0f, l.size());
-        FloatVectorOperations::addWithMultiply(dest.data(), r.data(), 2.0f, r.size());
+    void  getMono(vector<float> l, vector<float> r) {
+        std::fill(monoValues.begin(), monoValues.end(), 0);
+        FloatVectorOperations::addWithMultiply(monoValues.data(), l.data(), 0.5f, l.size());
+        FloatVectorOperations::addWithMultiply(monoValues.data(), r.data(), 0.5f, r.size());
     }
 
 };

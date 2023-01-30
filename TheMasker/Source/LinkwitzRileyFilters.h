@@ -19,8 +19,8 @@ public:
 
     void prepareToPlay(double sampleRate, int samplesPerBlock, float lc_freq, float hc_freq) {
         outputBuffer.setSize(1, samplesPerBlock);
-        LC = dsp::LinkwitzRileyFilter<float>();
-        HC = dsp::LinkwitzRileyFilter<float>();
+        //LC = dsp::LinkwitzRileyFilter<float>();
+        //HC = dsp::LinkwitzRileyFilter<float>();
         LC_freq = lc_freq;
         HC_freq = hc_freq;
 

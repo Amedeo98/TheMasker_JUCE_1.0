@@ -56,10 +56,10 @@ public:
         int nb = nfilts;
         float low = conv.hz2bark(frequencies.at(0));
         float high =  conv.hz2bark(frequencies.at(npoints-1));
-        float bw = (high - low) / (nfilts + 1);
+        float bw = (high - low) / nfilts;
         centerF = conv.linspace(1.f, (float)nfilts, nfilts);
         FloatVectorOperations::multiply(centerF.data(), bw, nfilts);
-        FloatVectorOperations::add(centerF.data(), low, nfilts);
+        FloatVectorOperations::add(centerF.data(), low-(bw/2), nfilts);
 
 
         vector<float> infr = centerF;
@@ -74,7 +74,7 @@ public:
         }
 
         infr[0] = (float) frequencies.at(0);
-        supr[supr.size()-1] = (float) frequencies.at(npoints-1);
+        //supr[supr.size()-1] = (float) frequencies.at(supr.size()-1);
         int m = 1;
         for (int b = 0; b < nfilts; b++) {
             vector<float> xw = {infr[b], centerF[b], supr[b]};
@@ -84,7 +84,7 @@ public:
             int n = ih - il + 1;
             vector<float> buffer, partOfFreqs;
             buffer.resize(nfilts);
-            partOfFreqs.resize(nfilts);
+            partOfFreqs.resize(n);
             for (int i = 0; i < n; i++) {
                 partOfFreqs[i] = frequencies[il + i];
             }

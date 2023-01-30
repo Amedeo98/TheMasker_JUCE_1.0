@@ -13,7 +13,7 @@ using namespace std;
 
 //#include <FilterBank.h>
 #include <JuceHeader.h>
-#include "Delta.h"
+#include "DeltaGetter.h"
 #include "FilterBank.h"
 #include "Converters.h"
 #include "FilterCascade.h"
@@ -48,11 +48,21 @@ public:
         numInChannels = inCh;
         numOutChannels = outCh;
         frequencies = _frequencies;
-        delta_L.resize(nfilts);
         fbank.getFilterBank(frequencies);
+        fCenters.resize(nfilts);
         fCenters = fbank.getFrequencies();
-        deltaGetter_L.prepareToPlay(sampleRate, samplesPerBlock, fbank, atqWeight, fCenters);
-        deltaScaler_L.prepareToPlay();
+
+        curves.resize(inCh);            
+        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, numInChannels);
+        deltaScaler.prepareToPlay();
+
+        for (int i = 0; i < numInChannels; ++i) {
+            curves[i].delta.resize(nfilts);
+            curves[i].threshold.resize(nfilts);
+        }
+
+        stereoLinked.prepareToPlay();
+
         filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, fCenters);
 
     }
@@ -68,25 +78,24 @@ public:
         mainBuffer.applyGain(inGain);
         scBuffer.applyGain(scGain);
 
-        auto [delta_L,threshold_L] = deltaGetter_L.getDelta(mainBuffer, scBuffer, 0);
 
-        //auto [delta_L, delta_R] = stereoLinked.process(delta_L, delta_R);
+        deltaGetter.getDelta(mainBuffer, scBuffer, numInChannels, curves);
 
-        delta_L = deltaScaler_L.scale(delta_L, compAmount, expAmount, mixAmount);
-        delta_L = deltaScaler_L.clip(delta_L, threshold_L);
-
-
-        
-
-
-        for (int ch = 0; ch < numOutChannels; ch++)
+        if (numInChannels == 2)
         {
-            filters.filterBlock(mainBuffer, delta_L, ch);
+            stereoLinked.process(curves[0].delta, curves[1].delta);
+
         }
+
+        for (int i = 0; i < numInChannels; i++) {
+
+            deltaScaler.scale(curves[i].delta, compAmount, expAmount, mixAmount);
+            deltaScaler.clip(curves[i].delta, curves[i].threshold);
+            filters.filterBlock(mainBuffer, curves[i].delta, i);
+        }
+            
         mainBuffer.applyGain(outGain);
 
-        //if (getActiveEditor() != nullptr)
-        //outSpectrum.processBlock(mainBuffer, 0, numOutChannels);
     }
 
 
@@ -101,7 +110,7 @@ public:
 
     void setAtq(float newValue) {
         atqWeight = newValue;
-        deltaGetter_L.setATQ(atqWeight);
+        //deltaGetter.setATQ(atqWeight);
     }
 
     void setStereoLinked(float newValue) {
@@ -127,8 +136,11 @@ public:
 
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)
     {
-        deltaGetter_L.drawFrame(g, bounds);
+        deltaGetter.drawFrame(g, bounds);
     }
+
+    struct result { vector<float> delta;  vector<float> threshold; };
+
 
 private:
 
@@ -151,12 +163,14 @@ private:
     Converter conv;
 
 
-    vector<float> delta_L, threshold_L;
 
+    //vector<vector<float>> deltas, thresholds;
+    //vector<float> delta_R, threshold_R;
+    vector<result> curves;
 
     StereoLinked stereoLinked;
-    Delta deltaGetter_L;
-    DeltaScaler deltaScaler_L;
+    DeltaGetter deltaGetter;
+    DeltaScaler deltaScaler;
 
 
     MultiBandMod filters;

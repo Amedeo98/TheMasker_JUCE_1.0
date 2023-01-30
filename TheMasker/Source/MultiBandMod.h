@@ -27,7 +27,7 @@ public:
         filters.resize(nfilts);
         gains.resize(nfilts);
         freqs.resize(nfilts);
-        smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
+        //smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
         inputBuffer_copy.setSize(1, samplesPerBlock);
         tempOutput.setSize(1, samplesPerBlock);
         for (int i = 0; i < nfilts; i++) {
@@ -49,14 +49,14 @@ public:
         buffer.clear(ch, 0, numSamples);
         for (int f = 0; f < nfilts; f++) {
             gains[f].setTargetValue(Decibels::decibelsToGain(delta[f]));
+            //gains[f] = Decibels::decibelsToGain(delta[f]);
             tempOutput.clear();
             tempOutput = filters[f].process(inputBuffer_copy);
             for (int sample = 0; sample < numSamples; sample++) {
-                tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f].getCurrentValue());
                 gains[f].getNextValue();
-                //buffer.addSample(ch, sample, tempOutput.getSample(0, sample));
+                tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f].getCurrentValue());
+                //tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f]);
             }
-            //juce::FloatVectorOperations::addWithMultiply(buffer.getSample(ch, sample), context.getOutputBlock().getChannelPointer(0), gains[f], numSamples);
             buffer.addFrom(ch, 0, tempOutput.getReadPointer(0), numSamples);
         }
 
@@ -78,10 +78,11 @@ public:
 
 private:
 
-    float smoothingSeconds;
+    float smoothingSeconds = 0.02f;
     float smoothingWindow = 0.5f;
     vector<LinkwitzRileyFilters> filters;
     vector<SmoothedValue<float, ValueSmoothingTypes::Linear>> gains;
+    //vector<float> gains;
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;
     struct freq {float f_lc;  float fCenter; float f_hc; };

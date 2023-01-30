@@ -51,7 +51,7 @@ void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSample
 {
     sampleRate = newSampleRate;
     
-    auxBuffer.setSize(2, newSamplesPerBlock);
+    auxBuffer.setSize(getTotalNumInputChannels(), newSamplesPerBlock);
     
     getFrequencies();
     conv = Converter();
@@ -63,7 +63,6 @@ void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSample
 void TheMaskerAudioProcessor::releaseResources()
 {
     dynEQ.releaseResources();
-   //Analyser.stopThread
     auxBuffer.setSize(0, 0);
 
 }
@@ -107,7 +106,7 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     const int numScChannels = scSource.getNumChannels();
 
     for (int ch = 0; ch < numScChannels; ch++) {
-        auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1.0f / numScChannels); //rimettere il gain a 1?
+        auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1.0f); //rimettere il gain a 1?
     }
     
 

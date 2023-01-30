@@ -13,39 +13,40 @@
 #include "Converters.h"
 #include "FilterBank.h"
 #include "PluginProcessor.h"
+#include "DynamicEQ.h"
 #include "FT.h"
 #include "PSY.h"
 
 
 
-class Delta {
+class DeltaGetter {
 
 public:
-    auto getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, int ch) {
-        inFT = ft_in.getFT(in, ch);
-        scFT = ft_sc.getFT(sc, ch);
+    void getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, int nCh, auto& deltas) {
 
-        scFT = psy.spread(scFT);
+        for (int i = 0; i < nCh; i++) {
 
-        conv.toMagnitudeDb(inFT);
-        conv.toMagnitudeDb(scFT);
+            inFT = ft_in.getFT(in, i);
+            scFT = ft_sc.getFT(sc, i);
 
-        scFT = psy.compareWithAtq(scFT, current_atq);
+            scFT = psy.spread(scFT);
+
+            conv.toMagnitudeDb(inFT);
+            conv.toMagnitudeDb(scFT);
+
+            scFT = psy.compareWithAtq(scFT, current_atq);
 
 
-        scFT = difference(inFT, scFT);
-        return result{ scFT, inFT };
+            scFT = difference(inFT, scFT);
+            deltas[i].delta = scFT;
+            deltas[i].threshold = inFT;
+        }
+
     }
 
-    void setATQ(float UIatqWeight) {
-            current_atq = atq;
-            juce::FloatVectorOperations::multiply(current_atq.data(), UIatqWeight+1, nfilts);
-            juce::FloatVectorOperations::multiply(current_atq.data(), atqLift, nfilts);
-            juce::FloatVectorOperations::add(current_atq.data(), minDBFS, nfilts);
-            FloatVectorOperations::clip(current_atq.data(), current_atq.data(), minDBFS, 0.0f, nfilts);
-    }
+ 
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters) {
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, int nCh) {
         scFT.resize(nfilts);
         inFT.resize(nfilts);
         atq.resize(nfilts);
@@ -60,7 +61,14 @@ public:
         setATQ(atqW);
 
 
+    }
 
+    void setATQ(float UIatqWeight) {
+        current_atq = atq;
+        juce::FloatVectorOperations::multiply(current_atq.data(), UIatqWeight, nfilts);
+        juce::FloatVectorOperations::multiply(current_atq.data(), atqLift, nfilts);
+        juce::FloatVectorOperations::add(current_atq.data(), minDBFS, nfilts);
+        FloatVectorOperations::clip(current_atq.data(), current_atq.data(), minDBFS, 0.0f, nfilts);
     }
 
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds){
@@ -80,7 +88,8 @@ private:
 
     float atqWeight;
 
-    struct result { vector<float> delta;  vector<float> threshold;};
+    //struct result { vector<float> delta;  vector<float> threshold;};
+
 
     size_t numChannels;
 

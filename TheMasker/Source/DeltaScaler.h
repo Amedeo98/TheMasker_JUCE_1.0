@@ -18,7 +18,7 @@ public:
         THclip.resize(nfilts);
     }
 
-    vector<float> scale(vector<float> delta, float UIcomp, float UIexp, float UImix) {
+    void scale(vector<float>& delta, float UIcomp, float UIexp, float UImix) {
         for (int i = 0; i < delta.size(); i++) {
             float temp = delta[i];
             temp = temp > 0.0f ? temp * UIcomp : temp * UIexp;
@@ -26,10 +26,9 @@ public:
             temp = tanh(temp / maxGain) * maxGain;
             delta[i] = temp;
         }
-        return delta;
     }
 
-    vector<float> clip(vector<float> delta, vector<float> threshold) {
+    void clip(vector<float>& delta, vector<float> threshold) {
         for (int i = 0; i < threshold.size(); i++) {
             THclip[i] = (1.0f + tanh((threshold[i] - gateThresh) / gateKnee)) / 2.0f;
         }
@@ -37,7 +36,7 @@ public:
         std::transform(delta.begin(), delta.end(),
             THclip.begin(), newValues.data(),
             std::multiplies<float>());
-        return newValues;
+        delta = newValues;
     }
 
 private:

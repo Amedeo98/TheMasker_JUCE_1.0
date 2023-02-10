@@ -37,7 +37,7 @@ parameters(*this, nullptr, "TheMaskerCompressor", {
     parameters.addParameterListener(NAME_OUT, this);
     parameters.addParameterListener(NAME_SC, this);
 
-    parameters.state = juce::ValueTree(JucePlugin_Name);
+    //parameters.state = juce::ValueTree(JucePlugin_Name);
 
 }
 

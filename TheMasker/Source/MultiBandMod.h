@@ -51,18 +51,16 @@ public:
         for (int ch = 0; ch < numCh; ch++) {
             inputBuffer_copy.clear();
             inputBuffer_copy.addFrom(0, 0, buffer.getReadPointer(ch), numSamples);
-        }
-
-        buffer.clear();
-        for (int ch = 0; ch < numCh; ch++) {
-
+            buffer.clear(ch, 0, numSamples);
             for (int f = 0; f < nfilts; f++) {
                 gains[f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
+                //gains[f] = Decibels::decibelsToGain(delta[f]);
                 tempOutput.clear();
                 tempOutput = filters[f].process(inputBuffer_copy);
                 for (int sample = 0; sample < numSamples; sample++) {
                     gains[f].getNextValue();
                     tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f].getCurrentValue());
+                    //tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f]);
                 }
                 buffer.addFrom(ch, 0, tempOutput.getReadPointer(0), numSamples);
             }

@@ -54,7 +54,7 @@ public:
 
         curves.resize(inCh);            
         deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, numInChannels);
-        deltaScaler.prepareToPlay();
+        deltaScaler.prepareToPlay(numInChannels);
 
         for (int i = 0; i < numInChannels; ++i) {
             curves[i].delta.resize(nfilts);
@@ -87,13 +87,9 @@ public:
 
         }
 
-        for (int i = 0; i < numInChannels; i++) {
-
-            deltaScaler.scale(curves[i].delta, compAmount, expAmount, mixAmount);
-            deltaScaler.clip(curves[i].delta, curves[i].threshold);
-            filters.filterBlock(mainBuffer, curves[i].delta, i);
-        }
-            
+        deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
+        deltaScaler.clip(curves);
+        filters.filterBlock(mainBuffer, curves);
         mainBuffer.applyGain(outGain);
 
     }

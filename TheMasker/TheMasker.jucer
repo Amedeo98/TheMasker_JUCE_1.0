@@ -9,6 +9,7 @@
       <GROUP id="{224B1F6F-B4C2-67BA-F881-EA7DFDFCB85F}" name="DSP">
         <FILE id="PrmF30" name="LinkwitzRileyFilters.h" compile="0" resource="0"
               file="Source/LinkwitzRileyFilters.h"/>
+        <FILE id="DnjyIp" name="DeltaGetter.h" compile="0" resource="0" file="Source/DeltaGetter.h"/>
         <FILE id="esf6Zn" name="OverlappingFFTProcessor.h" compile="0" resource="0"
               file="Source/OverlappingFFTProcessor.h"/>
         <FILE id="UG6aRi" name="PSY.h" compile="0" resource="0" file="Source/PSY.h"/>
@@ -18,7 +19,6 @@
         <FILE id="Ev0KdW" name="MultiBandMod.h" compile="0" resource="0" file="Source/MultiBandMod.h"/>
         <FILE id="MOlVV6" name="Analyser.h" compile="0" resource="0" file="Source/Analyser.h"/>
         <FILE id="rTJopX" name="Converters.h" compile="0" resource="0" file="Source/Converters.h"/>
-        <FILE id="r8g3ud" name="Delta.h" compile="0" resource="0" file="Source/Delta.h"/>
         <FILE id="LHzZCJ" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
         <FILE id="J5e9Rp" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>
         <FILE id="hJdanS" name="FilterCascade.h" compile="0" resource="0" file="Source/FilterCascade.h"/>

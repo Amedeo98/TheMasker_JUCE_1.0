@@ -22,11 +22,15 @@ public:
     MultiBandMod() {}
     ~MultiBandMod() {}
 
+    //using result = DynamicEQ::result;
+
     void prepareToPlay(double sampleRate, int samplesPerBlock, int numChannels, vector<float> fCenters) {
 
         filters.resize(nfilts);
         gains.resize(nfilts);
         freqs.resize(nfilts);
+        numCh = numChannels;
+
         //smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
         inputBuffer_copy.setSize(1, samplesPerBlock);
         tempOutput.setSize(1, samplesPerBlock);
@@ -41,23 +45,27 @@ public:
     }
 
 
-
-    void filterBlock(AudioBuffer<float>& buffer, vector<float>& delta, int ch) {
+    
+    void filterBlock(AudioBuffer<float>& buffer, auto curves) {
         int numSamples = buffer.getNumSamples();
-        inputBuffer_copy.clear();
-        inputBuffer_copy.copyFrom(0, 0, buffer.getReadPointer(ch), numSamples);
-        buffer.clear(ch, 0, numSamples);
-        for (int f = 0; f < nfilts; f++) {
-            gains[f].setTargetValue(Decibels::decibelsToGain(delta[f]));
-            //gains[f] = Decibels::decibelsToGain(delta[f]);
-            tempOutput.clear();
-            tempOutput = filters[f].process(inputBuffer_copy);
-            for (int sample = 0; sample < numSamples; sample++) {
-                gains[f].getNextValue();
-                tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f].getCurrentValue());
-                //tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f]);
+        for (int ch = 0; ch < numCh; ch++) {
+            inputBuffer_copy.clear();
+            inputBuffer_copy.addFrom(0, 0, buffer.getReadPointer(ch), numSamples);
+        }
+
+        buffer.clear();
+        for (int ch = 0; ch < numCh; ch++) {
+
+            for (int f = 0; f < nfilts; f++) {
+                gains[f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
+                tempOutput.clear();
+                tempOutput = filters[f].process(inputBuffer_copy);
+                for (int sample = 0; sample < numSamples; sample++) {
+                    gains[f].getNextValue();
+                    tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f].getCurrentValue());
+                }
+                buffer.addFrom(ch, 0, tempOutput.getReadPointer(0), numSamples);
             }
-            buffer.addFrom(ch, 0, tempOutput.getReadPointer(0), numSamples);
         }
 
 
@@ -77,7 +85,7 @@ public:
 
 
 private:
-
+    int numCh;
     float smoothingSeconds = 0.02f;
     float smoothingWindow = 0.5f;
     vector<LinkwitzRileyFilters> filters;

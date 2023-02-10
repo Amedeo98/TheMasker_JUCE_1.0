@@ -16,6 +16,10 @@ public:
     void prepareToPlay(int numChannels) {
         newValues.resize(nfilts);
         THclip.resize(nfilts);
+        setNumChannels(numChannels);
+    }
+
+    void setNumChannels(int numChannels) {
         nCh = numChannels;
     }
 

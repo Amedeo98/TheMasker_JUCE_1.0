@@ -24,46 +24,68 @@ public:
 
     //using result = DynamicEQ::result;
 
-    void prepareToPlay(double sampleRate, int samplesPerBlock, int numChannels, vector<float> fCenters) {
-
+    void prepareToPlay(double sampleRate, int newSamplesPerBlock, int numInChannels, int numScChannels, vector<float> fCenters) {
+        fs = sampleRate;
+        samplesPerBlock = newSamplesPerBlock;
         filters.resize(nfilts);
-        gains.resize(nfilts);
         freqs.resize(nfilts);
-        numCh = numChannels;
-
+        numInCh = numInChannels;
+        numScCh = numScChannels;
+        gains.resize(numScCh, vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>(nfilts));
         //smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
-        inputBuffer_copy.setSize(1, samplesPerBlock);
-        tempOutput.setSize(1, samplesPerBlock);
+        inputBuffer_copy.setSize(numInCh, samplesPerBlock);
+        tempOutput.setSize(numInCh, samplesPerBlock);
         for (int i = 0; i < nfilts; i++) {
             freqs[i].fCenter = fCenters[i];
         }
         getBandFreqs();
         for (int i = 0; i < nfilts; i++) {
-            filters[i].prepareToPlay(sampleRate, samplesPerBlock, freqs[i].f_lc, freqs[i].f_hc);
-            gains[i].reset(sampleRate, smoothingSeconds);
+            filters[i].prepareToPlay(sampleRate, samplesPerBlock, freqs[i].f_lc, freqs[i].f_hc, numInCh);
+            for (int ch = 0; ch < numScCh; ch++) {
+                gains[ch][i].reset(sampleRate, smoothingSeconds);
+            }
         }
     }
 
+    void setNumChannels(int inCh, int scCh) {
+        numInCh = inCh;
+        numScCh = scCh;
+        inputBuffer_copy.setSize(numInCh, samplesPerBlock);
+        tempOutput.setSize(numInCh, samplesPerBlock);
+        gains.resize(numScCh, vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>(nfilts));
+        for (int i = 0; i < nfilts; i++) {
+            filters[i].setNumChannels(numInCh);
+            for (int ch = 0; ch < numScCh; ch++) {
+                gains[ch][i].reset(fs, smoothingSeconds);
+            }
+        }
 
+    }
     
     void filterBlock(AudioBuffer<float>& buffer, auto curves) {
         int numSamples = buffer.getNumSamples();
-        for (int ch = 0; ch < numCh; ch++) {
-            inputBuffer_copy.clear();
-            inputBuffer_copy.addFrom(0, 0, buffer.getReadPointer(ch), numSamples);
-            buffer.clear(ch, 0, numSamples);
-            for (int f = 0; f < nfilts; f++) {
-                gains[f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
-                //gains[f] = Decibels::decibelsToGain(delta[f]);
-                tempOutput.clear();
-                tempOutput = filters[f].process(inputBuffer_copy);
+        inputBuffer_copy.clear();
+        for (int ch = 0; ch < numInCh; ch++) {
+            inputBuffer_copy.copyFrom(ch, 0, buffer, ch, 0, numSamples);
+        }
+        buffer.clear();
+        for (int f = 0; f < nfilts; f++) {
+            tempOutput.clear();
+            tempOutput = filters[f].process(inputBuffer_copy);
+
+            for (int ch = 0; ch < numScCh; ch++) {
+                gains[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
                 for (int sample = 0; sample < numSamples; sample++) {
-                    gains[f].getNextValue();
-                    tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f].getCurrentValue());
-                    //tempOutput.setSample(0, sample, tempOutput.getSample(0, sample) * gains[f]);
+                    gains[ch][f].getNextValue();
+                    tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains[ch][f].getCurrentValue());
                 }
-                buffer.addFrom(ch, 0, tempOutput.getReadPointer(0), numSamples);
+                buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }
+            //for (auto i = numInCh; i < numScCh; ++i) {
+            if (numInCh < 2) {
+                buffer.addFrom(2, 0, tempOutput, 1, 0, numSamples);
+            }
+
         }
 
 
@@ -83,12 +105,14 @@ public:
 
 
 private:
-    int numCh;
-    float smoothingSeconds = 0.02f;
+    int numInCh;
+    int numScCh;
+    int fs;
+    int samplesPerBlock;
+    float smoothingSeconds = 0.2f;
     float smoothingWindow = 0.5f;
     vector<LinkwitzRileyFilters> filters;
-    vector<SmoothedValue<float, ValueSmoothingTypes::Linear>> gains;
-    //vector<float> gains;
+    vector<vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>> gains;
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;
     struct freq {float f_lc;  float fCenter; float f_hc; };

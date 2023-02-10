@@ -42,29 +42,42 @@ public:
 
 
 
-    void prepareToPlay(vector<float> _frequencies, int sampleRate, int inCh, int outCh, int samplesPerBlock, Converter converter)
+    void prepareToPlay(vector<float> _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock, Converter converter)
     {
         fs = sampleRate;
         numInChannels = inCh;
-        numOutChannels = outCh;
+        numSamples = samplesPerBlock;
+        if (scCh > 0)
+            numScChannels = scCh;
+        else
+            numScChannels = numInChannels;
+
         frequencies = _frequencies;
         fbank.getFilterBank(frequencies);
         fCenters.resize(nfilts);
         fCenters = fbank.getFrequencies();
 
         curves.resize(inCh);            
-        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, numInChannels);
-        deltaScaler.prepareToPlay(numInChannels);
+        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, numScChannels);
+        deltaScaler.prepareToPlay(numScChannels);
 
-        for (int i = 0; i < numInChannels; ++i) {
+        for (int i = 0; i < numScChannels; ++i) {
             curves[i].delta.resize(nfilts);
             curves[i].threshold.resize(nfilts);
         }
 
         stereoLinked.prepareToPlay();
 
-        filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, fCenters);
+        filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, numScChannels, fCenters);
 
+    }
+
+    void numChannelsChanged(int inCh, int scCh) {
+        numInChannels = inCh;
+        numScChannels = scCh;
+        deltaGetter.setNumChannels(numScChannels);
+        deltaScaler.setNumChannels(numScChannels);
+        filters.setNumChannels(numInChannels, numScChannels);
     }
 
     void releaseResources()
@@ -79,9 +92,9 @@ public:
         scBuffer.applyGain(scGain);
 
 
-        deltaGetter.getDelta(mainBuffer, scBuffer, numInChannels, curves);
+        deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
-        if (numInChannels == 2)
+        if (numScChannels == 2)
         {
             stereoLinked.process(curves[0].delta, curves[1].delta);
 
@@ -153,11 +166,11 @@ private:
     vector<float> fCenters;
     int fs = 0;
     int numInChannels = 2;
-    int numOutChannels = 2;
+    int numScChannels;
     vector<vector<float>> spreadingMtx;
     FilterBank fbank;
     Converter conv;
-
+    int numSamples = 0;
 
 
     //vector<vector<float>> deltas, thresholds;

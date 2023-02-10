@@ -17,17 +17,18 @@ public:
 
 
 
-    void prepareToPlay(double sampleRate, int samplesPerBlock, float lc_freq, float hc_freq) {
-        outputBuffer.setSize(1, samplesPerBlock);
+    void prepareToPlay(double sampleRate, int newSamplesPerBlock, float lc_freq, float hc_freq, int nCh) {
+        samplesPerBlock = newSamplesPerBlock;
+        outputBuffer.setSize(nCh, samplesPerBlock);
         //LC = dsp::LinkwitzRileyFilter<float>();
         //HC = dsp::LinkwitzRileyFilter<float>();
         LC_freq = lc_freq;
         HC_freq = hc_freq;
 
-        juce::dsp::ProcessSpec spec;
+        //juce::dsp::ProcessSpec spec;
         spec.maximumBlockSize = samplesPerBlock;
         spec.sampleRate = sampleRate;
-        spec.numChannels = 1;
+        spec.numChannels = nCh;
         HC.prepare(spec);
         LC.prepare(spec);
 
@@ -44,15 +45,23 @@ public:
         juce::dsp::ProcessContextReplacing<float> context(ioBuffer);
         HC.process(context);
         LC.process(context);
-        for (int sample = 0; sample < inBuffer.getNumSamples(); sample++) {
-            outputBuffer.setSample(0, sample, context.getOutputBlock().getSample(0, sample));
-        }
+        context.getOutputBlock().copyTo(outputBuffer, 0, 0, context.getOutputBlock().getNumSamples());
         return outputBuffer;
+    }
+
+    void setNumChannels(int nCh) {
+        outputBuffer.setSize(nCh, samplesPerBlock);
+        spec.numChannels = nCh;
+        HC.prepare(spec);
+        LC.prepare(spec);
+
     }
 
 
 private:
     AudioBuffer<float> outputBuffer;
+    juce::dsp::ProcessSpec spec;
+    int samplesPerBlock;
     using LWR = dsp::LinkwitzRileyFilter<float>;
     LWR LC;
     LWR HC;

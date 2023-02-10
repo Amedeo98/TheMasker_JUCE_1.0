@@ -37,7 +37,7 @@ parameters(*this, nullptr, "TheMaskerCompressor", {
     parameters.addParameterListener(NAME_OUT, this);
     parameters.addParameterListener(NAME_SC, this);
 
-    //parameters.state = juce::ValueTree(JucePlugin_Name);
+    parameters.state = juce::ValueTree(JucePlugin_Name);
 
 }
 
@@ -50,13 +50,13 @@ TheMaskerAudioProcessor::~TheMaskerAudioProcessor()
 void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSamplesPerBlock)
 {
     sampleRate = newSampleRate;
-    
-    auxBuffer.setSize(getTotalNumInputChannels(), newSamplesPerBlock);
+    samplesPerBlock = newSamplesPerBlock;
+    auxBuffer.setSize(getTotalNumInputChannels(), samplesPerBlock);
     
     getFrequencies();
     conv = Converter();
-    dynEQ.prepareToPlay(frequencies, sampleRate, getTotalNumInputChannels(), getTotalNumOutputChannels(), newSamplesPerBlock, conv);
-
+    int inCh = getMainBusNumInputChannels();
+    dynEQ.prepareToPlay(frequencies, sampleRate, inCh, getTotalNumInputChannels() - inCh, samplesPerBlock, conv);
     setLatencySamples(pow(2, _fftOrder));
 }
 
@@ -103,12 +103,19 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     auto scBuffer = getBusBuffer(buffer, true, 1);
      
     const AudioBuffer<float>& scSource = scBuffer.getNumChannels() ? scBuffer : mainBuffer;
-    const int numScChannels = scSource.getNumChannels();
+
+    int nScCh = scSource.getNumChannels();
+    int nInCh = mainBuffer.getNumChannels();
+
+    if (numScChannels != nScCh || numInChannels != nInCh) {
+        numScChannels = nScCh;
+        numInChannels = nInCh;
+        dynEQ.numChannelsChanged(numInChannels, numScChannels);
+    }
 
     for (int ch = 0; ch < numScChannels; ch++) {
-        auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1.0f); //rimettere il gain a 1?
+        auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 3.0f); //rimettere il gain a 1?
     }
-    
 
 
     dynEQ.processBlock(mainBuffer, auxBuffer);

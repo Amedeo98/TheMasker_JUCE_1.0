@@ -78,7 +78,9 @@ private:
     DynamicEQ dynEQ;
     
     int sampleRate = 0;
-
+    int samplesPerBlock = 0;
+    int numScChannels;
+    int numInChannels;
     Converter conv;
 
     std::vector<float> frequencies;

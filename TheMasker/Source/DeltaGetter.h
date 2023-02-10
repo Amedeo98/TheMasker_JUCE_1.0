@@ -22,7 +22,8 @@
 class DeltaGetter {
 
 public:
-    void getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, int nCh, auto& deltas) {
+    void getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, auto& deltas) {
+
 
         for (int i = 0; i < nCh; i++) {
 
@@ -46,7 +47,7 @@ public:
 
  
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, int nCh) {
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, int numCh) {
         scFT.resize(nfilts);
         inFT.resize(nfilts);
         atq.resize(nfilts);
@@ -59,8 +60,13 @@ public:
         ft_in.setFBank(fb);
         ft_sc.setFBank(fb);
         setATQ(atqW);
+        setNumChannels(numCh);
 
 
+    }
+
+    void setNumChannels(int ch) {
+        nCh = ch;
     }
 
     void setATQ(float UIatqWeight) {
@@ -87,6 +93,7 @@ private:
     vector<float> inFT, scFT, current_atq, atq, fCenters;
 
     float atqWeight;
+    int nCh;
 
     //struct result { vector<float> delta;  vector<float> threshold;};
 

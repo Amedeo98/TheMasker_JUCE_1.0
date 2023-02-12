@@ -19,7 +19,7 @@
 
 
 
-class DeltaGetter {
+class DeltaGetter  {
 
 public:
     void getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, auto& deltas) {
@@ -76,7 +76,7 @@ public:
         juce::FloatVectorOperations::add(current_atq.data(), minDBFS, nfilts);
         FloatVectorOperations::clip(current_atq.data(), current_atq.data(), minDBFS, 0.0f, nfilts);
     }
-
+    
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds){
         ft_in.drawFrame(g, bounds);
     }

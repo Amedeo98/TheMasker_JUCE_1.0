@@ -20,6 +20,9 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     cleanUpSliderAttachment(audioProcessor.parameters, NAME_ATQ, cleanUpSlider)
 
 {
+    
+    startTimerHz (30);
+    
     for(auto* comp : getComponents())
     {
         addAndMakeVisible(comp);
@@ -81,7 +84,8 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(Colours::white);
     g.strokePath(responseCurve, PathStrokeType(2.f));
 
-
+     dynEq.drawFrame(g, responseArea);
+    
 }
 
 

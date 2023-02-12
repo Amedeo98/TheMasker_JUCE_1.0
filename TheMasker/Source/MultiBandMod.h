@@ -63,7 +63,7 @@ public:
     }
     
     void filterBlock(AudioBuffer<float>& buffer, auto curves) {
-        int numSamples = buffer.getNumSamples();
+        /*int numSamples = buffer.getNumSamples();
         inputBuffer_copy.clear();
         for (int ch = 0; ch < numInCh; ch++) {
             inputBuffer_copy.copyFrom(ch, 0, buffer, ch, 0, numSamples);
@@ -87,7 +87,7 @@ public:
             }
 
         }
-
+*/
 
 
     }

@@ -16,14 +16,14 @@ struct CustomRotarySlider : juce::Slider
     CustomRotarySlider() : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
                                         juce::Slider::TextEntryBoxPosition::NoTextBox)
     {
-        
+         
     }
 };
 
 //==============================================================================
 /**
 */
-class TheMaskerAudioProcessorEditor  : public juce::AudioProcessorEditor
+class TheMaskerAudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Timer
 {
 public:
     TheMaskerAudioProcessorEditor (TheMaskerAudioProcessor&);
@@ -56,6 +56,11 @@ private:
                 cleanUpSliderAttachment;
     
     std::vector<juce::Component*> getComponents();
+    
+    DynamicEQ dynEq;
+    void timerCallback() final {
+        repaint();
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMaskerAudioProcessorEditor)
 };

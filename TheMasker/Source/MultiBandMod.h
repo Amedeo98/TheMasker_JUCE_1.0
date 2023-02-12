@@ -63,7 +63,7 @@ public:
     }
     
     void filterBlock(AudioBuffer<float>& buffer, auto curves) {
-        /*int numSamples = buffer.getNumSamples();
+        int numSamples = buffer.getNumSamples();
         inputBuffer_copy.clear();
         for (int ch = 0; ch < numInCh; ch++) {
             inputBuffer_copy.copyFrom(ch, 0, buffer, ch, 0, numSamples);
@@ -72,7 +72,7 @@ public:
         for (int f = 0; f < nfilts; f++) {
             tempOutput.clear();
             tempOutput = filters[f].process(inputBuffer_copy);
-
+            
             for (int ch = 0; ch < numScCh; ch++) {
                 gains[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
                 for (int sample = 0; sample < numSamples; sample++) {
@@ -85,12 +85,10 @@ public:
             if (numInCh < 2) {
                 buffer.addFrom(2, 0, tempOutput, 1, 0, numSamples);
             }
-
+            
         }
-*/
-
-
     }
+    
 
     void getBandFreqs() {
         freqs[0].f_lc = minFreq;

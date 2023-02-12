@@ -21,7 +21,7 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
 
 {
     
-    startTimerHz (30);
+    startTimerHz(30);
     
     for(auto* comp : getComponents())
     {
@@ -83,8 +83,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     
     g.setColour(Colours::white);
     g.strokePath(responseCurve, PathStrokeType(2.f));
-
-     dynEq.drawFrame(g, responseArea);
+    dynEq.drawFrame(g, responseArea);
     
 }
 

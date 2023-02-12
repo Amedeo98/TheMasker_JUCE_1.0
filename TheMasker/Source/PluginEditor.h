@@ -58,6 +58,7 @@ private:
     std::vector<juce::Component*> getComponents();
     
     DynamicEQ dynEq;
+    
     void timerCallback() final {
         repaint();
     }

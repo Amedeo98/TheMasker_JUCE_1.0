@@ -95,9 +95,9 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
     auxBuffer.clear();
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
-        buffer.clear(i, 0, buffer.getNumSamples());
-    }
+    //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
+    //    buffer.clear(i, 0, buffer.getNumSamples());
+    //}
 
     auto mainBuffer = getBusBuffer(buffer, true, 0);
     auto scBuffer = getBusBuffer(buffer, true, 1);

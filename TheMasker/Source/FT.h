@@ -25,6 +25,7 @@ public:
     
     
     auto getFT(AudioBuffer<float>& input, int ch)  {
+        processFrameInBuffer(1);
         process(input);
         result = getResult();
         if (decimated)
@@ -49,6 +50,8 @@ public:
         fbank_values = fb.getValues();
         decimated = true;
     }
+
+    
 
     void drawNextFrameOfSpectrum()
     {
@@ -84,6 +87,19 @@ public:
     vector<float> result_decim;
 
 private:
+    void processFrameInBuffer(const int maxNumChannels) override
+    {
+        for (int ch = 0; ch < maxNumChannels; ++ch)
+            fft.performRealOnlyForwardTransform(fftInOutBuffer.getWritePointer(ch), true);
+
+        // clear high frequency content
+        for (int ch = 0; ch < maxNumChannels; ++ch)
+            FloatVectorOperations::clear(fftInOutBuffer.getWritePointer(ch, fftSize / 2), fftSize / 2);
+
+        for (int ch = 0; ch < maxNumChannels; ++ch)
+            fft.performRealOnlyInverseTransform(fftInOutBuffer.getWritePointer(ch));
+    }
+
     int scopeSize = npoints;
     float scopeData[npoints];
     float mindB = -100.0f;

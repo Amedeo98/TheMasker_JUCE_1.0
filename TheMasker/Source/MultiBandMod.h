@@ -32,7 +32,7 @@ public:
         numInCh = numInChannels;
         numScCh = numScChannels;
         gains.resize(numScCh, vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>(nfilts));
-        //smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
+        smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
         inputBuffer_copy.setSize(numInCh, samplesPerBlock);
         tempOutput.setSize(numInCh, samplesPerBlock);
         for (int i = 0; i < nfilts; i++) {
@@ -108,7 +108,7 @@ private:
     int fs;
     int samplesPerBlock;
     float smoothingSeconds = 0.2f;
-    float smoothingWindow = 0.5f;
+    float smoothingWindow = 0.99f;
     vector<LinkwitzRileyFilters> filters;
     vector<vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>> gains;
     AudioBuffer<float> inputBuffer_copy;

@@ -88,7 +88,7 @@ public:
             for (int i = 0; i < n; i++) {
                 partOfFreqs[i] = frequencies[il + i];
             }
-            buffer = interpolateYvector(xw, yw, partOfFreqs, 0);
+            buffer = conv.interpolateYvector(xw, yw, partOfFreqs, 0);
             vector<float> ptr = values.at(b);
             copy(buffer.begin(), buffer.end(), values.at(b).begin()+il);
         }
@@ -117,33 +117,7 @@ private:
 
     
 
-    vector<float>interpolateYvector(vector<float>xData, vector<float>yData, vector<float>xx, bool extrapolate)
-    {
-        vector<float> y_int;
-        for (float x : xx) {
-
-            int size = xData.size();
-
-            int i = 0;                                                                  // find left end of interval for interpolation
-            if (x >= xData[size - 2]) {                                                 // special case: beyond right end
-                i = size - 2;
-            }
-            else {
-                while (x > xData[i + 1]) i++;
-            }
-            float xL = xData[i], yL = yData[i], xR = xData[i + 1], yR = yData[i + 1];      // points on either side (unless beyond ends)
-            if (!extrapolate) {                                                         // if beyond ends of array and not extrapolating
-                if (x < xL) yR = yL;
-                if (x > xR) yL = yR;
-            }
-
-            float dydx = (yR - yL) / (xR - xL);                                    // gradient
-
-            y_int.push_back(yL + dydx * (x - xL));
-        }
-
-        return y_int;
-    }
+    
 
 
 };

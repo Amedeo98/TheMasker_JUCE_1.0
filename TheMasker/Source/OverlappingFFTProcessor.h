@@ -122,16 +122,6 @@ public:
     }
 
 
- /*   void process (const dsp::ProcessContextReplacing<float>& context)
-    {
-        process (context.getInputBlock(), context.getOutputBlock());
-    }
-
-    void process (const dsp::ProcessContextNonReplacing<float>& context)
-    {
-        process (context.getInputBlock(), context.getOutputBlock());
-    }*/
-
     void process (const AudioBuffer<float>& input)
     {
         const auto L = (int) input.getNumSamples();

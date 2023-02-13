@@ -103,7 +103,7 @@ public:
 
         deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
         deltaScaler.clip(curves);
-        //filters.filterBlock(mainBuffer, curves);
+        filters.filterBlock(mainBuffer, curves);
         mainBuffer.applyGain(outGain);
 
     }

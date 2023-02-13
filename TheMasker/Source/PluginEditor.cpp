@@ -27,7 +27,7 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     {
         addAndMakeVisible(comp);
     }
-    setSize (600, 400);
+    setSize (700, 500);
     
 }
 
@@ -92,17 +92,40 @@ void TheMaskerAudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds();
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.33);
+    bounds.removeFromTop(bounds.getHeight() * 0.15);
     auto in_area = bounds.removeFromLeft(bounds.getWidth() * 0.33);
     auto out_area = bounds.removeFromRight(bounds.getWidth() * 0.5);
     
-    inSlider.setBounds(in_area);
-    
+    inSlider.setBounds(in_area.removeFromTop(out_area.getHeight() * 0.5));
+    scSlider.setBounds(in_area);
     compSlider.setBounds(out_area.removeFromTop(out_area.getHeight() * 0.33));
     expSlider.setBounds(out_area.removeFromTop(out_area.getHeight() * 0.5));
-    cleanUpSlider.setBounds(out_area);
+    mixSlider.setBounds(out_area);
+    outSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.5));
+    cleanUpSlider.setBounds(bounds);
     
-    outSlider.setBounds(bounds);
-    
+    inLabel.setText ("IN",  juce::dontSendNotification);
+    inLabel.attachToComponent(&inSlider, false);
+    inLabel.setJustificationType(Justification::centred);
+    outLabel.setText ("OUT",  juce::dontSendNotification);
+    outLabel.attachToComponent(&outSlider, false);
+    outLabel.setJustificationType(Justification::centred);
+    scLabel.setText ("SC",  juce::dontSendNotification);
+    scLabel.setJustificationType(Justification::centred);
+    scLabel.attachToComponent(&scSlider, false);
+    compLabel.setText ("COMP",  juce::dontSendNotification);
+    compLabel.setJustificationType(Justification::centred);
+    compLabel.attachToComponent(&compSlider, false);
+    expLabel.setText ("EXP",  juce::dontSendNotification);
+    expLabel.setJustificationType(Justification::centred);
+    expLabel.attachToComponent(&expSlider, false);
+    cleanUpLabel.setText ("Clean Up",  juce::dontSendNotification);
+    cleanUpLabel.attachToComponent(&cleanUpSlider, false);
+    cleanUpLabel.setJustificationType(Justification::centred);
+    mixLabel.setText ("MIX",  juce::dontSendNotification);
+    mixLabel.attachToComponent(&mixSlider, false);
+    mixLabel.setJustificationType(Justification::centred);
+
 }
 
 
@@ -110,7 +133,9 @@ std::vector<juce::Component*> TheMaskerAudioProcessorEditor::getComponents()
 {
     return
     {
-        &inSlider, &outSlider,
-        &scSlider, &compSlider, &expSlider, &cleanUpSlider
+        &inSlider, &outSlider, &mixSlider,
+        &scSlider, &compSlider, &expSlider, &cleanUpSlider,
+        &inLabel, &outSlider, &mixLabel,
+        &scLabel, &compLabel, &expLabel, &cleanUpLabel
     };
 }

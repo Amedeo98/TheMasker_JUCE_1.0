@@ -43,8 +43,11 @@ private:
                         scSlider,
                         compSlider,
                         expSlider,
+                        mixSlider,
                         cleanUpSlider;
       
+    Label inLabel, outLabel, scLabel, compLabel, expLabel, cleanUpLabel, mixLabel;
+    
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
     

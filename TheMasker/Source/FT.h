@@ -17,16 +17,14 @@ class FT : public OverlappingFFTProcessor {
 public:
     FT() : OverlappingFFTProcessor(_fftOrder, hopSizeDividerAsPowOf2)
     {
-        //startTimerHz (30);
         result.resize(pow(2, _fftOrder - hopSizeDividerAsPowOf2));
         result_decim.resize(nfilts);
     }
     ~FT() {}
     
     
-    auto getFT(AudioBuffer<float>& input, int ch)  {
-        processFrameInBuffer(1);
-        process(input);
+    vector<float> getFT(AudioBuffer<float>& input, int ch)  {
+        process(input, ch);
         result = getResult();
         if (decimated)
         result_decim = conv.mXv_mult(fbank_values, result);
@@ -37,14 +35,10 @@ public:
         return decimated ? result_decim : result;
     }
     
-    /*void timerCallback() override
-    {
-        drawNextFrameOfSpectrum();
-        nextFFTBlockReady = false;
-        repaint();
-    }*/
 
-    
+    void prepare(const int maximumBlockSize) {
+        prepareFFTProcessor(maximumBlockSize);
+    }
 
     void setFBank(FilterBank fb) {
         fbank_values = fb.getValues();
@@ -87,18 +81,18 @@ public:
     vector<float> result_decim;
 
 private:
-    void processFrameInBuffer(const int maxNumChannels) override
-    {
-        for (int ch = 0; ch < maxNumChannels; ++ch)
-            fft.performRealOnlyForwardTransform(fftInOutBuffer.getWritePointer(ch), true);
+    //void processFrameInBuffer(const int maxNumChannels) override
+    //{
+    //    for (int ch = 0; ch < maxNumChannels; ++ch)
+    //        fft.performRealOnlyForwardTransform(fftInOutBuffer.getWritePointer(ch), true);
 
-        // clear high frequency content
-        for (int ch = 0; ch < maxNumChannels; ++ch)
-            FloatVectorOperations::clear(fftInOutBuffer.getWritePointer(ch, fftSize / 2), fftSize / 2);
+    //    //// clear high frequency content
+    //    //for (int ch = 0; ch < maxNumChannels; ++ch)
+    //    //    FloatVectorOperations::clear(fftInOutBuffer.getWritePointer(ch, fftSize / 2), fftSize / 2);
 
-        for (int ch = 0; ch < maxNumChannels; ++ch)
-            fft.performRealOnlyInverseTransform(fftInOutBuffer.getWritePointer(ch));
-    }
+    //    //for (int ch = 0; ch < maxNumChannels; ++ch)
+    //    //    fft.performRealOnlyInverseTransform(fftInOutBuffer.getWritePointer(ch));
+    //}
 
     int scopeSize = npoints;
     float scopeData[npoints];

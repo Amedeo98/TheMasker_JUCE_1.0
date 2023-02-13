@@ -24,49 +24,51 @@ class DeltaGetter  {
 public:
     void getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, auto& deltas) {
 
+        for (int i = 0; i < inCh; i++) {
 
-        for (int i = 0; i < nCh; i++) {
+            inFT[i] = ft_in.getFT(in, i);
+            conv.toMagnitudeDb(inFT[i]);
+            deltas[i].threshold = inFT[i];
 
-            inFT = ft_in.getFT(in, i);
-            scFT = ft_sc.getFT(sc, i);
+        }
+        for (int i = 0; i < scCh; i++) {
 
-            scFT = psy.spread(scFT);
+            scFT[i] = ft_sc.getFT(sc, i);
+            scFT[i] = psy.spread(scFT[i]);
+            conv.toMagnitudeDb(scFT[i]);
+            scFT[i] = psy.compareWithAtq(scFT[i], current_atq);
+        }
 
-            conv.toMagnitudeDb(inFT);
-            conv.toMagnitudeDb(scFT);
-
-            scFT = psy.compareWithAtq(scFT, current_atq);
-
-
-            scFT = difference(inFT, scFT);
-            deltas[i].delta = scFT;
-            deltas[i].threshold = inFT;
+        for (int i = 0; i < jmax(inCh, scCh); i++) {
+            scFT[i] = difference(inFT[i], scFT[i]);
+            deltas[i].delta = scFT[i];
         }
 
     }
 
  
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, int numCh) {
-        scFT.resize(nfilts);
-        inFT.resize(nfilts);
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, int numInCh, int numScCh) {
+        scFT.resize(numScCh, vector<float>(nfilts));
+        inFT.resize(numInCh, vector<float>(nfilts));
         atq.resize(nfilts);
         current_atq.resize(nfilts);
         fCenters.resize(nfilts);
         atq = getATQ(fCenters);
         psy.getSpreadingMtx();
-        ft_in.prepare(sampleRate, samplesPerBlock, 1, 1, fb);
-        ft_sc.prepare(sampleRate, samplesPerBlock, 1, 1, fb);
+        ft_in.prepare(samplesPerBlock);
+        ft_sc.prepare(samplesPerBlock);
         ft_in.setFBank(fb);
         ft_sc.setFBank(fb);
         setATQ(atqW);
-        setNumChannels(numCh);
+        setNumChannels(numInCh, numScCh);
 
 
     }
 
-    void setNumChannels(int ch) {
-        nCh = ch;
+    void setNumChannels(int _inCh, int _scCh) {
+        scCh = _scCh;
+        inCh = _inCh;
     }
 
     void setATQ(float UIatqWeight) {
@@ -90,12 +92,12 @@ private:
     PSY psy; 
     Converter conv;
 
-    vector<float> inFT, scFT, current_atq, atq, fCenters;
+    vector<vector<float>> inFT, scFT;
+    vector<float> current_atq, atq, fCenters;
 
     float atqWeight;
-    int nCh;
-
-    //struct result { vector<float> delta;  vector<float> threshold;};
+    int inCh;
+    int scCh;
 
 
     size_t numChannels;
@@ -110,8 +112,6 @@ private:
     float atqLift = 1.6;
 
     vector<float> difference(vector<float> input, vector<float> rel_thresh) {
-        //for (int i = 0; i < input.size(); i++)
-            //input[i] = input[i] - rel_thresh[i];
         FloatVectorOperations::subtract(input.data(), rel_thresh.data(), rel_thresh.size());
         return input;
 
@@ -136,200 +136,3 @@ private:
     }
 
 };
-
-/*
-public:
-
-    Curve() {}
-
-    ~Curve() {}
-
-    std::vector<float> yValues;
-    std::vector<float> xValues;
-    int curveSize;
-    Converter conv;
-
-
-    void setYValues(std::vector<float> newY) {
-        curveSize = newY.size();
-        yValues.resize(curveSize);
-        yValues = newY;
-    }
-
-    void setXValues(std::vector<float> newX) {
-        curveSize = newX.size();
-        xValues.resize(curveSize);
-        xValues = newX;
-    }
-
-    void setConverter(Converter c) {
-        conv = c;
-    }
-
-    std::vector<float> getXValues() {
-       return xValues;
-    }
-    std::vector<float> getYValues() {
-       return yValues;
-    }
-
-};
-
-
-class AbsoluteThreshold : public Curve {
-public:
-    void setATQ(std::vector<float> y, std::vector<float> x) 
-    {
-        setYValues(y);
-        setXValues(x);
-        
-    }
-
-
-    void scale(float UIatqWeight) {
-        vector<float> values = yValues;
-        juce::FloatVectorOperations::multiply(values.data(), UIatqWeight, curveSize);
-        juce::FloatVectorOperations::multiply(values.data(), atqLift, curveSize);
-        juce::FloatVectorOperations::add(values.data(), minDBFS, curveSize);
-        FloatVectorOperations::clip(values.data(), values.data(), minDBFS, 0.0f, curveSize);
-        setYValues(values);
-    }
-private:
-    //ATQ properties
-    int minDBFS = -64;
-    float atqLift = 1.6;
-
-  
-};
-
-
-
-class AudioFD : public Curve {
-public:
-
-    void prepareToPlay(int sampleRate, FilterBank& filterbank, vector<vector<float>>& spreadingMatrix, vector<float> freqs, bool decim, bool spread){
-        setDecimated(decim);
-        setXValues(freqs);
-        spreaded = spread;
-        analyser.setupAnalyser(sampleRate, float(sampleRate), fbank, spreadingMtx, decim);
-        fbank = filterbank;
-        spreadingMtx = spreadingMatrix;
-        setConverter(fbank.getConverter());
-        decim ? yValues.resize(nfilts) : yValues.resize(npoints);
-    }
-
-
-    void releaseResources(int timeOut){
-        analyser.stopThread(timeOut);
-    }
-
-    bool checkForNewData() {
-        return analyser.checkForNewData();
-    }
-
-    void createPath(juce::Path& p, const juce::Rectangle<int>& bounds, float minF) {
-        analyser.createPath(p, bounds.toFloat(), minF);
-    }
-
-    void processBlock(AudioBuffer<float>& mainBuffer, int startChannel, int numChannels) {
-        //analyser.addAudioData(mainBuffer, startChannel, numChannels);
-        setYValues(analyser.getFD());
-
-        if (decimated) {
-            vector<vector<float>> fbValues = fbank.getValues();
-            vector<float> _yValues = yValues;
-            temp=conv.mXv_mult(fbank.getValues(),yValues);
-        }
-        else {
-            temp = yValues;
-        }
-
-        if (spreaded) {
-            temp = conv.mXv_mult(spreadingMtx, temp);
-        }
-
-        for (int i = 0; i < temp.size(); i++) {
-            temp[i] = real(conv.amp2db(temp[i]));
-        }
-        setYValues(temp);
-
-    }
-
-
-    void setDecimated(bool decim) {
-        decimated = decim;
-    }
-
-
-private:
-    bool decimated = false;
-    bool spreaded = false;
-    FilterBank fbank;
-    vector<vector<float>> spreadingMtx;
-    vector<float> temp;
-    Analyser<float> analyser;
-
-
-
-};
-
-class RelativeThreshold : public Curve {
-public:
-
-
-    RelativeThreshold getRelativeThreshold(int sampleRate, FilterBank& filterbank, vector<vector<float>>& spreadMtx) {
-        yValues.resize(nfilts);
-        //xValues.resize(curveSize);
-        setXValues(filterbank.getFrequencies());
-        //fs = sampleRate;
-        //fbank = filterbank;
-        //spreadingMtx = spreadMtx;
-        //setYValues() ...?
-        return *this;
-    }
-
-    void update(AudioFD& scSpectrum, AbsoluteThreshold& atq) {
-        setYValues(jmax(scSpectrum.getYValues(), atq.yValues));
-    }
-
-
-private:
-
-};*/
-
-/*public:
-    void getDelta(AudioFD& input, RelativeThreshold& rel_thresh) {
-        std::vector<float> newValues = input.yValues;
-        std::vector<float> threshValues = rel_thresh.yValues;
-        FloatVectorOperations::subtract(newValues.data(), threshValues.data(), threshValues.size());
-        setYValues(newValues);
-        setXValues(input.xValues);
-        //return *this;
-    }
-
-    void clipDelta(RelativeThreshold& threshold) {
-        std::vector<float> THclip;
-        std::vector<float> newValues;
-        newValues.resize(yValues.size());
-        THclip.resize(threshold.curveSize);
-        for (int i = 0; i < threshold.curveSize; i++) {
-            THclip[i] = (1.0f + tanh((threshold.yValues[i] - gateThresh) / gateKnee)) / 2.0f;
-        }
-        //conv.mXv_mult(yValues, THclip);
-        std::transform(yValues.begin(), yValues.end(),
-            THclip.begin(), newValues.data(),
-            std::multiplies<float>());
-        setYValues(newValues);
-    }
-
-    void modulateDelta(float UIcomp, float UIexp, float UIsl, float UImix) {
-        //std::vector<float> monoValues;
-        for (int i = 0; i < curveSize; i++) {
-            float& temp = yValues[i];
-            //monoValues = mean(yValues);
-            //temp = UIsl * monoValues + (1-UIsl) * temp;
-            temp = temp > 0.0f ? temp * UIcomp : temp * UIexp;
-            temp = temp * UImix;
-            temp = tanh(temp / maxGain) * maxGain;
-        }
-    }*/

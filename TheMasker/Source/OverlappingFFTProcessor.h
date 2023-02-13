@@ -87,10 +87,9 @@ public:
 
     void reset() {}
 
-    void prepare (const double sampleRate, const int maximumBlockSize, const int numInputChannels, const int numOutputChannels, FilterBank fb)
+    void prepareFFTProcessor (const int maximumBlockSize)
     {
-        nChIn = numInputChannels;
-        nChOut = numOutputChannels;
+
         const auto maxCh = jmax (nChIn, nChOut);
 
         const int bufferSize = maximumBlockSize;
@@ -114,15 +113,14 @@ public:
 
         notYetUsedAudioDataCount = 0;
 
-        numChIn = nChIn;
-        numChOut = nChOut;
+        numChIn = 1;
+        numChOut = 1;
         result.resize(pow(2, _fftOrder-1));
-        fbank_values = fb.getValues();
 
     }
 
 
-    void process (const AudioBuffer<float>& input)
+    void process (const AudioBuffer<float>& input, int _ch)
     {
         const auto L = (int) input.getNumSamples();
         
@@ -147,7 +145,7 @@ public:
 
                 // fill up fftInOut buffer with new data (with hann windowing)
                 FloatVectorOperations::multiply (fftInOutBuffer.getWritePointer (ch, notYetUsedAudioDataCount), // destination
-                                                 input.getReadPointer(ch), // source 1 (audio data)
+                                                 input.getReadPointer(_ch), // source 1 (audio data)
                                                  window.data() + notYetUsedAudioDataCount, // source 2 (window)
                                                  fftSize - notYetUsedAudioDataCount // number of samples
                                                 );
@@ -169,7 +167,7 @@ public:
                                              notYetUsedAudioData.getReadPointer (ch, initialNotYetUsedAudioDataCount - notYetUsedAudioDataCount),
                                              notYetUsedAudioDataCount);
                 FloatVectorOperations::copy (notYetUsedAudioData.getWritePointer (ch, notYetUsedAudioDataCount),
-                                             input.getReadPointer (ch) + usedSamples,
+                                             input.getReadPointer (_ch) + usedSamples,
                                              L);
             }
             notYetUsedAudioDataCount += L;
@@ -183,7 +181,7 @@ public:
                 for (int ch = 0; ch < numChIn; ++ch)
                 {
                     FloatVectorOperations::multiply (fftInOutBuffer.getWritePointer (ch),
-                                                     input.getReadPointer (ch) + dataOffset,
+                                                     input.getReadPointer (_ch) + dataOffset,
                                                      window.data(), fftSize);
                 }
                 processFrameInBuffer (maxNumChannels);
@@ -198,7 +196,7 @@ public:
                 for (int ch = 0; ch < numChIn; ++ch)
                 {
                     FloatVectorOperations::copy (notYetUsedAudioData.getWritePointer (ch),
-                                                 input.getReadPointer (ch) + dataOffset,
+                                                 input.getReadPointer (_ch) + dataOffset,
                                                  L - dataOffset);
                 }
             }
@@ -217,7 +215,7 @@ public:
         for (int ch = 0; ch < numChOut; ++ch)
         {
             FloatVectorOperations::copy (result.data(), outputBuffer.getReadPointer(ch), L);
-            FloatVectorOperations::copy (result.data(), outputBuffer.getReadPointer (ch, shiftStart), shiftL);
+            FloatVectorOperations::copy (outputBuffer.getWritePointer(ch), outputBuffer.getReadPointer(ch, shiftStart), shiftL);
         }
 
 
@@ -278,7 +276,6 @@ private:
     int nChOut=1;
     int numChIn;
     int numChOut;
-    vector<vector<float>> fbank_values;
     vector<float> result;
 
 

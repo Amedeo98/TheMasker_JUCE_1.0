@@ -59,7 +59,7 @@ public:
         fCenters = fbank.getFrequencies();
 
         curves.resize(inCh);            
-        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, numScChannels);
+        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, numInChannels, numScChannels);
         deltaScaler.prepareToPlay(numScChannels);
 
         for (int i = 0; i < numScChannels; ++i) {
@@ -76,7 +76,7 @@ public:
     void numChannelsChanged(int inCh, int scCh) {
         numInChannels = inCh;
         numScChannels = scCh;
-        deltaGetter.setNumChannels(numScChannels);
+        deltaGetter.setNumChannels(numInChannels, numScChannels);
         deltaScaler.setNumChannels(numScChannels);
         filters.setNumChannels(numInChannels, numScChannels);
     }

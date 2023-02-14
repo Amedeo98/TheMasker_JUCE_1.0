@@ -26,10 +26,10 @@ public:
 
 
     void prepareToPlay() {
-        monoValues.resize(nfilts);
+        //monoValues.resize(nfilts);
     }
 private:
-    vector<float> monoValues;
+    float monoValues[nfilts];
     float UIsl;  
     
     void scaleChannel(vector<float>& in) {
@@ -39,9 +39,10 @@ private:
     }
 
     void  getMono(vector<float> l, vector<float> r) {
-        std::fill(monoValues.begin(), monoValues.end(), 0);
-        FloatVectorOperations::addWithMultiply(monoValues.data(), l.data(), 0.5f, l.size());
-        FloatVectorOperations::addWithMultiply(monoValues.data(), r.data(), 0.5f, r.size());
+        FloatVectorOperations::fill(monoValues, 0, nfilts);
+        //std::fill(monoValues.begin(), monoValues.end(), 0);
+        FloatVectorOperations::addWithMultiply(monoValues, l.data(), 0.5f, nfilts);
+        FloatVectorOperations::addWithMultiply(monoValues, r.data(), 0.5f, nfilts);
     }
 
 };

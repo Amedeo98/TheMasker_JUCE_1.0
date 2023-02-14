@@ -95,14 +95,17 @@ public:
 
         deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
-        if (numScChannels == 2)
+       /* if (numScChannels == 2)
         {
             stereoLinked.process(curves[0].delta, curves[1].delta);
 
-        }
+        }*/
 
         deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
+        //DBG(curves[0].delta[12]);
         deltaScaler.clip(curves);
+        //DBG(curves[0].delta[12]);
+        //DBG(" ");
         filters.filterBlock(mainBuffer, curves);
         mainBuffer.applyGain(outGain);
 

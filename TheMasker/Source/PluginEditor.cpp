@@ -16,13 +16,14 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     inSliderAttachment(audioProcessor.parameters, NAME_IN, inSlider),
     outSliderAttachment(audioProcessor.parameters, NAME_OUT, outSlider),
     scSliderAttachment(audioProcessor.parameters, NAME_SC, scSlider),
+    mixSliderAttachment(audioProcessor.parameters, NAME_MIX, mixSlider),
     compSliderAttachment(audioProcessor.parameters, NAME_COMP, compSlider),
     expSliderAttachment(audioProcessor.parameters, NAME_EXP, expSlider),
     cleanUpSliderAttachment(audioProcessor.parameters, NAME_ATQ, cleanUpSlider)
 
 {
     
-    startTimerHz(30);
+    startTimerHz(25);
     
     for(auto* comp : getComponents())
     {

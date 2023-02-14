@@ -54,6 +54,7 @@ private:
     Attachment  inSliderAttachment,
                 outSliderAttachment,
                 scSliderAttachment,
+                mixSliderAttachment,
                 compSliderAttachment,
                 expSliderAttachment,
                 cleanUpSliderAttachment;

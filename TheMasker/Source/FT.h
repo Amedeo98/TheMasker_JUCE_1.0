@@ -44,7 +44,7 @@ public:
 
     void drawNextFrameOfSpectrum()
     {
-        freqs_Content = conv.interpolateYvector(F, result, frequencies, false);
+        //freqs_Content = conv.interpolateYvector(F, result, frequencies, false);
 
         auto mindB = -100.0f;
         auto maxdB = 0.0f;

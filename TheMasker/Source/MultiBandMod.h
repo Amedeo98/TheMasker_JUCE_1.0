@@ -82,9 +82,9 @@ public:
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }
             //for (auto i = numInCh; i < numScCh; ++i) {
-            if (numInCh < 2) {
+            /*if (numInCh < 2) {
                 buffer.addFrom(2, 0, tempOutput, 1, 0, numSamples);
-            }
+            }*/
             
         }
     }
@@ -108,7 +108,7 @@ private:
     int fs;
     int samplesPerBlock;
     float smoothingSeconds = 0.2f;
-    float smoothingWindow = 0.99f;
+    float smoothingWindow = 0.5f;
     vector<LinkwitzRileyFilters> filters;
     vector<vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>> gains;
     AudioBuffer<float> inputBuffer_copy;

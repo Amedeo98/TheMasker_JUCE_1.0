@@ -7,6 +7,7 @@
   <MAINGROUP id="EtDrka" name="TheMasker">
     <GROUP id="{D0F8B5F3-955C-44AC-04A3-B12E30F491D6}" name="Source">
       <GROUP id="{224B1F6F-B4C2-67BA-F881-EA7DFDFCB85F}" name="DSP">
+        <FILE id="BrRo39" name="BlockAnalyser.h" compile="0" resource="0" file="Source/BlockAnalyser.h"/>
         <FILE id="PrmF30" name="LinkwitzRileyFilters.h" compile="0" resource="0"
               file="Source/LinkwitzRileyFilters.h"/>
         <FILE id="DnjyIp" name="DeltaGetter.h" compile="0" resource="0" file="Source/DeltaGetter.h"/>
@@ -17,7 +18,6 @@
         <FILE id="pUsKut" name="DeltaScaler.h" compile="0" resource="0" file="Source/DeltaScaler.h"/>
         <FILE id="XW6qMd" name="FT.h" compile="0" resource="0" file="Source/FT.h"/>
         <FILE id="Ev0KdW" name="MultiBandMod.h" compile="0" resource="0" file="Source/MultiBandMod.h"/>
-        <FILE id="MOlVV6" name="Analyser.h" compile="0" resource="0" file="Source/Analyser.h"/>
         <FILE id="rTJopX" name="Converters.h" compile="0" resource="0" file="Source/Converters.h"/>
         <FILE id="LHzZCJ" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
         <FILE id="J5e9Rp" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>

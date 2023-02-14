@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "DynamicEQ.h"
 
 //==============================================================================
 TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProcessor& p)
@@ -27,7 +28,7 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     {
         addAndMakeVisible(comp);
     }
-    setSize (600, 400);
+    setSize (1200, 800);
     
 }
 
@@ -83,7 +84,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     
     g.setColour(Colours::white);
     g.strokePath(responseCurve, PathStrokeType(2.f));
-    dynEq.drawFrame(g, responseArea);
+    audioProcessor.dynEQ.drawFrame(g, responseArea);
     
 }
 

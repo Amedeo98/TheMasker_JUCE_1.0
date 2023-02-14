@@ -72,10 +72,9 @@ public:
     AudioProcessorValueTreeState parameters;
     std::vector<float> getFrequencies();
     
-    DynamicEQ& getDynEQ();
+    DynamicEQ dynEQ;
 
 private:
-    DynamicEQ dynEQ;
     
     int sampleRate = 0;
     int samplesPerBlock = 0;

@@ -95,9 +95,9 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
     auxBuffer.clear();
 
-    //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
-    //    buffer.clear(i, 0, buffer.getNumSamples());
-    //}
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
+        buffer.clear(i, 0, buffer.getNumSamples());
+    }
 
     auto mainBuffer = getBusBuffer(buffer, true, 0);
     auto scBuffer = getBusBuffer(buffer, true, 1);
@@ -180,15 +180,16 @@ void TheMaskerAudioProcessor::setStateInformation (const void* data, int sizeInB
     
 }
 
-DynamicEQ& TheMaskerAudioProcessor::getDynEQ() { return dynEQ; }
+//DynamicEQ& TheMaskerAudioProcessor::getDynEQ() { return dynEQ; }
 
 
 std::vector<float> TheMaskerAudioProcessor::getFrequencies() {
-    frequencies.resize(npoints);
+
+    frequencies.resize(_fftSize);
     float maxbark = conv.hz2bark(maxFreq);
     float minbark = conv.hz2bark(minFreq);
-    float step_bark = (maxbark - minbark) / (npoints - 1);
-    for (int i = 0; i < npoints; ++i){
+    float step_bark = (maxbark - minbark) / (_fftSize - 1);
+    for (int i = 0; i < _fftSize; ++i){
         frequencies[i] = conv.bark2hz(minbark + step_bark * i);
     }
     return frequencies;

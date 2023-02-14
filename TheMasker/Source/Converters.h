@@ -12,9 +12,9 @@
 #define maxFreq 22000
 #define minFreq 20
 #define _fftOrder 10
+#define _fftSize (1 << _fftOrder)
 #define npoints 512
 #define blockSize 64
-#define hopSizeDividerAsPowOf2 1
 
 #pragma once
 class Converter {

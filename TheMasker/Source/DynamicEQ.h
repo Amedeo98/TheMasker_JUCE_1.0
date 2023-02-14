@@ -59,7 +59,7 @@ public:
         fCenters = fbank.getFrequencies();
 
         curves.resize(inCh);            
-        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, numInChannels, numScChannels);
+        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, frequencies, numInChannels, numScChannels);
         deltaScaler.prepareToPlay(numScChannels);
 
         for (int i = 0; i < numScChannels; ++i) {
@@ -172,10 +172,6 @@ private:
     FilterBank fbank;
     Converter conv;
     int numSamples = 0;
-
-
-    //vector<vector<float>> deltas, thresholds;
-    //vector<float> delta_R, threshold_R;
     vector<result> curves;
 
     StereoLinked stereoLinked;

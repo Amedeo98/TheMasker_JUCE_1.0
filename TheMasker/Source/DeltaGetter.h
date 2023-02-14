@@ -48,7 +48,7 @@ public:
 
  
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, int numInCh, int numScCh) {
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, vector<float> frequencies, int numInCh, int numScCh) {
         scFT.resize(numScCh, vector<float>(nfilts));
         inFT.resize(numInCh, vector<float>(nfilts));
         atq.resize(nfilts);
@@ -56,14 +56,12 @@ public:
         fCenters.resize(nfilts);
         atq = getATQ(fCenters);
         psy.getSpreadingMtx();
-        ft_in.prepare(samplesPerBlock);
-        ft_sc.prepare(samplesPerBlock);
+        ft_in.prepare(frequencies, sampleRate);
+        ft_sc.prepare(frequencies, sampleRate);
         ft_in.setFBank(fb);
         ft_sc.setFBank(fb);
         setATQ(atqW);
         setNumChannels(numInCh, numScCh);
-
-
     }
 
     void setNumChannels(int _inCh, int _scCh) {
@@ -80,7 +78,8 @@ public:
     }
     
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds){
-        ft_in.drawFrame(g, bounds);
+        ft_sc.drawFrame(g, bounds, juce::Colour::Colour(1.0f, 1.0f, 1.0f, 1.0f));
+        ft_in.drawFrame(g, bounds, juce::Colour::Colour(0.5f, 1.0f, 1.0f, 1.0f));
     }
 
 
@@ -119,7 +118,7 @@ private:
 
     vector<float> getATQ(vector<float>& f)
     {
-        vector<float> values(f.size());
+        vector<float> values(nfilts);
         for (int i = 0; i < f.size(); i++)
         {
             //   matlab function: absThresh=3.64*(f./1000).^-0.8-6.5*exp(-0.6*(f./1000-3.3).^2)+.00015*(f./1000).^4; % edited function (reduces the threshold in high freqs)

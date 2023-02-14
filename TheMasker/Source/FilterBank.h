@@ -49,13 +49,14 @@ public:
 
 
     FilterBank getFilterBank(vector<float> freqs) {
-        const int memorySize = npoints / nfilts;
+        const int fftSize = 1 << _fftOrder;
+        const int memorySize = fftSize / nfilts;
         frequencies = freqs;
         centerF.resize(nfilts);
-        values.resize(nfilts,vector<float>(npoints));
+        values.resize(nfilts,vector<float>(fftSize));
         int nb = nfilts;
         float low = conv.hz2bark(frequencies.at(0));
-        float high =  conv.hz2bark(frequencies.at(npoints-1));
+        float high =  conv.hz2bark(frequencies.at(fftSize -1));
         float bw = (high - low) / nfilts;
         centerF = conv.linspace(1.f, (float)nfilts, nfilts);
         FloatVectorOperations::multiply(centerF.data(), bw, nfilts);

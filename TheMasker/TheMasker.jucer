@@ -6,14 +6,15 @@
               pluginVST3Category="Analyzer,Dynamics,EQ" pluginAAXCategory="1">
   <MAINGROUP id="EtDrka" name="TheMasker">
     <GROUP id="{D0F8B5F3-955C-44AC-04A3-B12E30F491D6}" name="Source">
+      <FILE id="BjteSq" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
       <GROUP id="{224B1F6F-B4C2-67BA-F881-EA7DFDFCB85F}" name="DSP">
-        <FILE id="BrRo39" name="BlockAnalyser.h" compile="0" resource="0" file="Source/BlockAnalyser.h"/>
         <FILE id="PrmF30" name="LinkwitzRileyFilters.h" compile="0" resource="0"
               file="Source/LinkwitzRileyFilters.h"/>
         <FILE id="DnjyIp" name="DeltaGetter.h" compile="0" resource="0" file="Source/DeltaGetter.h"/>
         <FILE id="esf6Zn" name="OverlappingFFTProcessor.h" compile="0" resource="0"
               file="Source/OverlappingFFTProcessor.h"/>
         <FILE id="UG6aRi" name="PSY.h" compile="0" resource="0" file="Source/PSY.h"/>
+        <FILE id="b1on9c" name="Analyser.h" compile="0" resource="0" file="Source/Analyser.h"/>
         <FILE id="D9wx9s" name="StereoLinked.h" compile="0" resource="0" file="Source/StereoLinked.h"/>
         <FILE id="pUsKut" name="DeltaScaler.h" compile="0" resource="0" file="Source/DeltaScaler.h"/>
         <FILE id="XW6qMd" name="FT.h" compile="0" resource="0" file="Source/FT.h"/>
@@ -21,8 +22,6 @@
         <FILE id="rTJopX" name="Converters.h" compile="0" resource="0" file="Source/Converters.h"/>
         <FILE id="LHzZCJ" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
         <FILE id="J5e9Rp" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>
-        <FILE id="hJdanS" name="FilterCascade.h" compile="0" resource="0" file="Source/FilterCascade.h"/>
-        <FILE id="htlLip" name="SimpleFilter.h" compile="0" resource="0" file="Source/SimpleFilter.h"/>
       </GROUP>
       <GROUP id="{A103283F-E046-C838-ECB6-DB2C3B6D1442}" name="GUI"/>
       <FILE id="DlDhRW" name="PluginProcessor.cpp" compile="1" resource="0"

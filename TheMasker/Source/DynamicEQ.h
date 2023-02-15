@@ -16,7 +16,6 @@ using namespace std;
 #include "DeltaGetter.h"
 #include "FilterBank.h"
 #include "Converters.h"
-#include "FilterCascade.h"
 #include "Analyser.h"
 #include "StereoLinked.h"
 #include "DeltaScaler.h"
@@ -43,7 +42,7 @@ public:
 
 
 
-    void prepareToPlay(vector<float> _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock, Converter converter)
+    void prepareToPlay(vector<float> _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock)
     {
         fs = sampleRate;
         numInChannels = inCh;
@@ -56,7 +55,7 @@ public:
         frequencies = _frequencies;
         fbank.getFilterBank(frequencies);
         fCenters.resize(nfilts);
-        fCenters = fbank.getFrequencies();
+        fbank.getFrequencies(fCenters);
 
         curves.resize(inCh);            
         deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, frequencies, numInChannels, numScChannels);
@@ -66,8 +65,6 @@ public:
             curves[i].delta.resize(nfilts);
             curves[i].threshold.resize(nfilts);
         }
-
-        stereoLinked.prepareToPlay();
 
         filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, numScChannels, fCenters);
 
@@ -95,17 +92,13 @@ public:
 
         deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
-       /* if (numScChannels == 2)
+        if (numScChannels == 2)
         {
             stereoLinked.process(curves[0].delta, curves[1].delta);
-
-        }*/
+        }
 
         deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
-        //DBG(curves[0].delta[12]);
         deltaScaler.clip(curves);
-        //DBG(curves[0].delta[12]);
-        //DBG(" ");
         filters.filterBlock(mainBuffer, curves);
         mainBuffer.applyGain(outGain);
 
@@ -173,7 +166,6 @@ private:
     int numScChannels;
     vector<vector<float>> spreadingMtx;
     FilterBank fbank;
-    Converter conv;
     int numSamples = 0;
     vector<result> curves;
 

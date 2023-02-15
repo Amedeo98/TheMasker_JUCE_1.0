@@ -30,15 +30,15 @@ public:
         FloatVectorOperations::subtract(freqs_Error.data(), frequencies.data(), F.data(), fftSize);
     }
 
-    vector<float> getFT(AudioBuffer<float>& input, int ch) {
+    void getFT(AudioBuffer<float>& input, int ch, vector<float>& output) {
         process(input, ch);
-        result = getResult();
+        getResult(result);
         if (decimated)
-            result_decim = conv.mXv_mult(fbank_values, result);
+            conv.mXv_mult(fbank_values, result, result_decim);
 
         drawNextFrameOfSpectrum();
 
-        return decimated ? result_decim : result;
+        output = decimated ? result_decim : result;
     }
 
 
@@ -80,7 +80,7 @@ public:
 
 
     void setFBank(FilterBank fb) {
-        fbank_values = fb.getValues();
+        fb.getValues(fbank_values);
         decimated = true;
     }
 

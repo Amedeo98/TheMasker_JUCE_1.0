@@ -26,21 +26,21 @@ public:
 
         for (int i = 0; i < inCh; i++) {
 
-            inFT[i] = ft_in.getFT(in, i);
+            ft_in.getFT(in, i, inFT[i]);
             conv.toMagnitudeDb(inFT[i]);
             deltas[i].threshold = inFT[i];
 
         }
         for (int i = 0; i < scCh; i++) {
 
-            scFT[i] = ft_sc.getFT(sc, i);
-            scFT[i] = psy.spread(scFT[i]);
+            ft_sc.getFT(sc, i, scFT[i]);
+            psy.spread(scFT[i]);
             conv.toMagnitudeDb(scFT[i]);
-            scFT[i] = psy.compareWithAtq(scFT[i], current_atq);
+            psy.compareWithAtq(scFT[i], current_atq);
         }
 
         for (int i = 0; i < jmax(inCh, scCh); i++) {
-            scFT[i] = difference(inFT[i], scFT[i]);
+            difference(inFT[i], scFT[i], scFT[i]);
             deltas[i].delta = scFT[i];
         }
 
@@ -54,7 +54,7 @@ public:
         atq.resize(nfilts);
         current_atq.resize(nfilts);
         fCenters.resize(nfilts);
-        atq = getATQ(fCenters);
+        getATQ(fCenters, atq);
         psy.getSpreadingMtx();
         ft_in.prepare(frequencies, sampleRate);
         ft_sc.prepare(frequencies, sampleRate);
@@ -110,27 +110,29 @@ private:
     int minDBFS = -64;
     float atqLift = 1.6;
 
-    vector<float> difference(vector<float> input, vector<float> rel_thresh) {
+    void difference(vector<float> input, vector<float> rel_thresh, vector<float>& output) {
         FloatVectorOperations::subtract(input.data(), rel_thresh.data(), rel_thresh.size());
-        return input;
+        output = input;
+        //return input;
 
     }
 
-    vector<float> getATQ(vector<float>& f)
+    void getATQ(vector<float>& f, vector<float>& dest)
     {
-        vector<float> values(nfilts);
+        //vector<float> values(nfilts);
+        dest.resize(nfilts);
         for (int i = 0; i < f.size(); i++)
         {
             //   matlab function: absThresh=3.64*(f./1000).^-0.8-6.5*exp(-0.6*(f./1000-3.3).^2)+.00015*(f./1000).^4; % edited function (reduces the threshold in high freqs)
-            values[i] = 3.64 * pow((f[i] / 1000), -0.8) - 6.5 * exp(-0.6 * pow(f[i] / 1000 - 3.3, 2)) + 0.00015 * pow(f[i] / 1000, 4);
+            dest[i] = 3.64 * pow((f[i] / 1000), -0.8) - 6.5 * exp(-0.6 * pow(f[i] / 1000 - 3.3, 2)) + 0.00015 * pow(f[i] / 1000, 4);
         }
-        float minimum = FloatVectorOperations::findMinimum(values.data(), values.size());
-        FloatVectorOperations::add(values.data(), -minimum, values.size());
+        float minimum = FloatVectorOperations::findMinimum(dest.data(), dest.size());
+        FloatVectorOperations::add(dest.data(), -minimum, dest.size());
 
-        juce::FloatVectorOperations::multiply(values.data(), atqLift, nfilts);
-        juce::FloatVectorOperations::add(values.data(), minDBFS, nfilts);
-        FloatVectorOperations::clip(values.data(), values.data(), minDBFS, 0.0f, nfilts);
-        return values;
+        juce::FloatVectorOperations::multiply(dest.data(), atqLift, nfilts);
+        juce::FloatVectorOperations::add(dest.data(), minDBFS, nfilts);
+        FloatVectorOperations::clip(dest.data(), dest.data(), minDBFS, 0.0f, nfilts);
+        //return values;
 
     }
 

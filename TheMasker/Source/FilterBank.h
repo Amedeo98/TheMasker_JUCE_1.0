@@ -18,33 +18,21 @@ using namespace std;
 
 class FilterBank {
 public:
-    //FilterBank(std::vector<double>* freqs) {
-    //    frequencies = freqs;
-    //    centerF.resize(nfilts);
-    //    values.resize(nfilts, sizeof(freqs));
-    //}
+
 
     FilterBank() {}
     ~FilterBank() {}
 
 
-    std::vector<float> centerF ;
 
-    std::vector<float> getFrequencies() {
-        return centerF;
+    void getFrequencies(std::vector<float>& fCenters) {
+        fCenters = centerF;
     }  
     
-    std::vector<vector<float>> getValues() {
-        return values;
+    void getValues(vector<vector<float>>& dest) {
+        dest = values;
     }
 
-    void setConverter(Converter converter) {
-        conv = converter;
-    }
-
-    Converter getConverter() {
-        return conv;
-    }
 
 
 
@@ -55,8 +43,9 @@ public:
         centerF.resize(nfilts);
         values.resize(nfilts,vector<float>(fftSize));
         int nb = nfilts;
-        float low = conv.hz2bark(frequencies.at(0));
-        float high =  conv.hz2bark(frequencies.at(fftSize -1));
+        float low, high;
+        conv.hz2bark(frequencies.at(0), low);
+        conv.hz2bark(frequencies.at(fftSize -1), high);
         float bw = (high - low) / nfilts;
         centerF = conv.linspace(1.f, (float)nfilts, nfilts);
         FloatVectorOperations::multiply(centerF.data(), bw, nfilts);
@@ -69,9 +58,9 @@ public:
         FloatVectorOperations::add(supr.data(), bw, nfilts);
         
         for (int i = 0; i < centerF.size(); i++) {
-            infr[i] = conv.bark2hz(infr[i]);
-            supr[i] = conv.bark2hz(supr[i]);
-            centerF[i] = conv.bark2hz(centerF[i]);
+            conv.bark2hz(infr[i], infr[i]);
+            conv.bark2hz(supr[i], supr[i]);
+            conv.bark2hz(centerF[i], centerF[i]);
         }
 
         infr[0] = (float) frequencies.at(0);
@@ -89,7 +78,7 @@ public:
             for (int i = 0; i < n; i++) {
                 partOfFreqs[i] = frequencies[il + i];
             }
-            buffer = conv.interpolateYvector(xw, yw, partOfFreqs, 0);
+            conv.interpolateYvector(xw, yw, partOfFreqs, 0, buffer);
             vector<float> ptr = values.at(b);
             copy(buffer.begin(), buffer.end(), values.at(b).begin()+il);
         }
@@ -99,6 +88,7 @@ public:
     }
 
 
+    std::vector<float> centerF;
 
 
 

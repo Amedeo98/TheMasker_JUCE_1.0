@@ -54,9 +54,8 @@ void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSample
     auxBuffer.setSize(getTotalNumInputChannels(), samplesPerBlock);
     
     getFrequencies();
-    conv = Converter();
     int inCh = getMainBusNumInputChannels();
-    dynEQ.prepareToPlay(frequencies, sampleRate, inCh, getTotalNumInputChannels() - inCh, samplesPerBlock, conv);
+    dynEQ.prepareToPlay(frequencies, sampleRate, inCh, getTotalNumInputChannels() - inCh, samplesPerBlock);
     setLatencySamples(pow(2, _fftOrder));
 }
 
@@ -183,16 +182,16 @@ void TheMaskerAudioProcessor::setStateInformation (const void* data, int sizeInB
 //DynamicEQ& TheMaskerAudioProcessor::getDynEQ() { return dynEQ; }
 
 
-std::vector<float> TheMaskerAudioProcessor::getFrequencies() {
+void TheMaskerAudioProcessor::getFrequencies() {
 
     frequencies.resize(_fftSize);
-    float maxbark = conv.hz2bark(maxFreq);
-    float minbark = conv.hz2bark(minFreq);
+    float maxbark, minbark;
+    conv.hz2bark(maxFreq, maxbark);
+    conv.hz2bark(minFreq, minbark);
     float step_bark = (maxbark - minbark) / (_fftSize - 1);
     for (int i = 0; i < _fftSize; ++i){
-        frequencies[i] = conv.bark2hz(minbark + step_bark * i);
+        conv.bark2hz(minbark + step_bark * i, frequencies[i]);
     }
-    return frequencies;
 }
 
 

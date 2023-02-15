@@ -16,7 +16,6 @@ class Analyser
 {
 public:
 
-
     Analyser(const int fftOrder, const int _npoints)
         : forwardFFT (fftOrder), fftSize (1 << fftOrder)
     {
@@ -49,7 +48,7 @@ public:
 
 
 
-    vector<float> getResult()
+    void getResult(vector<float>& result)
     {
         if (nextFFTBlockReady)
         {
@@ -71,7 +70,7 @@ public:
         }
 
         //return conv.interpolateYvector(F,result,frequencies, false);
-        return result;
+        //return result;
 
 
     }
@@ -84,10 +83,8 @@ public:
         {
             if (!nextFFTBlockReady)            // [12]
             {
-                //juce::zeromem(fftData, sizeof(fftData)); //da tutorial
-                //fftData.erase(fftData.begin(), fftData.end());
-                //juce::zeromem(fftData.data(), fftData.size());
-                FloatVectorOperations::multiply(fftData.data(), 0.0f, fftSize*2);
+
+                FloatVectorOperations::fill(fftData.data(), 0.0f, fftSize * 2);
                 memcpy(fftData.data(), fifo.data(), fftSize);
                 nextFFTBlockReady = true;
             }

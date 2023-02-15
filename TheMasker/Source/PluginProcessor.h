@@ -11,7 +11,6 @@
 #include <JuceHeader.h>
 #include "DynamicEQ.h"
 #include "Converters.h"
-#include "FilterCascade.h"
 
 #define PLUGIN_V 1
 
@@ -70,7 +69,7 @@ public:
 
     //==============================================================================
     AudioProcessorValueTreeState parameters;
-    std::vector<float> getFrequencies();
+    void getFrequencies();
     
     DynamicEQ dynEQ;
 

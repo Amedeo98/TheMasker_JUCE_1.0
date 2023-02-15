@@ -24,23 +24,21 @@ public:
         scaleChannel(r);
     }
 
-
-    void prepareToPlay() {
-        //monoValues.resize(nfilts);
-    }
 private:
     float monoValues[nfilts];
     float UIsl;  
-    
+    float silence = Decibels::gainToDecibels(0.0f);
+
     void scaleChannel(vector<float>& in) {
-        for (int i = 0; i < in.size(); i++) {
+        int size = in.size();
+        for (int i = 0; i < size; i++) {
             in[i] = UIsl * monoValues[i] + (1 - UIsl) * in[i];
         }
     }
 
-    void  getMono(vector<float> l, vector<float> r) {
-        FloatVectorOperations::fill(monoValues, 0, nfilts);
-        //std::fill(monoValues.begin(), monoValues.end(), 0);
+    void getMono(vector<float> l, vector<float> r) {
+        FloatVectorOperations::fill(monoValues, silence, nfilts);
+        //FloatVectorOperations::multiply(monoValues, 0.0f, nfilts);
         FloatVectorOperations::addWithMultiply(monoValues, l.data(), 0.5f, nfilts);
         FloatVectorOperations::addWithMultiply(monoValues, r.data(), 0.5f, nfilts);
     }

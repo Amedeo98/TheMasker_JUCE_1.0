@@ -11,7 +11,6 @@
 #pragma once
 #include <JuceHeader.h>
 #include "Converters.h"
-#include "SimpleFilter.h"
 #include "LinkwitzRileyFilters.h"
 #include "DynamicEQ.h"
 
@@ -21,8 +20,6 @@ class MultiBandMod {
 public:
     MultiBandMod() {}
     ~MultiBandMod() {}
-
-    //using result = DynamicEQ::result;
 
     void prepareToPlay(double sampleRate, int newSamplesPerBlock, int numInChannels, int numScChannels, vector<float> fCenters) {
         fs = sampleRate;
@@ -73,12 +70,11 @@ public:
         for (int f = 0; f < nfilts; f++) 
         {
             tempOutput.clear();
-            tempOutput = filters[f].process(inputBuffer_copy);
+            filters[f].process(inputBuffer_copy, tempOutput);
             
             for (int ch = 0; ch < numScCh; ch++) {
                 gains[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
                 for (int sample = 0; sample < numSamples; sample++) {
-                    //gains[ch][f].getNextValue();
                     tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains[ch][f].getNextValue());
                 }
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);

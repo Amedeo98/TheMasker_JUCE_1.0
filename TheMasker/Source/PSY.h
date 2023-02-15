@@ -17,7 +17,8 @@ public:
         float fadB = 14.5 + 12;
         float fbdb = 7.5;
         float fbbdb = 26.0;
-        float maxbark = conv.hz2bark(maxFreq);
+        float maxbark;
+        conv.hz2bark(maxFreq, maxbark);
         float alphaScaled = spread_exp / 20.f;
         vector<float> spreadFuncBarkdB(2 * nfilts);
         spreadingMtx.resize(nfilts, vector<float>(nfilts));
@@ -46,12 +47,12 @@ public:
 
     }
 
-    vector<float> spread(vector<float> input) {
-        return conv.mXv_mult(spreadingMtx, input);
+    void spread(vector<float>& input) {
+        conv.mXv_mult(spreadingMtx, input, input);
     }
 
-    vector<float> compareWithAtq(vector<float> rel_t, vector<float> atq) {
-        return jmax(rel_t, atq);
+    void compareWithAtq(vector<float>& rel_t, vector<float> atq) {
+        rel_t = jmax(rel_t, atq);
     }
 private:
     vector<vector<float>> spreadingMtx;

@@ -76,7 +76,6 @@ public:
 
     void interpolateYvector(vector<float>xData, vector<float>yData, vector<float>xx, bool extrapolate, vector<float>& y_int)
     {
-        //vector<float> y_int;
         y_int.clear();
         for (float x : xx) {
 
@@ -100,17 +99,8 @@ public:
             y_int.push_back(yL + dydx * (x - xL));
         }
 
-        //return y_int;
     }
     
 };
 
-//class Values {
-//public:
-//    enum signal {
-//        input,
-//        output,
-//        sidechain
-//    };
-//};
 

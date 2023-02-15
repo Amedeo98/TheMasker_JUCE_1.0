@@ -19,7 +19,6 @@ public:
 
     void prepareToPlay(double sampleRate, int newSamplesPerBlock, float lc_freq, float hc_freq, int nCh) {
         samplesPerBlock = newSamplesPerBlock;
-        //outputBuffer.setSize(nCh, samplesPerBlock);
         LC_freq = lc_freq;
         HC_freq = hc_freq;
 
@@ -47,7 +46,6 @@ public:
     }
 
     void setNumChannels(int nCh) {
-        //outputBuffer.setSize(nCh, samplesPerBlock);
         spec.numChannels = nCh;
         HC.prepare(spec);
         LC.prepare(spec);
@@ -56,7 +54,6 @@ public:
 
 
 private:
-    //AudioBuffer<float> outputBuffer;
     juce::dsp::ProcessSpec spec;
     int samplesPerBlock;
     using LWR = dsp::LinkwitzRileyFilter<float>;

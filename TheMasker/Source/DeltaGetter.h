@@ -84,7 +84,6 @@ public:
 
 
 private:
-    //Delta properties
     FT ft_sc;
     FT ft_in;
 
@@ -101,25 +100,19 @@ private:
 
     size_t numChannels;
 
-    //Delta properties
     float maxGain = 20;
     int gateThresh = -40;
     int gateKnee = 10;
 
-    //ATQ properties
     int minDBFS = -64;
     float atqLift = 1.6;
 
     void difference(vector<float> input, vector<float> rel_thresh, vector<float>& output) {
-        FloatVectorOperations::subtract(input.data(), rel_thresh.data(), rel_thresh.size());
-        output = input;
-        //return input;
-
+        FloatVectorOperations::subtract(output.data(), input.data(), rel_thresh.data(), rel_thresh.size());
     }
 
     void getATQ(vector<float>& f, vector<float>& dest)
     {
-        //vector<float> values(nfilts);
         dest.resize(nfilts);
         for (int i = 0; i < f.size(); i++)
         {
@@ -132,7 +125,6 @@ private:
         juce::FloatVectorOperations::multiply(dest.data(), atqLift, nfilts);
         juce::FloatVectorOperations::add(dest.data(), minDBFS, nfilts);
         FloatVectorOperations::clip(dest.data(), dest.data(), minDBFS, 0.0f, nfilts);
-        //return values;
 
     }
 

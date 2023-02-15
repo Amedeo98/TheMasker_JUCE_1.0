@@ -41,7 +41,7 @@ public:
             for (int i = 0; i < size; i++) {
                 THclip[i] = (1.0f + tanh((curves[ch].threshold[i] - gateThresh) * gateKnee)) * 0.5f;
             }
-            //FloatVectorOperations::multiply(curves[ch].delta, THclip, size);
+
             std::transform(curves[ch].delta.begin(), curves[ch].delta.end(),
                 THclip.begin(), newValues.data(),
                 std::multiplies<float>());

@@ -53,15 +53,12 @@ public:
         if (nextFFTBlockReady)
         {
             
-            // first apply a windowing function to our data
             FloatVectorOperations::multiply(fftData.data(), window.data(), fftSize);
 
-            // then render our FFT data..
             forwardFFT.performFrequencyOnlyForwardTransform(fftData.data(), true);  // [2]
 
             FloatVectorOperations::copy(result.data(), fftData.data(), fftSize);
 
-            //drawNextFrameOfSpectrum();
 
 
             nextFFTBlockReady = false;
@@ -69,8 +66,8 @@ public:
 
         }
 
-        //return conv.interpolateYvector(F,result,frequencies, false);
-        //return result;
+        //conv.interpolateYvector(F, result, frequencies, false, result);
+
 
 
     }
@@ -79,9 +76,9 @@ public:
     {
         // if the fifo contains enough data, set a flag to say
         // that the next frame should now be rendered..
-        if (fifoIndex == fftSize)               // [11]
+        if (fifoIndex == fftSize)               
         {
-            if (!nextFFTBlockReady)            // [12]
+            if (!nextFFTBlockReady)            
             {
 
                 FloatVectorOperations::fill(fftData.data(), 0.0f, fftSize * 2);
@@ -92,7 +89,7 @@ public:
             fifoIndex = 0;
         }
 
-        fifo[fifoIndex++] = sample;             // [12]
+        fifo[fifoIndex++] = sample;            
     }
 
 

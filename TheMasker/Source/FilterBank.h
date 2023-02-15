@@ -64,7 +64,8 @@ public:
         }
 
         infr[0] = (float) frequencies.at(0);
-        //supr[supr.size()-1] = (float) frequencies.at(supr.size()-1);
+        supr[supr.size()-1] = (float) frequencies.at(frequencies.size()-1);
+
         int m = 1;
         for (int b = 0; b < nfilts; b++) {
             vector<float> xw = {infr[b], centerF[b], supr[b]};

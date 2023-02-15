@@ -56,12 +56,14 @@ public:
         fCenters.resize(nfilts);
         getATQ(fCenters, atq);
         psy.getSpreadingMtx();
-        ft_in.prepare(frequencies, sampleRate);
-        ft_sc.prepare(frequencies, sampleRate);
+        ft_in.prepare(frequencies, sampleRate, in_colour);
+        ft_sc.prepare(frequencies, sampleRate, sc_colour);
         ft_in.setFBank(fb);
         ft_sc.setFBank(fb);
         setATQ(atqW);
         setNumChannels(numInCh, numScCh);
+
+
     }
 
     void setNumChannels(int _inCh, int _scCh) {
@@ -78,12 +80,14 @@ public:
     }
     
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds){
-        ft_sc.drawFrame(g, bounds, juce::Colour::Colour(1.0f, 1.0f, 1.0f, 1.0f));
-        ft_in.drawFrame(g, bounds, juce::Colour::Colour(0.5f, 1.0f, 1.0f, 1.0f));
+        ft_sc.drawFrame(g, bounds);
+        ft_in.drawFrame(g, bounds);
     }
 
 
 private:
+    juce::Colour in_colour = Colour(0.5f, 1.0f, 1.0f, 1.0f);
+    juce::Colour sc_colour = Colour(1.0f, 1.0f, 1.0f, 1.0f);
     FT ft_sc;
     FT ft_in;
 

@@ -9,7 +9,6 @@
 */
 
 #pragma once
-#include <JuceHeader.h>
 #include "Converters.h"
 #include "FilterBank.h"
 #include "PluginProcessor.h"
@@ -56,8 +55,8 @@ public:
         fCenters.resize(nfilts);
         getATQ(fCenters, atq);
         psy.getSpreadingMtx();
-        ft_in.prepare(frequencies, sampleRate, in_colour);
-        ft_sc.prepare(frequencies, sampleRate, sc_colour);
+        ft_in.prepare(frequencies, fCenters, sampleRate, in_colour);
+        ft_sc.prepare(frequencies, fCenters, sampleRate, sc_colour);
         ft_in.setFBank(fb);
         ft_sc.setFBank(fb);
         setATQ(atqW);
@@ -101,7 +100,6 @@ private:
     int inCh;
     int scCh;
 
-
     size_t numChannels;
 
     float maxGain = 20;
@@ -112,7 +110,10 @@ private:
     float atqLift = 1.6;
 
     void difference(vector<float> input, vector<float> rel_thresh, vector<float>& output) {
-        FloatVectorOperations::subtract(output.data(), input.data(), rel_thresh.data(), rel_thresh.size());
+        int size = rel_thresh.size();
+        for (int i = 0; i < size; i++)
+            output[i] = input[i] - rel_thresh[i];
+        //FloatVectorOperations::subtract(output.data(), input.data(), rel_thresh.data(), rel_thresh.size());
     }
 
     void getATQ(vector<float>& f, vector<float>& dest)

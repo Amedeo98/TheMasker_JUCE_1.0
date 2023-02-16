@@ -20,24 +20,29 @@ public:
     {}
     ~FT() {}
 
-    void prepare(vector<float>_frequencies, int sampleRate, juce::Colour colour) {
+    void prepare(vector<float> freqs, vector<float> fCents, int sampleRate, juce::Colour colour) {
         result_decim.resize(nfilts);
-        frequencies = _frequencies;
-        //scopeData.resize(scopeSize);
-        freqs_Error.resize(fftSize);
+        result_decim.resize(_fftSize);
+        frequencies = freqs;
+        fCenters.resize(nfilts);
+        fCenters = fCents;
         F.resize(fftSize);
         F = conv.linspace(1.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
-        FloatVectorOperations::subtract(freqs_Error.data(), frequencies.data(), F.data(), fftSize);
-        spectrumDrawer.setColour(colour);
+        spectrumDrawer.prepareToPlay(frequencies, fCenters, colour, sampleRate);
     }
 
     void getFT(AudioBuffer<float>& input, int ch, vector<float>& output) {
         process(input, ch);
         getResult(result);
-        if (decimated)
-            conv.mXv_mult(fbank_values, result, result_decim);
 
         spectrumDrawer.drawNextFrameOfSpectrum(result);
+
+        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
+
+        if (decimated)
+            conv.mXv_mult(fbank_values,  result_fixed  , result_decim);
+
+
 
         output = decimated ? result_decim : result;
     }
@@ -53,12 +58,12 @@ public:
     }
 
     vector<float> result_decim;
+    vector<float> result_fixed;
 
 private:
 
 
-    vector<float> freqs_Content;
-    vector<float> freqs_Error;
+    vector<float> fCenters;
 
     vector<vector<float>> fbank_values;
     Converter conv;

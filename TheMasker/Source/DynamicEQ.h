@@ -68,6 +68,9 @@ public:
 
         filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, numScChannels, fCenters);
 
+        outFT.resize(2, vector<float>(_fftSize));
+        ft_out.prepare(frequencies, fCenters, sampleRate, out_colour);
+
     }
 
     void numChannelsChanged(int inCh, int scCh) {
@@ -101,6 +104,10 @@ public:
         deltaScaler.clip(curves);
         filters.filterBlock(mainBuffer, curves);
         mainBuffer.applyGain(outGain);
+
+        for(int i=0; i<2; i++)
+        ft_out.getFT(mainBuffer, i, outFT[i]);
+
 
     }
 
@@ -143,6 +150,7 @@ public:
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)
     {
         deltaGetter.drawFrame(g, bounds);
+        ft_out.drawFrame(g, bounds);
     }
 
     struct result { vector<float> delta;  vector<float> threshold; };
@@ -159,6 +167,9 @@ private:
     float outGain = Decibels::decibelsToGain(DEFAULT_OUT);
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
+    juce::Colour out_colour = Colour(0.7f, 1.0f, 1.0f, 1.0f);
+    vector<vector<float>> outFT;
+
     vector<float> frequencies;
     vector<float> fCenters;
     int fs = 0;
@@ -172,7 +183,7 @@ private:
     StereoLinked stereoLinked;
     DeltaGetter deltaGetter;
     DeltaScaler deltaScaler;
-
+    FT ft_out;
 
     MultiBandMod filters;
 

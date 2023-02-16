@@ -29,9 +29,9 @@ public:
 
 
 
-    void prepare(vector<float> freqs) {
-        frequencies = freqs;
-    }
+    //void prepare(vector<float> freqs) {
+    //    frequencies = freqs;
+    //}
 
     void process(AudioBuffer<float>& bufferToFill, int ch)
     {
@@ -55,7 +55,7 @@ public:
             
             FloatVectorOperations::multiply(fftData.data(), window.data(), fftSize);
 
-            forwardFFT.performFrequencyOnlyForwardTransform(fftData.data(), true);  // [2]
+            forwardFFT.performFrequencyOnlyForwardTransform(fftData.data(), false);  // [2]
 
             FloatVectorOperations::copy(result.data(), fftData.data(), fftSize);
 
@@ -66,7 +66,6 @@ public:
 
         }
 
-        //conv.interpolateYvector(F, result, frequencies, false, result);
 
 
 

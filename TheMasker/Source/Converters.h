@@ -45,7 +45,8 @@ public:
 
     void toMagnitudeDb(vector<float>& res) {
         for (int i = 0; i < res.size(); i++) {
-            amp2db(abs(res[i]), res[i]);
+            res[i]=Decibels::gainToDecibels(abs(res[i]));
+            //amp2db(abs(res[i]), res[i]);
         }
     }
 
@@ -74,9 +75,10 @@ public:
     };
 
 
-    void interpolateYvector(vector<float>xData, vector<float>yData, vector<float>xx, bool extrapolate, vector<float>& y_int)
+    void interpolateYvector(vector<float>xData, vector<float>yData, vector<float>xx, bool extrapolate, vector<float> y_int)
     {
         y_int.clear();
+        //vector<float> y_int;
         for (float x : xx) {
 
             int size = xData.size();
@@ -98,6 +100,7 @@ public:
 
             y_int.push_back(yL + dydx * (x - xL));
         }
+        //return y_int;
 
     }
     

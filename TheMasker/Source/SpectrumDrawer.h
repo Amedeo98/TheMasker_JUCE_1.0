@@ -22,18 +22,7 @@ public:
         frequencies = freqs;
         fCenters = fCents;
         sampleRate = fs;
-        //logAxis = conv.linspace(1.0f, (float) _fftSize, (float) _fftSize);
 
-        
-
-
-        //p.startNewSubPath(bounds.getX() + factor * indexToX(0, minFreq), binToY(fftData[0], bounds));
-        //for (int i = 0; i < averager.getNumSamples(); ++i)
-        //    p.lineTo(bounds.getX() + factor * indexToX(float(i), minFreq), binToY(fftData[i], bounds));
-       
-
-        //float normalizer = pow((float)maxFreq,-1);
-        //float log_normalizer = pow(log10(_fftSize), -1);
         for (int i = 0; i < _fftSize; i++)
         {
             freqAxis[i] = juce::mapFromLog10(frequencies[i], (float)minFreq, (float)maxFreq);

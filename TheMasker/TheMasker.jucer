@@ -23,7 +23,10 @@
         <FILE id="LHzZCJ" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
         <FILE id="J5e9Rp" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>
       </GROUP>
-      <GROUP id="{A103283F-E046-C838-ECB6-DB2C3B6D1442}" name="GUI"/>
+      <GROUP id="{A103283F-E046-C838-ECB6-DB2C3B6D1442}" name="GUI">
+        <FILE id="nzmQnM" name="SpectrumDrawer.h" compile="0" resource="0"
+              file="Source/SpectrumDrawer.h"/>
+      </GROUP>
       <FILE id="DlDhRW" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="vsNo2g" name="PluginProcessor.h" compile="0" resource="0"

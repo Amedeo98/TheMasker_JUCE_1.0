@@ -13,15 +13,13 @@
 class SpectrumDrawer {
 public:
 
-
-    void prepareToPlay(vector<float> freqs, vector<float> fCents, juce::Colour col, float fs) {
+    void prepareToPlay(vector<float> freqs, vector<float> fCents, juce::Colour col) {
         colour = col;
         frequencies.resize(_fftSize);
         fCents.resize(nfilts);
         freqAxis.resize(_fftSize);
         frequencies = freqs;
         fCenters = fCents;
-        sampleRate = fs;
 
         for (int i = 0; i < _fftSize; i++)
         {
@@ -30,18 +28,6 @@ public:
 
     }
 
-    vector<float> getXs(const std::vector<float>& freqs, float left, float width)
-    {
-        std::vector<float> xs;
-        for (auto f : freqs)
-        {
-            auto normX = juce::mapFromLog10(f, (float) minFreq, (float) maxFreq);
-            //xs.push_back(left + width * normX);
-            xs.push_back(normX);
-        }
-
-        return xs;
-    }
 
 
 
@@ -70,12 +56,10 @@ public:
         auto width = bounds.getWidth();
         auto height = bounds.getHeight();
         auto left = bounds.getX();
-        //freqAxis = getXs(frequencies, left , width);
         for (int i = 1; i < scopeSize; ++i)
         {
 
             g.setColour(colour);
-            //vector<float> xVal{ , };
             vector<float> xVal = { jmap( freqAxis[i-1] , 0.f, 1.f, (float) left, (float)width),
                                    jmap( freqAxis[i] , 0.f, 1.f, (float) left, (float)width)};
             
@@ -98,7 +82,6 @@ private:
     float scope_step = pow(_fftSize,-1);
     Converter conv;
     float mindB = -100.0f;
-    float sampleRate;
     float maxdB = 0.0f;
     juce::Colour colour;
     int scopeSize = _fftSize;

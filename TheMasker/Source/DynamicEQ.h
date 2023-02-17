@@ -70,7 +70,7 @@ public:
 
         outFT.resize(2, vector<float>(_fftSize));
         ft_out.prepare(frequencies, fCenters, sampleRate, out_colour);
-
+        stereoLinked.setSL(stereoLinkAmt);
     }
 
     void numChannelsChanged(int inCh, int scCh) {

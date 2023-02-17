@@ -22,13 +22,13 @@ public:
 
     void prepare(vector<float> freqs, vector<float> fCents, int sampleRate, juce::Colour colour) {
         result_decim.resize(nfilts);
-        result_decim.resize(_fftSize);
+        result_fixed.resize(_fftSize);
         frequencies = freqs;
         fCenters.resize(nfilts);
         fCenters = fCents;
         F.resize(fftSize);
         F = conv.linspace(1.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
-        spectrumDrawer.prepareToPlay(frequencies, fCenters, colour, sampleRate);
+        spectrumDrawer.prepareToPlay(frequencies, fCenters, colour);
     }
 
     void getFT(AudioBuffer<float>& input, int ch, vector<float>& output) {
@@ -37,7 +37,8 @@ public:
 
         spectrumDrawer.drawNextFrameOfSpectrum(result);
 
-        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
+        //conv.interpolateYvector(F, result, frequencies, false, result_fixed);
+        result_fixed = result;
 
         if (decimated)
             conv.mXv_mult(fbank_values,  result_fixed  , result_decim);

@@ -99,6 +99,7 @@ private:
     float atqWeight;
     int inCh;
     int scCh;
+    float rel_thresh_lift = 5.0f;
 
     size_t numChannels;
 
@@ -112,7 +113,7 @@ private:
     void difference(vector<float> input, vector<float> rel_thresh, vector<float>& output) {
         int size = rel_thresh.size();
         for (int i = 0; i < size; i++)
-            output[i] = input[i] - rel_thresh[i];
+            output[i] = input[i] - (rel_thresh[i]+rel_thresh_lift);
         //FloatVectorOperations::subtract(output.data(), input.data(), rel_thresh.data(), rel_thresh.size());
     }
 

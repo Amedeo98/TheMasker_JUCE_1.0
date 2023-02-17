@@ -81,10 +81,20 @@ public:
                 /*old_gains[ch][f] = gains[ch][f];
                 gains[ch][f] = Decibels::decibelsToGain(curves[ch].delta[f]);
                 tempOutput.applyGainRamp(0, rampSamples, old_gains[ch][f], gains[ch][f]);*/
+                //DBG("Curves:");
+                //DBG(curves[ch].delta[f]);
+                //DBG("Curves_gain:");
+
+                //DBG(Decibels::decibelsToGain(curves[ch].delta[f]));
+
                 gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
                 for (int sample = 0; sample < numSamples; sample++) {
                     tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
+
                 }
+                
+
+
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }
             //for (auto i = numInCh; i < numScCh; ++i) {
@@ -115,7 +125,7 @@ private:
     int samplesPerBlock;
     float smoothingSeconds = 0.2f;
     int rampSamples;
-    float smoothingWindow = 0.99f;
+    float smoothingWindow = 0.8f;
     vector<LinkwitzRileyFilters> filters;
     vector<vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>> gains_sm;
     vector<vector<float>> gains;

@@ -75,12 +75,13 @@ public:
     };
 
 
-    void interpolateYvector(vector<float>xData, vector<float>yData, vector<float>xx, bool extrapolate, vector<float> y_int)
+    void interpolateYvector(vector<float>xData, vector<float>yData, vector<float>xx, bool extrapolate, vector<float>& y_int)
     {
-        y_int.clear();
-        //vector<float> y_int;
-        for (float x : xx) {
-
+        int ySize=y_int.size();
+        FloatVectorOperations::fill(y_int.data(), 0.0f, ySize);
+        int xSize = xx.size();
+        for (int point = 0; point < ySize; point++) {
+            float x = xx[point];
             int size = xData.size();
 
             int i = 0;                                                                  // find left end of interval for interpolation
@@ -98,7 +99,7 @@ public:
 
             float dydx = (yR - yL) / (xR - xL);                                    // gradient
 
-            y_int.push_back(yL + dydx * (x - xL));
+            y_int[point] = yL + dydx * (x - xL);
         }
         //return y_int;
 

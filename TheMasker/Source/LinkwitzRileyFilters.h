@@ -49,7 +49,6 @@ public:
         spec.numChannels = nCh;
         HC.prepare(spec);
         LC.prepare(spec);
-
     }
 
 

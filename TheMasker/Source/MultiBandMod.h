@@ -52,6 +52,7 @@ public:
         numScCh = scCh;
         inputBuffer_copy.setSize(numInCh, samplesPerBlock);
         tempOutput.setSize(numInCh, samplesPerBlock);
+        valueRamp.setSize(numInCh, samplesPerBlock);
         gains_sm.resize(numScCh, vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>(nfilts));
         gains.resize(numScCh, vector<float>(nfilts));
         old_gains.resize(numScCh, vector<float>(nfilts));
@@ -75,6 +76,7 @@ public:
         for (int f = 0; f < nfilts; f++) 
         {
             tempOutput.clear();
+            valueRamp.clear();
             filters[f].process(inputBuffer_copy, tempOutput);
             
             for (int ch = 0; ch < numScCh; ch++) {
@@ -89,10 +91,12 @@ public:
 
                 gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
                 for (int sample = 0; sample < numSamples; sample++) {
-                    tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
-
+                    //tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
+                    valueRamp.setSample(ch, sample, gains_sm[ch][f].getNextValue());
+                    
                 }
                 
+                FloatVectorOperations::multiply(tempOutput.getWritePointer(ch), valueRamp.getReadPointer(ch), numSamples);
 
 
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
@@ -132,6 +136,7 @@ private:
     vector<vector<float>> old_gains;
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;
+    AudioBuffer<float> valueRamp;
     struct freq {float f_lc;  float fCenter; float f_hc; };
     vector<freq> freqs;
 

@@ -105,8 +105,8 @@ public:
         filters.filterBlock(mainBuffer, curves);
         mainBuffer.applyGain(outGain);
 
-        for(int i=0; i<2; i++)
-        ft_out.getFT(mainBuffer, i, outFT[i]);
+        /*for(int i=0; i<2; i++)
+        ft_out.getFT(mainBuffer, i, outFT[i]);*/
 
 
     }

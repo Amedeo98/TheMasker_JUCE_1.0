@@ -16,7 +16,7 @@
 class FT : public Analyser {
 
 public:
-    FT() : Analyser(_fftOrder, npoints)
+    FT() : Analyser(_fftOrder, _fftSize)
     {}
     ~FT() {}
 

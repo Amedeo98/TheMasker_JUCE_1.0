@@ -99,7 +99,7 @@ private:
     float atqWeight;
     int inCh;
     int scCh;
-    float rel_thresh_lift = 5.0f;
+    float rel_thresh_lift = 3.0f;
 
     size_t numChannels;
 

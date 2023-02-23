@@ -8,12 +8,12 @@
   ==============================================================================
 */
 
-#define nfilts 32
+#define nfilts 16
 #define maxFreq 22000
 #define minFreq 20
 #define _fftOrder 10
 #define _fftSize (1 << _fftOrder)
-#define npoints 512
+//#define npoints 512
 #define blockSize 64
 
 #pragma once

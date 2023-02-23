@@ -79,7 +79,7 @@ public:
             for (int i = 0; i < n; i++) {
                 partOfFreqs[i] = frequencies[il + i];
             }
-            conv.interpolateYvector(xw, yw, partOfFreqs, 0, buffer);
+            conv.interpolateYvector(xw, yw, partOfFreqs, false, buffer);
             vector<float> ptr = values.at(b);
             copy(buffer.begin(), buffer.end(), values.at(b).begin()+il);
         }

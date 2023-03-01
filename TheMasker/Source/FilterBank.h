@@ -29,8 +29,9 @@ public:
         fCenters = centerF;
     }  
     
-    void getValues(vector<vector<float>>& dest) {
-        dest = values;
+    void getValues(array<float*,nfilts>& dest) {
+        for(int i=0; i<nfilts;i++)
+        dest[i] = values[i].data();
     }
 
 
@@ -41,7 +42,9 @@ public:
         const int memorySize = fftSize / nfilts;
         frequencies = freqs;
         centerF.resize(nfilts);
-        values.resize(nfilts,vector<float>(fftSize));
+        //values.resize(nfilts,vector<float>(fftSize));
+        for (int i = 0; i < nfilts; i++)
+            fill(values[i].begin(), values[i].end(), 0);
         int nb = nfilts;
         float low, high;
         conv.hz2bark(frequencies.at(0), low);
@@ -80,7 +83,7 @@ public:
                 partOfFreqs[i] = frequencies[il + i];
             }
             conv.interpolateYvector(xw, yw, partOfFreqs, false, buffer);
-            vector<float> ptr = values.at(b);
+            array<float,_fftSize> ptr = values.at(b);
             copy(buffer.begin(), buffer.end(), values.at(b).begin()+il);
         }
 
@@ -95,7 +98,7 @@ public:
 
 private:
     vector<float> frequencies;
-    vector<vector<float>> values;
+    array<array<float,_fftSize>,nfilts> values;
     Converter conv;
 
     const int findx(vector<float> X, float val) {

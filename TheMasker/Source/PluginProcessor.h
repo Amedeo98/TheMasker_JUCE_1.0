@@ -23,6 +23,10 @@
 #define NAME_OUT "outGain"
 #define NAME_SC "scGain"
 
+/*
+ Maschera > IN -> IN Masked        ->  MASKED PARTS: -1 = reveal … +1 = bury
+ Maschera < IN -> IN Intelligibile ->  CLEAR PARTS:  -1 = bury  ... +1 = emphasise
+ */
 
 class TheMaskerAudioProcessor : public juce::AudioProcessor, public AudioProcessorValueTreeState::Listener
 
@@ -81,7 +85,8 @@ private:
     int numInChannels;
     Converter conv;
 
-    std::vector<float> frequencies;
+    //float frequencies[npoints];
+    vector<float> frequencies;
     AudioBuffer<float> auxBuffer;
 
 

@@ -41,7 +41,7 @@ public:
         result_fixed = result;
 
         if (decimated)
-            conv.mXv_mult(fbank_values,  result_fixed  , result_decim);
+            conv.mXv_mult(fbank_values, result_fixed.data(), result_fixed.size(), result_decim.data());
 
 
 
@@ -66,7 +66,7 @@ private:
 
     vector<float> fCenters;
 
-    vector<vector<float>> fbank_values;
+    array<float*,nfilts> fbank_values;
     Converter conv;
     bool decimated = false;
     vector<float> F;

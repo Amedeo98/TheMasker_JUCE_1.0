@@ -8,13 +8,13 @@
   ==============================================================================
 */
 
-#define nfilts 16
+#define nfilts 32
 #define maxFreq 22000
 #define minFreq 20
 #define _fftOrder 10
 #define _fftSize (1 << _fftOrder)
-//#define npoints 512
-#define blockSize 64
+#define npoints (1 << (_fftOrder - 1))
+//#define blockSize 64
 
 #pragma once
 class Converter {
@@ -52,12 +52,12 @@ public:
 
     
 
-    void mXv_mult(vector<vector<float>> in1, vector<float> in2, vector<float>& dest) {
+    void mXv_mult(auto in1, float* in2, int in2Size, float* dest) {
         
-        size_t length = in1.size();
-        dest.resize(length);
+        size_t length = nfilts;
+        //dest.resize(length);
         for (int i = 0; i < length; i++) {
-            for (int k = 0; k < in2.size();k++) {
+            for (int k = 0; k < in2Size;k++) {
                 dest[i] = dest[i] + in1[i][k] * in2[k];
             }
         }
@@ -71,6 +71,21 @@ public:
         T val;
         for (x = xs.begin(), val = a; x != xs.end(); ++x, val += h)
             *x = val;
+        return xs;
+    };
+
+    template <typename T>
+    vector<T> linspaceArray(T a, T b, size_t N) {
+        T h = (b - a) / static_cast<T>(N - 1);
+        //size_t const dim = static_cast<size_t>(N);
+        vector<T> xs(N);
+        for (size_t i = 0; i < N; i++) {
+            xs[i] = a + h * i;
+        }
+        /*T* x;
+        T val;
+        for (x = *xs.begin(), val = a; x != *xs.end(); ++x, val += h)
+            *x = val;*/
         return xs;
     };
 

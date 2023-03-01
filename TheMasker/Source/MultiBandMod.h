@@ -83,21 +83,17 @@ public:
                 /*old_gains[ch][f] = gains[ch][f];
                 gains[ch][f] = Decibels::decibelsToGain(curves[ch].delta[f]);
                 tempOutput.applyGainRamp(0, rampSamples, old_gains[ch][f], gains[ch][f]);*/
-                //DBG("Curves:");
-                //DBG(curves[ch].delta[f]);
-                //DBG("Curves_gain:");
-
-                //DBG(Decibels::decibelsToGain(curves[ch].delta[f]));
-
+                float sampleGain;
                 gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
                 for (int sample = 0; sample < numSamples; sample++) {
+                    sampleGain = gains_sm[ch][f].getNextValue();
                     //tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
-                    valueRamp.setSample(ch, sample, gains_sm[ch][f].getNextValue());
-                    
+                    valueRamp.setSample(ch, sample, sampleGain);
+                    tempOutput.applyGain(ch, sample, 1, sampleGain);
+
                 }
                 
-                FloatVectorOperations::multiply(tempOutput.getWritePointer(ch), valueRamp.getReadPointer(ch), numSamples);
-
+                //FloatVectorOperations::multiply(tempOutput.getWritePointer(ch), valueRamp.getReadPointer(ch), numSamples);
 
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }

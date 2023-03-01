@@ -175,7 +175,6 @@ private:
     int fs = 0;
     int numInChannels = 2;
     int numScChannels;
-    vector<vector<float>> spreadingMtx;
     FilterBank fbank;
     int numSamples = 0;
     vector<result> curves;

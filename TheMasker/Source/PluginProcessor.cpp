@@ -27,6 +27,10 @@ parameters(*this, nullptr, "TheMaskerCompressor", {
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_SC, PLUGIN_V},"Sidechain (dB)", -40.0f, 20.0f, DEFAULT_SC)
     })
 
+    /*
+    Maschera > IN -> IN Masked        ->  MASKED PARTS: -1 = reveal … +1 = bury
+    Maschera < IN -> IN Intelligibile ->  CLEAR PARTS:  -1 = bury  ... +1 = emphasise
+    */
 {
     parameters.addParameterListener(NAME_COMP, this);
     parameters.addParameterListener(NAME_EXP, this);
@@ -56,7 +60,7 @@ void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSample
     getFrequencies();
     int inCh = getMainBusNumInputChannels();
     dynEQ.prepareToPlay(frequencies, sampleRate, inCh, getTotalNumInputChannels() - inCh, samplesPerBlock);
-    setLatencySamples(_fftSize);
+    setLatencySamples(_fftSize*2);
 }
 
 void TheMaskerAudioProcessor::releaseResources()

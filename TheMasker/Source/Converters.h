@@ -14,7 +14,7 @@
 #define _fftOrder 10
 #define _fftSize (1 << _fftOrder)
 //#define npoints (1 << (_fftOrder - 1))
-#define npoints _fftSize
+#define npoints 512
 //#define blockSize 64
 
 #pragma once
@@ -29,9 +29,9 @@ public:
         res = 6 * asinh(f / 600);
     };
 
-    void bark2hz(float b, float& res) {
+    void bark2hz(float b, float& dest) {
 
-        res = 600 * sinh(b / 6);
+        dest = 600 * sinh(b / 6);
     };
 
     void db2amp(float db, float& res) {
@@ -91,13 +91,16 @@ public:
     };
 
 
-    void interpolateYvector(vector<float>xData, vector<float>yData, vector<float>xx, bool extrapolate, vector<float>& y_int)
+    void interpolateYvector(vector<float>xData, vector<float>yData, auto xx, bool extrapolate, vector<float>& y_int)
     {
         int ySize=y_int.size();
+        float ySize_inv = pow(ySize, -1);
         FloatVectorOperations::fill(y_int.data(), 0.0f, ySize);
         int xSize = xx.size();
         for (int point = 0; point < ySize; point++) {
-            float x = xx[point];
+            int indx = floor(point * xSize * ySize_inv);
+            float x = xx[indx];
+            
             int size = xData.size();
 
             int i = 0;                                                                  // find left end of interval for interpolation

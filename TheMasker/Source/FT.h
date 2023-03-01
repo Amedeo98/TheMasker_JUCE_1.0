@@ -20,11 +20,11 @@ public:
     {}
     ~FT() {}
 
-    void prepare(array<float,npoints> freqs, vector<float> fCents, int sampleRate, juce::Colour colour) {
+    void prepare(array<float,npoints> freqs, array<float,nfilts> fCents, int sampleRate, juce::Colour colour) {
         result_decim.resize(nfilts);
         result_fixed.resize(_fftSize);
         frequencies = freqs;
-        fCenters.resize(nfilts);
+        //fCenters.resize(nfilts);
         fCenters = fCents;
         F.resize(fftSize);
         F = conv.linspace(1.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
@@ -37,7 +37,7 @@ public:
 
         spectrumDrawer.drawNextFrameOfSpectrum(result);
 
-        //conv.interpolateYvector(F, result, frequencies, false, result_fixed);
+        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
         result_fixed = result;
 
         if (decimated)
@@ -64,7 +64,7 @@ public:
 private:
 
 
-    vector<float> fCenters;
+    array<float,nfilts> fCenters;
 
     array<float*,nfilts> fbank_values;
     Converter conv;

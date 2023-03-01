@@ -21,7 +21,7 @@ public:
     MultiBandMod() {}
     ~MultiBandMod() {}
 
-    void prepareToPlay(double sampleRate, int newSamplesPerBlock, int numInChannels, int numScChannels, vector<float> fCenters) {
+    void prepareToPlay(double sampleRate, int newSamplesPerBlock, int numInChannels, int numScChannels, array<float,nfilts> fCenters) {
         fs = sampleRate;
         samplesPerBlock = newSamplesPerBlock;
         filters.resize(nfilts);

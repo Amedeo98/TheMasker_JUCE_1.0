@@ -13,15 +13,15 @@
 class SpectrumDrawer {
 public:
 
-    void prepareToPlay(array<float,npoints> freqs, vector<float> fCents, juce::Colour col) {
+    void prepareToPlay(array<float,npoints> freqs, array<float,nfilts> fCents, juce::Colour col) {
         colour = col;
         //frequencies.resize(_fftSize);
-        fCents.resize(nfilts);
-        freqAxis.resize(_fftSize);
+        //fCents.resize(nfilts);
+        freqAxis.resize(npoints);
         frequencies = freqs;
-        fCenters = fCents;
+        //fCenters = fCents;
 
-        for (int i = 0; i < _fftSize; i++)
+        for (int i = 0; i < npoints; i++)
         {
             freqAxis[i] = juce::mapFromLog10(frequencies[i], (float)minFreq, (float)maxFreq);
         }
@@ -71,19 +71,16 @@ public:
         }
     }
 
-    float toLog(float x) {
-        return log10(x);
-        //return mapFromLog10<float>(x, log10(minFreq), log10(maxFreq));
-    }
+
 private:
     vector<float> freqAxis;
     array<float,npoints> frequencies;
-    vector<float> fCenters;
-    float scope_step = pow(_fftSize,-1);
+    //array<float,nfilts> fCenters;
+    float scope_step = pow(npoints,-1);
     Converter conv;
     float mindB = -100.0f;
     float maxdB = 0.0f;
     juce::Colour colour;
-    int scopeSize = _fftSize;
-    float scopeData[_fftSize];
+    int scopeSize = npoints;
+    float scopeData[npoints];
 };

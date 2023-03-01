@@ -47,12 +47,12 @@ public:
 
  
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, array<float,npoints> frequencies, int numInCh, int numScCh) {
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, array<float,nfilts> fCenters, array<float,npoints> frequencies, int numInCh, int numScCh) {
         scFT.resize(numScCh, vector<float>(nfilts));
         inFT.resize(numInCh, vector<float>(nfilts));
         atq.resize(nfilts);
         current_atq.resize(nfilts);
-        fCenters.resize(nfilts);
+        //fCenters.resize(nfilts);
         getATQ(fCenters, atq);
         psy.getSpreadingMtx();
         ft_in.prepare(frequencies, fCenters, sampleRate, in_colour);
@@ -94,7 +94,8 @@ private:
     Converter conv;
 
     vector<vector<float>> inFT, scFT;
-    vector<float> current_atq, atq, fCenters;
+    vector<float> current_atq, atq;
+    array<float, nfilts> fCenters;
 
     float atqWeight;
     int inCh;
@@ -117,7 +118,7 @@ private:
         //FloatVectorOperations::subtract(output.data(), input.data(), rel_thresh.data(), rel_thresh.size());
     }
 
-    void getATQ(vector<float>& f, vector<float>& dest)
+    void getATQ(array<float,nfilts>& f, vector<float>& dest)
     {
         dest.resize(nfilts);
         for (int i = 0; i < f.size(); i++)

@@ -25,7 +25,7 @@ public:
 
 
 
-    void getFrequencies(std::vector<float>& fCenters) {
+    void getFrequencies(array<float,nfilts>& fCenters) {
         fCenters = centerF;
     }  
     
@@ -38,10 +38,10 @@ public:
 
 
     FilterBank getFilterBank(array<float,npoints> freqs) {
-        const int fftSize = 1 << _fftOrder;
+        const int fftSize = npoints;
         const int memorySize = fftSize / nfilts;
         frequencies = freqs;
-        centerF.resize(nfilts);
+        //centerF.resize(nfilts);
         //values.resize(nfilts,vector<float>(fftSize));
         for (int i = 0; i < nfilts; i++)
             fill(values[i].begin(), values[i].end(), 0);
@@ -50,13 +50,16 @@ public:
         conv.hz2bark(frequencies.at(0), low);
         conv.hz2bark(frequencies.at(fftSize -1), high);
         float bw = (high - low) / nfilts;
-        centerF = conv.linspace(1.f, (float)nfilts, nfilts);
+        vector<float> temp(nfilts);
+        temp = conv.linspace(1.f, (float)nfilts, nfilts);
+        copy(temp.begin(), temp.end(), centerF.begin());
         FloatVectorOperations::multiply(centerF.data(), bw, nfilts);
         FloatVectorOperations::add(centerF.data(), low-(bw/2), nfilts);
 
 
-        vector<float> infr = centerF;
-        vector<float> supr = centerF;
+        array<float,nfilts> infr = centerF;
+        array<float,nfilts> supr = centerF;
+        //float infr[nfilts], supr[nfilts];
         FloatVectorOperations::add(infr.data(), -bw, nfilts);
         FloatVectorOperations::add(supr.data(), bw, nfilts);
         
@@ -67,7 +70,7 @@ public:
         }
 
         infr[0] = (float) frequencies.at(0);
-        supr[supr.size()-1] = (float) frequencies.at(frequencies.size()-1);
+        supr[nfilts-1] = (float) frequencies.at(frequencies.size()-1);
 
         int m = 1;
         for (int b = 0; b < nfilts; b++) {
@@ -77,14 +80,14 @@ public:
             int ih = findx(frequencies, supr[b]);
             int n = ih - il + 1;
             vector<float> buffer, partOfFreqs;
-            buffer.resize(nfilts);
+            buffer.resize(n);
             partOfFreqs.resize(n);
             for (int i = 0; i < n; i++) {
                 partOfFreqs[i] = frequencies[il + i];
             }
             conv.interpolateYvector(xw, yw, partOfFreqs, false, buffer);
-            array<float,_fftSize> ptr = values.at(b);
-            copy(buffer.begin(), buffer.end(), values.at(b).begin()+il);
+            copy(buffer.begin(), buffer.end(), values[b].begin() + il);
+            
         }
 
 
@@ -92,21 +95,27 @@ public:
     }
 
 
-    std::vector<float> centerF;
+    array<float,nfilts> centerF;
 
 
 
 private:
     array<float,npoints> frequencies;
-    array<array<float,_fftSize>,nfilts> values;
+    array<array<float,npoints>,nfilts> values;
     Converter conv;
 
-    const int findx(auto X, float val) {
+    int findx(array<float,npoints> X, float val) {
         int minDistIndex=0;
-        for (int i = 0; i < X.size(); i++) {
-            X[i] = abs(X[i] - val);
-            if (X[i]<X[minDistIndex]) minDistIndex = i;
+        int dim = X.size();
+        FloatVectorOperations::add(X.data(), -val, dim);
+        FloatVectorOperations::abs(X.data(), X.data(), dim);
+        for (int i = 0; i < dim; i++) {
+            //X[i] = abs(X[i] - val);
+            if (X[i] < X[minDistIndex]) minDistIndex = i;
         }
+        
+        
+
         return minDistIndex;
     }
 

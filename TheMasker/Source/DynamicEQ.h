@@ -54,7 +54,7 @@ public:
 
         frequencies = _frequencies;
         fbank.getFilterBank(frequencies);
-        fCenters.resize(nfilts);
+        //fCenters.resize(nfilts);
         fbank.getFrequencies(fCenters);
 
         curves.resize(inCh);            
@@ -171,7 +171,7 @@ private:
     vector<vector<float>> outFT;
 
     array<float, npoints> frequencies;
-    vector<float> fCenters;
+    array<float, nfilts> fCenters;
     int fs = 0;
     int numInChannels = 2;
     int numScChannels;

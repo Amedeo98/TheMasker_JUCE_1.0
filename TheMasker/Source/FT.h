@@ -20,7 +20,7 @@ public:
     {}
     ~FT() {}
 
-    void prepare(vector<float> freqs, vector<float> fCents, int sampleRate, juce::Colour colour) {
+    void prepare(array<float,npoints> freqs, vector<float> fCents, int sampleRate, juce::Colour colour) {
         result_decim.resize(nfilts);
         result_fixed.resize(_fftSize);
         frequencies = freqs;

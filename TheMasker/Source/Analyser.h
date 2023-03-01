@@ -95,7 +95,7 @@ public:
    
 
     vector<float> result;
-    vector<float> frequencies;
+    array<float,npoints> frequencies;
     const int fftSize;
 
 

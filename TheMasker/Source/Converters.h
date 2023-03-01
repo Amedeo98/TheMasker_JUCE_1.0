@@ -13,7 +13,8 @@
 #define minFreq 20
 #define _fftOrder 10
 #define _fftSize (1 << _fftOrder)
-#define npoints (1 << (_fftOrder - 1))
+//#define npoints (1 << (_fftOrder - 1))
+#define npoints _fftSize
 //#define blockSize 64
 
 #pragma once

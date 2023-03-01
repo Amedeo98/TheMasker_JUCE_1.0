@@ -86,7 +86,7 @@ private:
     Converter conv;
 
     //float frequencies[npoints];
-    vector<float> frequencies;
+    array<float,npoints> frequencies;
     AudioBuffer<float> auxBuffer;
 
 

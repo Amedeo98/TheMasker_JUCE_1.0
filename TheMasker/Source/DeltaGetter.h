@@ -47,7 +47,7 @@ public:
 
  
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, vector<float> frequencies, int numInCh, int numScCh) {
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, vector<float> fCenters, array<float,npoints> frequencies, int numInCh, int numScCh) {
         scFT.resize(numScCh, vector<float>(nfilts));
         inFT.resize(numInCh, vector<float>(nfilts));
         atq.resize(nfilts);

@@ -37,7 +37,7 @@ public:
 
 
 
-    FilterBank getFilterBank(vector<float> freqs) {
+    FilterBank getFilterBank(array<float,npoints> freqs) {
         const int fftSize = 1 << _fftOrder;
         const int memorySize = fftSize / nfilts;
         frequencies = freqs;
@@ -97,11 +97,11 @@ public:
 
 
 private:
-    vector<float> frequencies;
+    array<float,npoints> frequencies;
     array<array<float,_fftSize>,nfilts> values;
     Converter conv;
 
-    const int findx(vector<float> X, float val) {
+    const int findx(auto X, float val) {
         int minDistIndex=0;
         for (int i = 0; i < X.size(); i++) {
             X[i] = abs(X[i] - val);

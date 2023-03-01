@@ -42,7 +42,7 @@ public:
 
 
 
-    void prepareToPlay(vector<float> _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock)
+    void prepareToPlay(array<float,npoints> _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock)
     {
         fs = sampleRate;
         numInChannels = inCh;
@@ -170,7 +170,7 @@ private:
     juce::Colour out_colour = Colour(0.7f, 1.0f, 1.0f, 1.0f);
     vector<vector<float>> outFT;
 
-    vector<float> frequencies;
+    array<float, npoints> frequencies;
     vector<float> fCenters;
     int fs = 0;
     int numInChannels = 2;

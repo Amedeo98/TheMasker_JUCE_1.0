@@ -13,9 +13,9 @@
 class SpectrumDrawer {
 public:
 
-    void prepareToPlay(vector<float> freqs, vector<float> fCents, juce::Colour col) {
+    void prepareToPlay(array<float,npoints> freqs, vector<float> fCents, juce::Colour col) {
         colour = col;
-        frequencies.resize(_fftSize);
+        //frequencies.resize(_fftSize);
         fCents.resize(nfilts);
         freqAxis.resize(_fftSize);
         frequencies = freqs;
@@ -77,7 +77,7 @@ public:
     }
 private:
     vector<float> freqAxis;
-    vector<float> frequencies;
+    array<float,npoints> frequencies;
     vector<float> fCenters;
     float scope_step = pow(_fftSize,-1);
     Converter conv;

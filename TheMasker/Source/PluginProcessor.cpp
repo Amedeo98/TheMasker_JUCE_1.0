@@ -187,7 +187,7 @@ void TheMaskerAudioProcessor::setStateInformation (const void* data, int sizeInB
 
 void TheMaskerAudioProcessor::getFrequencies() {
 
-    frequencies.resize(_fftSize);
+    //frequencies.resize(_fftSize);
     float maxbark, minbark;
     conv.hz2bark(maxFreq, maxbark);
     conv.hz2bark(minFreq, minbark);

@@ -50,8 +50,8 @@ public:
     void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float atqW, array<float,nfilts> fCenters, array<float,npoints> frequencies, int numInCh, int numScCh) {
         scFT.resize(numScCh, vector<float>(nfilts));
         inFT.resize(numInCh, vector<float>(nfilts));
-        atq.resize(nfilts);
-        current_atq.resize(nfilts);
+        //atq.resize(nfilts);
+        //current_atq.resize(nfilts);
         //fCenters.resize(nfilts);
         getATQ(fCenters, atq);
         psy.getSpreadingMtx();
@@ -94,7 +94,8 @@ private:
     Converter conv;
 
     vector<vector<float>> inFT, scFT;
-    vector<float> current_atq, atq;
+    array<float,nfilts> current_atq, atq;
+
     array<float, nfilts> fCenters;
 
     float atqWeight;
@@ -118,9 +119,9 @@ private:
         //FloatVectorOperations::subtract(output.data(), input.data(), rel_thresh.data(), rel_thresh.size());
     }
 
-    void getATQ(array<float,nfilts>& f, vector<float>& dest)
+    void getATQ(array<float,nfilts>& f, array<float,nfilts>& dest)
     {
-        dest.resize(nfilts);
+        //dest.resize(nfilts);
         for (int i = 0; i < f.size(); i++)
         {
             //   matlab function: absThresh=3.64*(f./1000).^-0.8-6.5*exp(-0.6*(f./1000-3.3).^2)+.00015*(f./1000).^4; % edited function (reduces the threshold in high freqs)
@@ -129,9 +130,9 @@ private:
         float minimum = FloatVectorOperations::findMinimum(dest.data(), dest.size());
         FloatVectorOperations::add(dest.data(), -minimum, dest.size());
 
-        juce::FloatVectorOperations::multiply(dest.data(), atqLift, nfilts);
+        /*juce::FloatVectorOperations::multiply(dest.data(), atqLift, nfilts);
         juce::FloatVectorOperations::add(dest.data(), minDBFS, nfilts);
-        FloatVectorOperations::clip(dest.data(), dest.data(), minDBFS, 0.0f, nfilts);
+        FloatVectorOperations::clip(dest.data(), dest.data(), minDBFS, 0.0f, nfilts);*/
 
     }
 

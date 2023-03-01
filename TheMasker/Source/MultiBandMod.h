@@ -76,7 +76,7 @@ public:
         for (int f = 0; f < nfilts; f++) 
         {
             tempOutput.clear();
-            valueRamp.clear();
+            //valueRamp.clear();
             filters[f].process(inputBuffer_copy, tempOutput);
             
             for (int ch = 0; ch < numScCh; ch++) {
@@ -84,15 +84,27 @@ public:
                 gains[ch][f] = Decibels::decibelsToGain(curves[ch].delta[f]);
                 tempOutput.applyGainRamp(0, rampSamples, old_gains[ch][f], gains[ch][f]);*/
                 float sampleGain;
-                gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
-                for (int sample = 0; sample < numSamples; sample++) {
-                    sampleGain = gains_sm[ch][f].getNextValue();
-                    //tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
-                    valueRamp.setSample(ch, sample, sampleGain);
-                    tempOutput.applyGain(ch, sample, 1, sampleGain);
+                float* ptr;
 
-                }
+                gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
                 
+                for (int sample = 0; sample < numSamples; sample++) {
+                    tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
+                    //ptr = tempOutput.getWritePointer(ch, sample);
+                    //ptr = tempOutput.getReadPointer(ch, sample) * 
+                    //sampleGain = gains_sm[ch][f].getNextValue();
+                    //valueRamp.setSample(ch, sample, sampleGain);
+                    //tempOutput.applyGain(ch, sample, 1, sampleGain);
+                   /* DBG(sampleGain);
+                    DBG("");*/
+                }
+
+               /* for (int sample = 0; sample < numSamples; sample++) {
+                    DBG(valueRamp.getSample(ch,sample));
+                }*/
+
+                //DBG("");
+
                 //FloatVectorOperations::multiply(tempOutput.getWritePointer(ch), valueRamp.getReadPointer(ch), numSamples);
 
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);

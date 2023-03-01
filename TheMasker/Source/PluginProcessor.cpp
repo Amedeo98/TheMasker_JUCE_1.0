@@ -116,7 +116,7 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     }
 
     for (int ch = 0; ch < numScChannels; ch++) {
-        auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1.0f); //rimettere il gain a 1?
+        auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1.0f);
     }
 
 

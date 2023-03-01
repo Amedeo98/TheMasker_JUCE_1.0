@@ -53,7 +53,7 @@ public:
 
     
 
-    void mXv_mult(auto in1, float* in2, int in2Size, float* dest) {
+    void mXv_mult(auto in1, auto in2, int in2Size, auto& dest) {
         
         size_t length = nfilts;
         //dest.resize(length);

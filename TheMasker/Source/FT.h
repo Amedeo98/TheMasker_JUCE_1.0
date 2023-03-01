@@ -22,7 +22,7 @@ public:
 
     void prepare(array<float,npoints> freqs, array<float,nfilts> fCents, int sampleRate, juce::Colour colour) {
         result_decim.resize(nfilts);
-        result_fixed.resize(_fftSize);
+        result_fixed.resize(npoints);
         frequencies = freqs;
         //fCenters.resize(nfilts);
         fCenters = fCents;
@@ -37,11 +37,12 @@ public:
 
         spectrumDrawer.drawNextFrameOfSpectrum(result);
 
-        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
-        result_fixed = result;
+        //result_fixed = result;
+
+        conv.interpolateYvector(F, result, frequencies, true, result_fixed);
 
         if (decimated)
-            conv.mXv_mult(fbank_values, result_fixed.data(), result_fixed.size(), result_decim.data());
+            conv.mXv_mult(fbank_values, result_fixed, result_fixed.size(), result_decim);
 
 
 
@@ -63,10 +64,9 @@ public:
 
 private:
 
-
     array<float,nfilts> fCenters;
 
-    array<float*,nfilts> fbank_values;
+    array<array<float,npoints>,nfilts> fbank_values;
     Converter conv;
     bool decimated = false;
     vector<float> F;

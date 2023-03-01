@@ -51,11 +51,12 @@ public:
     }
 
     void spread(vector<float>& input) {
-        conv.mXv_mult(spreadingMtx, input.data(), input.size(), input.data());
+        conv.mXv_mult(spreadingMtx, input.data(), input.size(), input);
     }
 
-    void compareWithAtq(vector<float>& rel_t, vector<float> atq) {
-        rel_t = jmax(rel_t, atq);
+    void compareWithAtq(vector<float>& rel_t, array<float,nfilts> atq) {
+        FloatVectorOperations::max(rel_t.data(), rel_t.data(), atq.data(), nfilts);
+        //rel_t = jmax(rel_t, atq);
     }
 private:
     array<array<float,nfilts>,nfilts> spreadingMtx;

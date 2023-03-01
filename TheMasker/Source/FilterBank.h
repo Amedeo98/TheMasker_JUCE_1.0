@@ -29,9 +29,10 @@ public:
         fCenters = centerF;
     }  
     
-    void getValues(array<float*,nfilts>& dest) {
-        for(int i=0; i<nfilts;i++)
-        dest[i] = values[i].data();
+    void getValues(array<array<float,npoints>,nfilts>& dest) {
+        for (int i = 0; i < nfilts; i++)
+            FloatVectorOperations::copy(dest[i].data(), values[i].data(), npoints);
+            //dest[i] = values[i].data();
     }
 
 

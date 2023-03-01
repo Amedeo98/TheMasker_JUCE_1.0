@@ -68,7 +68,7 @@ public:
 
         filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, numScChannels, fCenters);
 
-        outFT.resize(2, vector<float>(_fftSize));
+        //outFT.resize(2, vector<float>(_fftSize));
         ft_out.prepare(frequencies, fCenters, sampleRate, out_colour);
         stereoLinked.setSL(stereoLinkAmt);
     }
@@ -123,7 +123,7 @@ public:
 
     void setAtq(float newValue) {
         atqWeight = newValue;
-        //deltaGetter.setATQ(atqWeight);
+        deltaGetter.setATQ(atqWeight);
     }
 
     void setStereoLinked(float newValue) {
@@ -168,7 +168,7 @@ private:
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
     juce::Colour out_colour = Colour(0.7f, 1.0f, 1.0f, 1.0f);
-    vector<vector<float>> outFT;
+    //vector<vector<float>> outFT;
 
     array<float, npoints> frequencies;
     array<float, nfilts> fCenters;

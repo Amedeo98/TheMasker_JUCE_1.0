@@ -44,9 +44,10 @@ private:
                         compSlider,
                         expSlider,
                         mixSlider,
+                        stereoLinkedSlider,
                         cleanUpSlider;
       
-    Label inLabel, outLabel, scLabel, compLabel, expLabel, cleanUpLabel, mixLabel;
+    Label inLabel, outLabel, scLabel, compLabel, expLabel, cleanUpLabel, mixLabel, stereoLabel;
     
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
@@ -57,6 +58,7 @@ private:
                 mixSliderAttachment,
                 compSliderAttachment,
                 expSliderAttachment,
+                stereoLinkedSliderAttachment,
                 cleanUpSliderAttachment;
     
     std::vector<juce::Component*> getComponents();

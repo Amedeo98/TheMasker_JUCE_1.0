@@ -19,8 +19,8 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     mixSliderAttachment(audioProcessor.parameters, NAME_MIX, mixSlider),
     compSliderAttachment(audioProcessor.parameters, NAME_COMP, compSlider),
     expSliderAttachment(audioProcessor.parameters, NAME_EXP, expSlider),
-    cleanUpSliderAttachment(audioProcessor.parameters, NAME_ATQ, cleanUpSlider)
-
+    cleanUpSliderAttachment(audioProcessor.parameters, NAME_ATQ, cleanUpSlider),
+    stereoLinkedSliderAttachment(audioProcessor.parameters, NAME_SL, stereoLinkedSlider)
 {
     
     startTimerHz(25);
@@ -104,7 +104,8 @@ void TheMaskerAudioProcessorEditor::resized()
     expSlider.setBounds(out_area.removeFromTop(out_area.getHeight() * 0.5));
     mixSlider.setBounds(out_area);
     outSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.5));
-    cleanUpSlider.setBounds(bounds);
+    cleanUpSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.5));
+    stereoLinkedSlider.setBounds(bounds);
 
     inLabel.setText("IN", juce::dontSendNotification);
     inLabel.attachToComponent(&inSlider, false);
@@ -127,6 +128,9 @@ void TheMaskerAudioProcessorEditor::resized()
     mixLabel.setText("MIX", juce::dontSendNotification);
     mixLabel.attachToComponent(&mixSlider, false);
     mixLabel.setJustificationType(Justification::centred);
+    stereoLabel.setText("STEREO", juce::dontSendNotification);
+    stereoLabel.attachToComponent(&stereoLinkedSlider, false);
+    stereoLabel.setJustificationType(Justification::centred);
     
 }
 
@@ -138,6 +142,6 @@ std::vector<juce::Component*> TheMaskerAudioProcessorEditor::getComponents()
        &inSlider,& outSlider,& mixSlider,
         & scSlider,& compSlider,& expSlider,& cleanUpSlider,
         & inLabel,& outSlider,& mixLabel,
-        & scLabel,& compLabel,& expLabel,& cleanUpLabel
+        & scLabel,& compLabel,& expLabel,& cleanUpLabel,& stereoLinkedSlider
     };
 }

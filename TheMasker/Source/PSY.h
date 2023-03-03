@@ -63,5 +63,5 @@ private:
     float ascendent[nfilts];
     float descendent[nfilts];
     Converter conv;
-    float spread_exp = 0.6f;
+    float spread_exp = _spreadExp;
 };

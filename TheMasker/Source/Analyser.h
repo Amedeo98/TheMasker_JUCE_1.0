@@ -73,21 +73,16 @@ public:
 
     void pushNextSampleIntoFifo(float sample) noexcept
     {
-        // if the fifo contains enough data, set a flag to say
-        // that the next frame should now be rendered..
         if (fifoIndex == fftSize)               
         {
             if (!nextFFTBlockReady)            
             {
-
                 FloatVectorOperations::fill(fftData.data(), 0.0f, fftSize * 2);
                 memcpy(fftData.data(), fifo.data(), fftSize);
                 nextFFTBlockReady = true;
             }
-
             fifoIndex = 0;
         }
-
         fifo[fifoIndex++] = sample;            
     }
 

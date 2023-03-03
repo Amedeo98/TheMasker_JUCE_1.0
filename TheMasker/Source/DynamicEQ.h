@@ -107,7 +107,7 @@ public:
         deltaScaler.clip(curves);
         bufferDelayer.delayBuffer(mainBuffer);
         filters.filterBlock(mainBuffer, curves);
-        mainBuffer.applyGain(outGain);
+        mainBuffer.applyGain(outGain+_outExtraGain);
 
        
         for (int i = 0; i<2; i++)
@@ -172,7 +172,7 @@ private:
     float outGain = Decibels::decibelsToGain(DEFAULT_OUT);
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
-    juce::Colour out_colour = Colour(0.7f, 1.0f, 1.0f, 1.0f);
+    juce::Colour out_colour = Colour(0.3f, 1.0f, 1.0f, 1.0f);
     vector<vector<float>> outFT;
 
     array<float, npoints> frequencies;

@@ -18,6 +18,10 @@
 //#define blockSize 64
 #define _maxGain 20
 #define _mindBFS -64
+#define _relThreshLift 0.0f
+#define _atqLift 1.6f
+#define _spreadExp 0.6f
+#define _outExtraGain 8.0f
 
 #pragma once
 class Converter {

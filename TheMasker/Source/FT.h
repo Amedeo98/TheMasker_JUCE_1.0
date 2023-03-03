@@ -29,7 +29,7 @@ public:
         F.resize(fftSize);
         F = conv.linspace(1.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
         spectrumDrawer.prepareToPlay(frequencies, fCenters, colour);
-        interp = false;
+        interp = true;
     }
 
     void getFT(AudioBuffer<float>& input, int ch, vector<float>& output) {
@@ -51,7 +51,7 @@ public:
 
 
 
-        output = decimated ? result_decim : result;
+        output = decimated ? result_decim : result_fixed;
     }
 
     

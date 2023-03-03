@@ -10,6 +10,8 @@
 #include "PluginEditor.h"
 
 
+
+
 TheMaskerAudioProcessor::TheMaskerAudioProcessor()
      : AudioProcessor (BusesProperties()
                        .withInput   ("Input",  juce::AudioChannelSet::stereo(), true)
@@ -60,7 +62,7 @@ void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSample
     getFrequencies();
     int inCh = getMainBusNumInputChannels();
     dynEQ.prepareToPlay(frequencies, sampleRate, inCh, getTotalNumInputChannels() - inCh, samplesPerBlock);
-    setLatencySamples(_fftSize*2);
+    setLatencySamples(_fftSize);
 }
 
 void TheMaskerAudioProcessor::releaseResources()

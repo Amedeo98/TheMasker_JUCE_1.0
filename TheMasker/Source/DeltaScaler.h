@@ -50,7 +50,7 @@ public:
     }
 
 private:
-    float maxGain = 20;
+    float maxGain = _maxGain;
     int gateThresh = -40;
     int gateKnee = 0.1f;
     int nCh;

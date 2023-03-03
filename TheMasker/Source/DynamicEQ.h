@@ -20,6 +20,8 @@ using namespace std;
 #include "StereoLinked.h"
 #include "DeltaScaler.h"
 #include "MultiBandMod.h"
+#include "BufferDelayer.h"
+#include "DeltaDrawer.h"
 
 
 
@@ -54,7 +56,6 @@ public:
 
         frequencies = _frequencies;
         fbank.getFilterBank(frequencies);
-        //fCenters.resize(nfilts);
         fbank.getFrequencies(fCenters);
 
         curves.resize(inCh);            
@@ -68,9 +69,11 @@ public:
 
         filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, numScChannels, fCenters);
 
-        //outFT.resize(2, vector<float>(_fftSize));
+        outFT.resize(2, vector<float>(_fftSize));
         ft_out.prepare(frequencies, fCenters, sampleRate, out_colour);
         stereoLinked.setSL(stereoLinkAmt);
+        bufferDelayer.prepareToPlay(samplesPerBlock, inCh, _fftSize);
+        setInGain(DEFAULT_IN);
     }
 
     void numChannelsChanged(int inCh, int scCh) {
@@ -95,18 +98,20 @@ public:
 
         deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
-        if (numScChannels == 2)
+        if (numScChannels == 2 && stereoLinkAmt > 0.0f)
         {
             stereoLinked.process(curves[0].delta, curves[1].delta);
         }
 
         deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
         deltaScaler.clip(curves);
+        bufferDelayer.delayBuffer(mainBuffer);
         filters.filterBlock(mainBuffer, curves);
         mainBuffer.applyGain(outGain);
 
-        /*for(int i=0; i<2; i++)
-        ft_out.getFT(mainBuffer, i, outFT[i]);*/
+       
+        for (int i = 0; i<2; i++)
+        ft_out.getFT(mainBuffer, i, outFT[i]);
 
 
     }
@@ -135,16 +140,16 @@ public:
         mixAmount = newValue;
     }
 
-    void setInGain(float newValue) {
-        inGain = Decibels::decibelsToGain(newValue);
+    void setInGain(float newInValue) {
+        inGain = Decibels::decibelsToGain(newInValue);
     }
 
-    void setOutGain(float newValue) {
-        outGain = Decibels::decibelsToGain(newValue);
+    void setOutGain(float newOutValue) {
+        outGain = Decibels::decibelsToGain(newOutValue);
     }
 
-    void setScGain(float newValue) {
-        scGain = Decibels::decibelsToGain(newValue);
+    void setScGain(float newScValue) {
+        scGain = Decibels::decibelsToGain(newScValue);
     }
 
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)
@@ -168,7 +173,7 @@ private:
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
     juce::Colour out_colour = Colour(0.7f, 1.0f, 1.0f, 1.0f);
-    //vector<vector<float>> outFT;
+    vector<vector<float>> outFT;
 
     array<float, npoints> frequencies;
     array<float, nfilts> fCenters;
@@ -185,6 +190,7 @@ private:
     FT ft_out;
 
     MultiBandMod filters;
+    BufferDelayer bufferDelayer;
 
 
 

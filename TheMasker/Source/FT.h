@@ -29,6 +29,7 @@ public:
         F.resize(fftSize);
         F = conv.linspace(1.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
         spectrumDrawer.prepareToPlay(frequencies, fCenters, colour);
+        interp = false;
     }
 
     void getFT(AudioBuffer<float>& input, int ch, vector<float>& output) {
@@ -37,9 +38,13 @@ public:
 
         spectrumDrawer.drawNextFrameOfSpectrum(result);
 
-        //result_fixed = result;
 
+        if (interp)
         conv.interpolateYvector(F, result, frequencies, true, result_fixed);
+        else
+        result_fixed = result;
+
+
 
         if (decimated)
             conv.mXv_mult(fbank_values, result_fixed, result_fixed.size(), result_decim);
@@ -65,7 +70,7 @@ public:
 private:
 
     array<float,nfilts> fCenters;
-
+    bool interp;
     array<array<float,npoints>,nfilts> fbank_values;
     Converter conv;
     bool decimated = false;

@@ -109,7 +109,7 @@ private:
     int gateThresh = -40;
     int gateKnee = 10;
 
-    int minDBFS = -64;
+    int minDBFS = _mindBFS;
     float atqLift = 1.6;
 
     void difference(vector<float> input, vector<float> rel_thresh, vector<float>& output) {

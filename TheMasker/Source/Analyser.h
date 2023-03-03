@@ -16,8 +16,8 @@ class Analyser
 {
 public:
 
-    Analyser(const int fftOrder, const int _npoints)
-        : forwardFFT (fftOrder), fftSize (1 << fftOrder)
+    Analyser(const int fftOrder, const int fftSize_)
+        : forwardFFT (fftOrder), fftSize (fftSize_)
     {
         
         window.resize(fftSize);

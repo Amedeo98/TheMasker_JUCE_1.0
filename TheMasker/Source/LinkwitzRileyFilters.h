@@ -24,9 +24,7 @@ public:
 
         spec.maximumBlockSize = samplesPerBlock;
         spec.sampleRate = sampleRate;
-        spec.numChannels = nCh;
-        HC.prepare(spec);
-        LC.prepare(spec);
+        setNumChannels(nCh);
 
         LC.setType(dsp::LinkwitzRileyFilterType::highpass);
         LC.setCutoffFrequency(LC_freq);
@@ -42,7 +40,6 @@ public:
         HC.process(context);
         LC.process(context);
         context.getOutputBlock().copyTo(outputBuffer, 0, 0, context.getOutputBlock().getNumSamples());
-        //return outputBuffer;
     }
 
     void setNumChannels(int nCh) {

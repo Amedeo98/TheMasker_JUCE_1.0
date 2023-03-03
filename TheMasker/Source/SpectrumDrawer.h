@@ -9,78 +9,51 @@
 */
 
 #pragma once
+#include"Drawer.h"
 
-class SpectrumDrawer {
+class SpectrumDrawer : public Drawer {
 public:
-
-    void prepareToPlay(array<float,npoints> freqs, array<float,nfilts> fCents, juce::Colour col) {
-        colour = col;
-        //frequencies.resize(_fftSize);
-        //fCents.resize(nfilts);
-        freqAxis.resize(npoints);
-        frequencies = freqs;
-        //fCenters = fCents;
-
-        for (int i = 0; i < npoints; i++)
-        {
-            freqAxis[i] = juce::mapFromLog10(frequencies[i], (float)minFreq, (float)maxFreq);
-        }
-
+    SpectrumDrawer() : Drawer(npoints, _fftSize)
+    {
+        mindB = -100.0f;
+        maxdB = 0.0f;
     }
-
-
-
-
-  
+    ~SpectrumDrawer() {}
 
     void drawNextFrameOfSpectrum(vector<float> result)
     {
 
 
-        for (int i = 0; i < scopeSize; ++i)                         // [3]
+        for (int i = 0; i < scopeSize; ++i)
         {
-            auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * 0.2f);
-            auto fftDataIndex = juce::jlimit(0, _fftSize / 2, (int)(skewedProportionX * (float)_fftSize * 0.5f));
+            auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i / (float)scopeSize) * _spectrumSkew);
+            auto fftDataIndex = juce::jlimit(0, resultSize / 2, (int)(skewedProportionX * (float)resultSize * 0.5f));
             auto level = juce::jmap(juce::jlimit(mindB, maxdB, juce::Decibels::gainToDecibels(result[fftDataIndex])
-                - juce::Decibels::gainToDecibels((float)_fftSize)
+                - juce::Decibels::gainToDecibels((float)resultSize)
             ), mindB, maxdB, 0.0f, 1.0f);
 
-            scopeData[i] = level;                                   // [4]
+            scopeData[i] = level;
         }
     }
 
 
+    void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds) override {
 
-    void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)
-    {
-        auto width = bounds.getWidth();
-        auto height = bounds.getHeight();
-        auto left = bounds.getX();
+        g.setColour(colour);
+
         for (int i = 1; i < scopeSize; ++i)
         {
+            auto width = bounds.getWidth();
+            auto height = bounds.getHeight();
+            auto left = bounds.getX();
 
-            g.setColour(colour);
-            vector<float> xVal = { jmap( freqAxis[i-1] , 0.f, 1.f, (float) left, (float)width),
-                                   jmap( freqAxis[i] , 0.f, 1.f, (float) left, (float)width)};
-            
-            
-            /*   vector<float> xVal = { (float)juce::jmap( frequencies[i-1], (float) minFreq, (float) maxFreq, 0.0f, (float) width),
-                                     (float)juce::jmap(  frequencies[i], (float) minFreq, (float) maxFreq, 0.0f, (float) width) };*/
-            g.drawLine( xVal[0], jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
-                          xVal[1], jmap(scopeData[i],     0.0f, 1.0f, (float)height, 0.0f) );
+            xVal = { jmap(freqAxis[i - 1] , 0.f, 1.f, (float)left, (float)width),
+                                   jmap(freqAxis[i] , 0.f, 1.f, (float)left, (float)width) };
+            g.drawLine(xVal[0], jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
+                xVal[1], jmap(scopeData[i], 0.0f, 1.0f, (float)height, 0.0f));
         }
     }
 
-
 private:
-    vector<float> freqAxis;
-    array<float,npoints> frequencies;
-    //array<float,nfilts> fCenters;
-    float scope_step = pow(npoints,-1);
-    Converter conv;
-    float mindB = -100.0f;
-    float maxdB = 0.0f;
-    juce::Colour colour;
-    int scopeSize = npoints;
-    float scopeData[npoints];
+
 };

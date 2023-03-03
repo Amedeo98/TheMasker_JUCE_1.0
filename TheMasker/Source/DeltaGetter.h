@@ -15,6 +15,8 @@
 #include "DynamicEQ.h"
 #include "FT.h"
 #include "PSY.h"
+#include "DeltaDrawer.h"
+
 
 
 
@@ -24,14 +26,12 @@ public:
     void getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, auto& deltas) {
 
         for (int i = 0; i < inCh; i++) {
-
             ft_in.getFT(in, i, inFT[i]);
             conv.toMagnitudeDb(inFT[i]);
             deltas[i].threshold = inFT[i];
 
         }
         for (int i = 0; i < scCh; i++) {
-
             ft_sc.getFT(sc, i, scFT[i]);
             psy.spread(scFT[i]);
             conv.toMagnitudeDb(scFT[i]);
@@ -42,6 +42,9 @@ public:
             difference(inFT[i], scFT[i], scFT[i]);
             deltas[i].delta = scFT[i];
         }
+
+        deltaDrawer.drawNextFrameOfSpectrum(deltas[0].delta);
+
 
     }
 
@@ -54,6 +57,7 @@ public:
         psy.getSpreadingMtx();
         ft_in.prepare(frequencies, fCenters, sampleRate, in_colour);
         ft_sc.prepare(frequencies, fCenters, sampleRate, sc_colour);
+        deltaDrawer.prepareToPlay(fCenters.data(), delta_colour);
         ft_in.setFBank(fb);
         ft_sc.setFBank(fb);
         setATQ(atqW);
@@ -78,18 +82,20 @@ public:
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds){
         ft_sc.drawFrame(g, bounds);
         ft_in.drawFrame(g, bounds);
+        deltaDrawer.drawFrame(g, bounds);
     }
 
 
 private:
     juce::Colour in_colour = Colour(0.5f, 1.0f, 1.0f, 1.0f);
-    juce::Colour sc_colour = Colour(1.0f, 1.0f, 1.0f, 1.0f);
+    juce::Colour sc_colour = Colour(0.07f, 1.0f, 1.0f, 1.0f);
+    juce::Colour delta_colour = Colour(1.0f, 1.0f, 1.0f, 1.0f);
     FT ft_sc;
     FT ft_in;
 
     PSY psy; 
     Converter conv;
-
+    DeltaDrawer deltaDrawer;
     vector<vector<float>> inFT, scFT;
     array<float,nfilts> current_atq, atq;
 
@@ -110,7 +116,7 @@ private:
     float atqLift = _atqLift;
 
     void difference(vector<float> input, vector<float> rel_thresh, vector<float>& output) {
-        int size = rel_thresh.size();
+        int size = nfilts;
         for (int i = 0; i < size; i++)
             output[i] = input[i] - (rel_thresh[i]+rel_thresh_lift);
         //FloatVectorOperations::subtract(output.data(), input.data(), rel_thresh.data(), rel_thresh.size());
@@ -118,7 +124,7 @@ private:
 
     void getATQ(array<float,nfilts>& f, array<float,nfilts>& dest)
     {
-        for (int i = 0; i < f.size(); i++)
+        for (int i = 0; i < nfilts; i++)
         {
             //   matlab function: absThresh=3.64*(f./1000).^-0.8-6.5*exp(-0.6*(f./1000-3.3).^2)+.00015*(f./1000).^4; % edited function (reduces the threshold in high freqs)
             dest[i] = 3.64 * pow((f[i] / 1000), -0.8) - 6.5 * exp(-0.6 * pow(f[i] / 1000 - 3.3, 2)) + 0.00015 * pow(f[i] / 1000, 4);

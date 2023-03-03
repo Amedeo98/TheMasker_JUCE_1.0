@@ -78,6 +78,7 @@ public:
             if (!nextFFTBlockReady)            
             {
                 FloatVectorOperations::fill(fftData.data(), 0.0f, fftSize * 2);
+                //FloatVectorOperations::copy(fftData.data(), fifo.data(), fftSize);
                 memcpy(fftData.data(), fifo.data(), fftSize);
                 nextFFTBlockReady = true;
             }

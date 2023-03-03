@@ -73,7 +73,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         return jmap(input, -24.0, 24.0, outputMin, outputMax);
     };
     
-    responseCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
+    //responseCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
     
     for( size_t i=1; i < mags.size(); ++i)
     {
@@ -83,8 +83,8 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(Colours::orange);
     g.drawRoundedRectangle(responseArea.toFloat(), 4.f, 1.f);
     
-    g.setColour(Colours::white);
-    g.strokePath(responseCurve, PathStrokeType(2.f));
+    /*g.setColour(Colours::white);
+    g.strokePath(responseCurve, PathStrokeType(2.f));*/
     audioProcessor.dynEQ.drawFrame(g, responseArea);
     
 }

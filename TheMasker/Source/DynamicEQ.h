@@ -107,7 +107,7 @@ public:
         deltaScaler.clip(curves);
         bufferDelayer.delayBuffer(mainBuffer);
         filters.filterBlock(mainBuffer, curves);
-        mainBuffer.applyGain(outGain+_outExtraGain);
+        mainBuffer.applyGain(outGain*_outExtraGain);
 
        
         for (int i = 0; i<2; i++)

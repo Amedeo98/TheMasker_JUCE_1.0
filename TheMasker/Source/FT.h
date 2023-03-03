@@ -28,7 +28,7 @@ public:
         fCenters = fCents;
         F.resize(fftSize);
         F = conv.linspace(1.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
-        spectrumDrawer.prepareToPlay(frequencies, fCenters, colour);
+        spectrumDrawer.prepareToPlay(frequencies.data(), colour);
         interp = true;
     }
 

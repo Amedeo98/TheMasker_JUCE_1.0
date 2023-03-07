@@ -12,6 +12,7 @@
 #include "SpectrumDrawer.h"
 
 
+
 #pragma once
 class FT : public Analyser {
 
@@ -20,7 +21,7 @@ public:
     {}
     ~FT() {}
 
-    void prepare(array<float,npoints> freqs, array<float,nfilts> fCents, int sampleRate, juce::Colour colour) {
+    void prepare(float* freqs, float* fCents, int sampleRate) {
         result_decim.resize(nfilts);
         result_fixed.resize(npoints);
         frequencies = freqs;
@@ -28,24 +29,24 @@ public:
         fCenters = fCents;
         F.resize(fftSize);
         F = conv.linspace(1.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
-        spectrumDrawer.prepareToPlay(frequencies.data(), colour);
+        //spectrumDrawer.prepareToPlay(frequencies.data(), colour);
         interp = true;
     }
 
-    void getFT(AudioBuffer<float>& input, int ch, vector<float>& output) {
+    void getFT(AudioBuffer<float>& input, int ch, vector<float>& output, vector<float>& spectrumOutput) {
         process(input, ch);
         getResult(result);
 
-        spectrumDrawer.drawNextFrameOfSpectrum(result);
+
 
 
         if (interp)
-        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
+            conv.interpolateYvector(F, result, frequencies, false, result_fixed);
         else
-        result_fixed = result;
+            result_fixed = result;
 
 
-        FloatVectorOperations::fill(output.data(), 0.0f, decimated? nfilts : npoints);
+        FloatVectorOperations::fill(output.data(), 0.0f, decimated ? nfilts : npoints);
 
 
         if (decimated)
@@ -56,11 +57,10 @@ public:
             FloatVectorOperations::copy(output.data(), result_fixed.data(), npoints);
         }
 
-        
-        //output = decimated ? result_decim : result_fixed;
+        FloatVectorOperations::copy(spectrumOutput.data(), result.data(), _fftSize);
     }
 
-    
+
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds) {
         spectrumDrawer.drawFrame(g, bounds);
     }
@@ -75,15 +75,15 @@ public:
 
 private:
 
-    array<float,nfilts> fCenters;
+    float* fCenters;
     bool interp;
-    array<array<float,npoints>,nfilts> fbank_values;
-    Converter conv;
+    array<array<float, npoints>, nfilts> fbank_values;
     bool decimated = false;
     vector<float> F;
 
+    Converter conv;
     SpectrumDrawer spectrumDrawer;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FT) 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FT)
 };
 

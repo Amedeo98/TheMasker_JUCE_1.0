@@ -38,10 +38,11 @@ public:
 
 
 
-    FilterBank getFilterBank(array<float,npoints> freqs) {
+    FilterBank getFilterBank(float* freqs) {
         const int fftSize = npoints;
         const int memorySize = fftSize / nfilts;
-        frequencies = freqs;
+        FloatVectorOperations::copy(frequencies.data(), freqs, npoints);
+        //frequencies = freqs;
         //centerF.resize(nfilts);
         //values.resize(nfilts,vector<float>(fftSize));
         for (int i = 0; i < nfilts; i++)
@@ -101,7 +102,7 @@ public:
 
 
 private:
-    array<float,npoints> frequencies;
+    array<float, npoints> frequencies;
     array<array<float,npoints>,nfilts> values;
     Converter conv;
 
@@ -115,8 +116,6 @@ private:
             if (X[i] < X[minDistIndex]) minDistIndex = i;
         }
         
-        
-
         return minDistIndex;
     }
 

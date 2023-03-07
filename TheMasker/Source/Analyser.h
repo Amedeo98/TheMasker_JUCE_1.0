@@ -45,28 +45,19 @@ public:
     }
 
 
-
-
-
     void getResult(vector<float>& result)
     {
         if (nextFFTBlockReady)
         {
-            
             FloatVectorOperations::multiply(fftData.data(), window.data(), fftSize);
 
             forwardFFT.performFrequencyOnlyForwardTransform(fftData.data(), false);  // [2]
 
             FloatVectorOperations::copy(result.data(), fftData.data(), fftSize);
 
-
-
             nextFFTBlockReady = false;
 
-
         }
-
-
 
 
     }
@@ -78,7 +69,6 @@ public:
             if (!nextFFTBlockReady)            
             {
                 FloatVectorOperations::fill(fftData.data(), 0.0f, fftSize * 2);
-                //FloatVectorOperations::copy(fftData.data(), fifo.data(), fftSize);
                 memcpy(fftData.data(), fifo.data(), fftSize);
                 nextFFTBlockReady = true;
             }
@@ -91,7 +81,7 @@ public:
    
 
     vector<float> result;
-    array<float,npoints> frequencies;
+    float* frequencies;
     const int fftSize;
 
 

@@ -22,6 +22,7 @@ using namespace std;
 #include "MultiBandMod.h"
 #include "BufferDelayer.h"
 #include "DeltaDrawer.h"
+#include "Plotter.h"
 
 
 
@@ -47,33 +48,39 @@ public:
     void prepareToPlay(array<float,npoints> _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock)
     {
         fs = sampleRate;
-        numInChannels = inCh;
         numSamples = samplesPerBlock;
+
+        numInChannels = inCh;
         if (scCh > 0)
             numScChannels = scCh;
         else
             numScChannels = numInChannels;
 
         frequencies = _frequencies;
-        fbank.getFilterBank(frequencies);
+        fbank.getFilterBank(frequencies.data());
         fbank.getFrequencies(fCenters);
 
-        curves.resize(inCh);            
-        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, DEFAULT_ATQ, fCenters, frequencies, numInChannels, numScChannels);
-        deltaScaler.prepareToPlay(numScChannels);
-
+        curves.resize(inCh);    
         for (int i = 0; i < numScChannels; ++i) {
             curves[i].delta.resize(nfilts);
             curves[i].threshold.resize(nfilts);
+            curves[i].inSpectrum.resize(_fftSize);
+            curves[i].scSpectrum.resize(_fftSize);
+            curves[i].outSpectrum.resize(_fftSize);
         }
 
-        filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, numScChannels, fCenters);
+        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, fCenters.data(), frequencies.data(), numInChannels, numScChannels);
+        deltaScaler.prepareToPlay(numScChannels);
 
-        outFT.resize(2, vector<float>(_fftSize));
-        ft_out.prepare(frequencies, fCenters, sampleRate, out_colour);
-        stereoLinked.setSL(stereoLinkAmt);
         bufferDelayer.prepareToPlay(samplesPerBlock, inCh, _fftSize);
+        filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, numScChannels, fCenters.data());
+
+        stereoLinked.setSL(stereoLinkAmt);
         setInGain(DEFAULT_IN);
+        deltaGetter.setATQ(DEFAULT_ATQ);
+
+        spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data());
+        ft_out.prepare(frequencies.data(), fCenters.data(), sampleRate);
     }
 
     void numChannelsChanged(int inCh, int scCh) {
@@ -95,7 +102,6 @@ public:
         mainBuffer.applyGain(inGain);
         scBuffer.applyGain(scGain);
 
-
         deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
         if (numScChannels == 2 && stereoLinkAmt > 0.0f)
@@ -105,15 +111,16 @@ public:
 
         deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
         deltaScaler.clip(curves);
+
         bufferDelayer.delayBuffer(mainBuffer);
         filters.filterBlock(mainBuffer, curves);
-        mainBuffer.applyGain(outGain*_outExtraGain);
+        mainBuffer.applyGain(outGain * _outExtraGain);
 
        
         for (int i = 0; i<2; i++)
-        ft_out.getFT(mainBuffer, i, outFT[i]);
+        ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
 
-
+        spectrumPlotter.drawNextFrameOfSpectrum(curves[0].inSpectrum, curves[0].scSpectrum, curves[0].outSpectrum, curves[0].delta);
     }
 
 
@@ -154,11 +161,10 @@ public:
 
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)
     {
-        deltaGetter.drawFrame(g, bounds);
-        ft_out.drawFrame(g, bounds);
+        spectrumPlotter.drawFrame(g, bounds);
     }
 
-    struct result { vector<float> delta;  vector<float> threshold; };
+
 
 
 private:
@@ -172,28 +178,36 @@ private:
     float outGain = Decibels::decibelsToGain(DEFAULT_OUT);
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
-    juce::Colour out_colour = Colour(0.3f, 1.0f, 1.0f, 1.0f);
-    vector<vector<float>> outFT;
+
+    int fs;
+    int numInChannels = 2;
+    int numScChannels;
+    int numSamples;
+
+    struct result
+    {
+        vector<float> delta;
+        vector<float> threshold;
+        vector<float> inSpectrum;
+        vector<float> scSpectrum;
+        vector<float> outSpectrum;
+    };
 
     array<float, npoints> frequencies;
     array<float, nfilts> fCenters;
-    int fs = 0;
-    int numInChannels = 2;
-    int numScChannels;
-    FilterBank fbank;
-    int numSamples = 0;
+
     vector<result> curves;
 
+    FilterBank fbank;
     StereoLinked stereoLinked;
     DeltaGetter deltaGetter;
     DeltaScaler deltaScaler;
-    FT ft_out;
-
     MultiBandMod filters;
     BufferDelayer bufferDelayer;
+    Plotter spectrumPlotter;
 
+    FT ft_out;
 
-
-  
+    
 
 };

@@ -25,10 +25,10 @@ public:
         
         float spreadFuncBarkVoltage[2 * nfilts];
         vector<float> temp(nfilts);
-        temp = conv.linspaceArray(-maxbark * fbdb, -2.5f, nfilts);
+        temp = conv.linspace(-maxbark * fbdb, -2.5f, nfilts);
         copy(temp.begin(), temp.end(), ascendent);
         FloatVectorOperations::add(ascendent, -fadB, nfilts);
-        temp = conv.linspaceArray(1.0f, -maxbark * fbbdb, nfilts);
+        temp = conv.linspace(1.0f, -maxbark * fbbdb, nfilts);
         copy(temp.begin(), temp.end(), descendent);
         FloatVectorOperations::add(descendent, -fadB, nfilts);
         copy(ascendent, ascendent + nfilts, spreadFuncBarkdB);
@@ -40,14 +40,8 @@ public:
             spreadFuncBarkVoltage[i] = std::pow(10.0f, spreadFuncBarkdB[i]);
         }
         for (int i = 0; i < nfilts; i++) {
-
-            //vector<float> temp(nfilts);
-            //vector<float>::const_iterator first = spreadFuncBarkVoltage.begin() + nfilts - i - 1;
-            //vector<float>::const_iterator last = spreadFuncBarkVoltage.begin() + 2 * nfilts - i - 2;
             copy(spreadFuncBarkVoltage+nfilts - i - 1, spreadFuncBarkVoltage+2 * nfilts - i - 1, spreadingMtx[i].begin());
-            //spreadingMtx[i] = temp;
         }
-
     }
 
     void spread(vector<float>& input) {
@@ -56,7 +50,6 @@ public:
 
     void compareWithAtq(vector<float>& rel_t, array<float,nfilts> atq) {
         FloatVectorOperations::max(rel_t.data(), rel_t.data(), atq.data(), nfilts);
-        //rel_t = jmax(rel_t, atq);
     }
 private:
     array<array<float,nfilts>,nfilts> spreadingMtx;

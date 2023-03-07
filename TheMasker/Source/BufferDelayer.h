@@ -39,16 +39,6 @@ public:
 
     }
 
-    
-
- /*   void getStoredBuffer(AudioBuffer<float>& newBuffer)
-    {
-            for (int ch = 0; ch < numCh; ch++) {
-                for (auto i = 0; i < numSamples; ++i)
-                    newBuffer.setSample(ch,i, getNextSamplefromFifo());
-            }
-        
-    }*/
 
 private:
     AudioBuffer<float> storedBuffer;
@@ -62,35 +52,20 @@ private:
 
     void pushNextSampleIntoFifo(float sample) noexcept
     {
-        // if the fifo contains enough data, set a flag to say
-        // that the next frame should now be rendered..
-
 
         if (fifoIndex == (delaySamples+numSamples)) 
-
         {
-                /*storedBuffer.clear();
-                for (int ch = 0; ch < numCh; ch++) {
-                    storedBuffer.copyFrom(ch, 0, fifo.data(), delaySamples);
-                }*/
-
             fifoIndex = 0;
-
         }
-
         fifo[fifoIndex++] = sample;
     }
 
     float getNextSamplefromFifo() noexcept
     {
-
         if (readIndex == (delaySamples + numSamples))
-
         {
             readIndex = 0;
-
         }
-
         return fifo[readIndex++];
     }
 

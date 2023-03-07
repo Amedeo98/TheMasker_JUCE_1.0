@@ -20,11 +20,8 @@ public:
 
     void prepareToPlay(float* freqs, juce::Colour col) {
         colour = col;
-        freqAxis.resize(scopeSize);
-        frequencies.resize(scopeSize);
-        FloatVectorOperations::copy(frequencies.data(), freqs, scopeSize);
+        frequencies = freqs;
         scope_step = pow(scopeSize, -1);
-        scopeData.resize(scopeSize);
         
         for (int i = 0; i < scopeSize; i++)
         {
@@ -35,24 +32,9 @@ public:
 
     }
 
+    virtual void drawNextFrameOfSpectrum(vector<float> result)  {}
 
-
-
-
-
-    virtual void drawNextFrameOfSpectrum(vector<float> result)
-    {
-
-
-    }
-
-
-
-    virtual void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)
-    {
-
-    }
-
+    virtual void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)  {}
 
     float mindB;
     float maxdB;
@@ -62,17 +44,16 @@ public:
     int scopeSize;
     int resultSize;
 
-    vector<float> scopeData;
-    vector<float> freqAxis;
+    array<float, npoints> scopeData;
+    array<float,npoints> freqAxis;
+    float* frequencies;
+
     array<float, 2> xVal;
+
+    float scope_step;
 
 
 private:
-
-    vector<float> frequencies;
-    float scope_step;
-    Converter conv;
-
 
 
 };

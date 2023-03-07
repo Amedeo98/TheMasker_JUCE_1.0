@@ -21,15 +21,15 @@ public:
     MultiBandMod() {}
     ~MultiBandMod() {}
 
-    void prepareToPlay(double sampleRate, int newSamplesPerBlock, int numInChannels, int numScChannels, array<float,nfilts> fCenters) {
+    void prepareToPlay(double sampleRate, int newSamplesPerBlock, int numInChannels, int numScChannels, float* fCenters) {
         fs = sampleRate;
         samplesPerBlock = newSamplesPerBlock;
-        filters.resize(nfilts);
-        freqs.resize(nfilts);
+        //filters.resize(nfilts);
+        //freqs.resize(nfilts);
         numInCh = numInChannels;
         numScCh = numScChannels;
-        gains_sm.resize(numScCh, vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>(nfilts));
-        smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
+        gains_sm.resize(numScCh);
+        //smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
         inputBuffer_copy.setSize(numInCh, samplesPerBlock);
         tempOutput.setSize(numInCh, samplesPerBlock);
         for (int i = 0; i < nfilts; i++) {
@@ -49,7 +49,7 @@ public:
         numScCh = scCh;
         inputBuffer_copy.setSize(numInCh, samplesPerBlock);
         tempOutput.setSize(numInCh, samplesPerBlock);
-        gains_sm.resize(numScCh, vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>(nfilts));
+        gains_sm.resize(numScCh);
         for (int i = 0; i < nfilts; i++) {
             filters[i].setNumChannels(numInCh);
             for (int ch = 0; ch < numScCh; ch++) {
@@ -112,13 +112,18 @@ private:
     int samplesPerBlock;
     float smoothingSeconds = 0.2f;
     float smoothingWindow = 0.8f;
-    vector<LinkwitzRileyFilters> filters;
-    vector<vector<SmoothedValue<float, ValueSmoothingTypes::Linear>>> gains_sm;
-    vector<vector<float>> gains;
+    array<LinkwitzRileyFilters, nfilts> filters;
+    vector<array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>> gains_sm;
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;
-    struct freq {float f_lc;  float fCenter; float f_hc; };
-    vector<freq> freqs;
+    struct freq 
+    {
+        float f_lc;  
+        float fCenter; 
+        float f_hc; 
+    };
+
+    array<freq, nfilts> freqs;
 
 
 };

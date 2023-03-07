@@ -14,8 +14,8 @@ class DeltaScaler {
 public:
 
     void prepareToPlay(int numChannels) {
-        newValues.resize(nfilts);
-        THclip.resize(nfilts);
+        //newValues.resize(nfilts);
+        //THclip.resize(nfilts);
         setNumChannels(numChannels);
     }
 
@@ -39,23 +39,23 @@ public:
         for (int ch = 0; ch < nCh; ch++) {
             int size = curves[ch].threshold.size();
             for (int i = 0; i < size; i++) {
-                THclip[i] = (1.0f + tanh((curves[ch].threshold[i] - gateThresh) * gateKnee)) * 0.5f;
+                THclip[i] = (1.0f + tanh((curves[ch].threshold[i] - gateThresh) * gateKnee_inv)) * 0.5f;
             }
 
             std::transform(curves[ch].delta.begin(), curves[ch].delta.end(),
                 THclip.begin(), newValues.data(),
                 std::multiplies<float>());
-            curves[ch].delta = newValues;
+            FloatVectorOperations::copy(curves[ch].delta.data(), newValues.data(), nfilts);
         }
     }
 
 private:
     float maxGain = _maxGain;
-    int gateThresh = -40;
-    int gateKnee = 0.1f;
+    int gateThresh = _gateThresh;
+    int gateKnee_inv = pow(_gateKnee,-1);
     int nCh;
-    vector<float> THclip;
-    vector<float> newValues;
+    array<float, nfilts> THclip;
+    array<float, nfilts> newValues;
 };
 
 

@@ -24,8 +24,6 @@ public:
     void prepareToPlay(double sampleRate, int newSamplesPerBlock, int numInChannels, int numScChannels, float* fCenters) {
         fs = sampleRate;
         samplesPerBlock = newSamplesPerBlock;
-        //filters.resize(nfilts);
-        //freqs.resize(nfilts);
         numInCh = numInChannels;
         numScCh = numScChannels;
         gains_sm.resize(numScCh);
@@ -61,7 +59,6 @@ public:
     
     void filterBlock(AudioBuffer<float>& buffer, auto curves) {
         int numSamples = buffer.getNumSamples();
-        //inputBuffer_copy.clear();
         for (int ch = 0; ch < numInCh; ch++) 
         {
             inputBuffer_copy.copyFrom(ch, 0, buffer, ch, 0, numSamples);
@@ -106,16 +103,21 @@ public:
 
 
 private:
+
     int numInCh;
     int numScCh;
     int fs;
     int samplesPerBlock;
+
     float smoothingSeconds = 0.2f;
     float smoothingWindow = 0.8f;
+
     array<LinkwitzRileyFilters, nfilts> filters;
     vector<array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>> gains_sm;
+
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;
+
     struct freq 
     {
         float f_lc;  

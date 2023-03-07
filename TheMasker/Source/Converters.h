@@ -20,11 +20,11 @@
 #define _gateThresh -40
 #define _gateKnee 10
 
-#define _mindBFS -64
+#define _mindBFS -100
 #define _relThreshLift 0.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
-#define _outExtraGain 8.0f
+#define _outExtraGain 1.0f
 #define _spectrumSkew 0.2f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
                             // se = 1.0f -> basse "strette", se 0.1f basse "larghe", (default 0.2f)
 

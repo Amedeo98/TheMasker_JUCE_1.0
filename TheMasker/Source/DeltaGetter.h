@@ -29,8 +29,8 @@ public:
             ft_in.getFT(in, i, inFT[i], deltas[i].inSpectrum);
             conv.magnitudeToDb(inFT[i]);
             deltas[i].threshold = inFT[i];
-
         }
+
         for (int i = 0; i < scCh; i++) {
             ft_sc.getFT(sc, i, scFT[i], deltas[i].scSpectrum);
             psy.spread(scFT[i]);

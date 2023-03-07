@@ -15,7 +15,7 @@ class SpectrumDrawer : public Drawer {
 public:
     SpectrumDrawer() : Drawer(npoints, _fftSize)
     {
-        mindB = -100.0f;
+        mindB = _mindBFS;
         maxdB = 0.0f;
     }
     ~SpectrumDrawer() {}
@@ -52,6 +52,5 @@ public:
         }
     }
 
-private:
 
 };

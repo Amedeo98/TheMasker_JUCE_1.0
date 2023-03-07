@@ -48,7 +48,7 @@ public:
                                    jmap(freqAxis[i] , 0.f, 1.f, (float)left, (float)width) };
 
             g.setColour(colour
-                .withAlpha(jlimit(0.0f, 1.0f, abs(scopeData[i]-0.5f) * 1.5f)) //1.5f : moltiplicatore dell'alfa del rosso - poi clippato tra 0 e 1
+                //.withAlpha(jlimit(0.0f, 1.0f, abs(scopeData[i]-0.5f) * 1.5f)) //1.5f : moltiplicatore dell'alfa del rosso - poi clippato tra 0 e 1
             );
             g.drawLine(xVal[0], jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
                 xVal[1], jmap(scopeData[i], 0.0f, 1.0f, (float)height, 0.0f));

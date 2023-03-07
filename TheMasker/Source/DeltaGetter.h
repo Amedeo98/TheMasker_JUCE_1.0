@@ -39,8 +39,7 @@ public:
         }
 
         for (int i = 0; i < jmax(inCh, scCh); i++) {
-            difference(inFT[i], scFT[i], scFT[i]);
-            deltas[i].delta = scFT[i];
+            difference(inFT[i], scFT[i], deltas[i].delta);
         }
 
         deltaDrawer.drawNextFrameOfSpectrum(deltas[0].delta);
@@ -119,7 +118,6 @@ private:
         int size = nfilts;
         for (int i = 0; i < size; i++)
             output[i] = input[i] - (rel_thresh[i]+rel_thresh_lift);
-        //FloatVectorOperations::subtract(output.data(), input.data(), rel_thresh.data(), rel_thresh.size());
     }
 
     void getATQ(array<float,nfilts>& f, array<float,nfilts>& dest)

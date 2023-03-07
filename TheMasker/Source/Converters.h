@@ -20,7 +20,7 @@
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
 #define _outExtraGain 8.0f
-#define _spectrumSkew 1.0f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
+#define _spectrumSkew 0.2f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
                             // se = 1.0f -> basse "strette", se 0.1f basse "larghe", (default 0.2f)
 
 #pragma once

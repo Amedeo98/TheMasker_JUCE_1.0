@@ -82,10 +82,6 @@ public:
                     tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
                 }
 
-
-
-                //FloatVectorOperations::multiply(tempOutput.getWritePointer(ch), valueRamp.getReadPointer(ch), numSamples);
-
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }
             //for (auto i = numInCh; i < numScCh; ++i) {

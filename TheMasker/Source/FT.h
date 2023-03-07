@@ -40,18 +40,24 @@ public:
 
 
         if (interp)
-        conv.interpolateYvector(F, result, frequencies, true, result_fixed);
+        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
         else
         result_fixed = result;
 
 
+        FloatVectorOperations::fill(output.data(), 0.0f, decimated? nfilts : npoints);
+
 
         if (decimated)
-            conv.mXv_mult(fbank_values, result_fixed, result_fixed.size(), result_decim);
+        {
+            conv.mXv_mult(fbank_values, result_fixed, npoints, output);
+        }
+        else {
+            FloatVectorOperations::copy(output.data(), result_fixed.data(), npoints);
+        }
 
-
-
-        output = decimated ? result_decim : result_fixed;
+        
+        //output = decimated ? result_decim : result_fixed;
     }
 
     

@@ -9,7 +9,7 @@
 */
 
 #define nfilts 32
-#define _fftOrder 10
+#define _fftOrder 11
 #define _fftSize (1 << _fftOrder)
 #define npoints 256
 
@@ -24,8 +24,11 @@
 #define _relThreshLift 0.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
-#define _outExtraGain 1.0f
-#define _spectrumSkew 0.2f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
+#define _outExtraGain 3.6f
+
+#define _spectrumPaddingHighFreq 0.145f
+#define _spectrumPaddingLowFreq 0.4f
+#define _spectrumSkew 1.0f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
                             // se = 1.0f -> basse "strette", se 0.1f basse "larghe", (default 0.2f)
 
 #pragma once

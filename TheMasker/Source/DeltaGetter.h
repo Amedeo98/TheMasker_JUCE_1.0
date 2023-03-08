@@ -38,7 +38,7 @@ public:
             psy.compareWithAtq(scFT[i], current_atq);
         }
 
-        for (int i = 0; i < jmax(inCh, scCh); i++) {
+        for (int i = 0; i < maxCh; i++) {
             difference(inFT[i], scFT[i], deltas[i].delta);
         }
     }
@@ -62,6 +62,7 @@ public:
     void setNumChannels(int _inCh, int _scCh) {
         scCh = _scCh;
         inCh = _inCh;
+        maxCh = jmax(inCh, scCh);
     }
 
     void setATQ(float UIatqWeight) {
@@ -71,7 +72,8 @@ public:
         juce::FloatVectorOperations::add(current_atq.data(), minDBFS, nfilts);
         FloatVectorOperations::clip(current_atq.data(), current_atq.data(), minDBFS, 0.0f, nfilts);
     }
-    
+    void drawGrid() {}
+
 
 
 private:
@@ -86,6 +88,7 @@ private:
 
     int inCh;
     int scCh;
+    int maxCh;
 
     float maxGain = _maxGain;
     int gateThresh = _gateThresh;

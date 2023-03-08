@@ -19,7 +19,6 @@ public:
     Analyser(const int fftOrder, const int fftSize_)
         : forwardFFT (fftOrder), fftSize (fftSize_)
     {
-        
         window.resize(fftSize);
         dsp::WindowingFunction<float>::fillWindowingTables(window.data(), fftSize, dsp::WindowingFunction<float>::WindowingMethod::hann, false);
         fifo.resize(fftSize);                          
@@ -27,11 +26,6 @@ public:
         result.resize(fftSize);
     }
 
-
-
-    //void prepare(vector<float> freqs) {
-    //    frequencies = freqs;
-    //}
 
     void process(AudioBuffer<float>& bufferToFill, int ch)
     {

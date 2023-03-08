@@ -25,11 +25,9 @@ public:
         result_decim.resize(nfilts);
         result_fixed.resize(npoints);
         frequencies = freqs;
-        //fCenters.resize(nfilts);
         fCenters = fCents;
         F.resize(fftSize);
-        F = conv.linspace(1.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
-        //spectrumDrawer.prepareToPlay(frequencies.data(), colour);
+        F = conv.linspace(0.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
         interp = true;
     }
 
@@ -37,14 +35,10 @@ public:
         process(input, ch);
         getResult(result);
 
-
-
-
         if (interp)
             conv.interpolateYvector(F, result, frequencies, false, result_fixed);
         else
             result_fixed = result;
-
 
         FloatVectorOperations::fill(output.data(), 0.0f, decimated ? nfilts : npoints);
 
@@ -57,7 +51,7 @@ public:
             FloatVectorOperations::copy(output.data(), result_fixed.data(), npoints);
         }
 
-        FloatVectorOperations::copy(spectrumOutput.data(), result.data(), _fftSize);
+        FloatVectorOperations::copy(spectrumOutput.data(), result_fixed.data(), npoints);
     }
 
 

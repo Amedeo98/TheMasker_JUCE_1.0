@@ -64,9 +64,9 @@ public:
         for (int i = 0; i < numScChannels; ++i) {
             curves[i].delta.resize(nfilts);
             curves[i].threshold.resize(nfilts);
-            curves[i].inSpectrum.resize(_fftSize);
-            curves[i].scSpectrum.resize(_fftSize);
-            curves[i].outSpectrum.resize(_fftSize);
+            curves[i].inSpectrum.resize(npoints);
+            curves[i].scSpectrum.resize(npoints);
+            curves[i].outSpectrum.resize(npoints);
         }
 
         deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, fCenters.data(), frequencies.data(), numInChannels, numScChannels);

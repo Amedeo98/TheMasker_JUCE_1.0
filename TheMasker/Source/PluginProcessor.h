@@ -24,7 +24,7 @@
 #define NAME_SC "scGain"
 
 /*
- Maschera > IN -> IN Masked        ->  MASKED PARTS: -1 = reveal â€¦ +1 = bury
+ Maschera > IN -> IN Masked        ->  MASKED PARTS: -1 = reveal … +1 = bury
  Maschera < IN -> IN Intelligibile ->  CLEAR PARTS:  -1 = bury  ... +1 = emphasise
  */
 

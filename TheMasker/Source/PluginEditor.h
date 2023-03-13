@@ -16,7 +16,7 @@ struct LnF : juce::LookAndFeel_V4
 {
 public:
     LnF() {
-        sliderImg = ImageCache::getFromMemory(BinaryData::purple_slider_img_png, BinaryData::purple_slider_img_pngSize);
+        //sliderImg = ImageCache::getFromMemory(BinaryData::purple_slider_img_png, BinaryData::purple_slider_img_pngSize);
     }
     
     void drawRotarySlider(juce::Graphics&,

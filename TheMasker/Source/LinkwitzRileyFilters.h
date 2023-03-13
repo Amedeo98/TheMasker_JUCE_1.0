@@ -30,15 +30,15 @@ public:
         LC.setCutoffFrequency(LC_freq);
         HC.setType(dsp::LinkwitzRileyFilterType::lowpass);
         HC.setCutoffFrequency(HC_freq);
-        
+        HC.prepare(spec);
+        LC.prepare(spec);
     }
 
     void process(AudioBuffer<float> inBuffer, AudioBuffer<float>& outputBuffer) {
-
         juce::dsp::AudioBlock<float>              ioBuffer(inBuffer);
         juce::dsp::ProcessContextReplacing<float> context(ioBuffer);
-        HC.process(context);
         LC.process(context);
+        HC.process(context);
         context.getOutputBlock().copyTo(outputBuffer, 0, 0, context.getOutputBlock().getNumSamples());
     }
 

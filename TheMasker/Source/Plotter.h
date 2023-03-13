@@ -24,7 +24,7 @@ public:
         deltaSpectrum.prepareToPlay(fCenters, delta_colour);
     }
 
-    void drawNextFrameOfSpectrum(vector<float> in, vector<float> sc, vector<float> out, vector<float> delta) {
+    void drawNextFrameOfSpectrum(vector<float> in, vector<float> sc, vector<float> out, array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts> delta) {
         inSpectrum.drawNextFrameOfSpectrum(in);
         scSpectrum.drawNextFrameOfSpectrum(sc);
         outSpectrum.drawNextFrameOfSpectrum(out);

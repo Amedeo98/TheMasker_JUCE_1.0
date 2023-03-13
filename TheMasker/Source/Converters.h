@@ -24,7 +24,7 @@
 #define _relThreshLift 0.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
-#define _outExtraGain 3.6f
+#define _outExtraGain 6.0f
 
 #define _spectrumPaddingHighFreq 0.145f
 #define _spectrumPaddingLowFreq 0.4f

@@ -26,7 +26,6 @@ public:
         samplesPerBlock = newSamplesPerBlock;
         numInCh = numInChannels;
         numScCh = numScChannels;
-        gains_sm.resize(numScCh);
         //smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
         inputBuffer_copy.setSize(numInCh, samplesPerBlock);
         tempOutput.setSize(numInCh, samplesPerBlock);
@@ -36,9 +35,6 @@ public:
         getBandFreqs();
         for (int i = 0; i < nfilts; i++) {
             filters[i].prepareToPlay(sampleRate, samplesPerBlock, freqs[i].f_lc, freqs[i].f_hc, numInCh);
-            for (int ch = 0; ch < numScCh; ch++) {
-                gains_sm[ch][i].reset(sampleRate, smoothingSeconds);
-            }
         }
     }
 
@@ -47,17 +43,13 @@ public:
         numScCh = scCh;
         inputBuffer_copy.setSize(numInCh, samplesPerBlock);
         tempOutput.setSize(numInCh, samplesPerBlock);
-        gains_sm.resize(numScCh);
         for (int i = 0; i < nfilts; i++) {
             filters[i].setNumChannels(numInCh);
-            for (int ch = 0; ch < numScCh; ch++) {
-                gains_sm[ch][i].reset(fs, smoothingSeconds);
-            }
         }
 
     }
     
-    void filterBlock(AudioBuffer<float>& buffer, auto curves) {
+    void filterBlock(AudioBuffer<float>& buffer, auto curves, auto& gains_sm) {
         int numSamples = buffer.getNumSamples();
         for (int ch = 0; ch < numInCh; ch++) 
         {
@@ -73,10 +65,10 @@ public:
 
                 float sampleGain;
 
-                gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
+                gains_sm[ch][f].setTargetValue(curves[ch].delta[f]);
                 
                 for (int sample = 0; sample < numSamples; sample++) {
-                    tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
+                    tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * Decibels::decibelsToGain(gains_sm[ch][f].getNextValue()));
                 }
 
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
@@ -109,11 +101,9 @@ private:
     int fs;
     int samplesPerBlock;
 
-    float smoothingSeconds = 0.2f;
-    float smoothingWindow = 0.8f;
+
 
     array<LinkwitzRileyFilters, nfilts> filters;
-    vector<array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>> gains_sm;
 
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;

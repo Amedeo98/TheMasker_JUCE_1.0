@@ -33,7 +33,7 @@ public:
     void getFT(AudioBuffer<float>& input, int ch, auto& output, array<float,npoints>& spectrumOutput) {
         process(input, ch);
         getResult(result);
-        conv.interpolateYarray(F, result, frequencies, false, result_fixed);
+        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
         FloatVectorOperations::fill(output.data(), 0.0f, decimated ? nfilts : npoints);
         if (decimated)
         {

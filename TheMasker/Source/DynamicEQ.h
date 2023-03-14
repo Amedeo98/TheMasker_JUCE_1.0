@@ -60,9 +60,9 @@ public:
         fbank.getFilterBank(frequencies.data());
         fbank.getFrequencies(fCenters);
 
-        curves.resize(numInChannels);    
+        //curves.resize(numInChannels);    
 
-        gains_sm.resize(numScChannels);
+        //gains_sm.resize(numScChannels);
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
                 gains_sm[ch][i].reset(fs, smoothingSeconds);
@@ -89,7 +89,8 @@ public:
         deltaGetter.setNumChannels(numInChannels, numScChannels);
         deltaScaler.setNumChannels(numScChannels);
         filters.setNumChannels(numInChannels, numScChannels);
-        gains_sm.resize(numScChannels);
+        //curves.resize(numScChannels);
+        //gains_sm.resize(numScChannels);
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
                 gains_sm[ch][i].reset(fs, smoothingSeconds);
@@ -122,7 +123,7 @@ public:
         filters.filterBlock(mainBuffer, curves, gains_sm);
         mainBuffer.applyGain(outGain * _outExtraGain);
        
-        for (int i = 0; i<2; i++)
+        for (int i = 0; i < 2; i++)
         ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
 
         spectrumPlotter.drawNextFrameOfSpectrum(curves[0].inSpectrum, curves[0].scSpectrum, curves[0].outSpectrum, gains_sm[0]);
@@ -201,8 +202,8 @@ private:
     array<float, npoints> frequencies;
     array<float, nfilts> fCenters;
 
-    vector<curve> curves;
-    vector<array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>> gains_sm;
+    array<curve,2> curves;
+    array<array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>, 2> gains_sm;
 
     float smoothingSeconds = _smoothingSeconds;
 

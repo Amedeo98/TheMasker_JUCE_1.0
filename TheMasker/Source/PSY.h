@@ -21,7 +21,6 @@ public:
         conv.hz2bark(maxFreq, maxbark);
         float alphaScaled = spread_exp / 20.f;
         float spreadFuncBarkdB[2 * nfilts];
-        //spreadingMtx.resize(nfilts, vector<float>(nfilts));
         
         float spreadFuncBarkVoltage[2 * nfilts];
         vector<float> temp(nfilts);

@@ -83,39 +83,9 @@ public:
     };
 
 
-    void interpolateYarray(auto xData, array<float, _fftSize>yData, float* xx, bool extrapolate, array<float, npoints>& y_int)
-    {
-        int ySize = npoints;
-        float ySize_inv = pow(ySize, -1);
-        FloatVectorOperations::fill(y_int.data(), 0.0f, ySize);
-        int xSize = ySize;
-        for (int point = 0; point < ySize; point++) {
-            int indx = floor(point * xSize * ySize_inv);
-            float x = xx[indx];
 
-            int size = _fftSize;
 
-            int i = 0;                                                                  // find left end of interval for interpolation
-            if (x >= xData[size - 2]) {                                                 // special case: beyond right end
-                i = size - 2;
-            }
-            else {
-                while (x > xData[i + 1]) i++;
-            }
-            float xL = xData[i], yL = yData[i], xR = xData[i + 1], yR = yData[i + 1];      // points on either side (unless beyond ends)
-            if (!extrapolate) {                                                         // if beyond ends of array and not extrapolating
-                if (x < xL) yR = yL;
-                if (x > xR) yL = yR;
-            }
-
-            float dydx = (yR - yL) / (xR - xL);                                    // gradient
-
-            y_int[point] = yL + dydx * (x - xL);
-        }
-
-    }
-
-    void interpolateYvector(array<float,3>xData, array<float,3>yData, auto xx, bool extrapolate, vector<float>& y_int)
+    void interpolateYvector(auto xData, auto yData, auto xx, bool extrapolate, auto& y_int)
     {
         int ySize=y_int.size();
         float ySize_inv = pow(ySize, -1);

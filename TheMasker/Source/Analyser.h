@@ -19,10 +19,10 @@ public:
     Analyser(const int fftOrder, const int fftSize_)
         : forwardFFT (fftOrder), fftSize (fftSize_)
     {
-        window.resize(fftSize);
+        //window.resize(fftSize);
         dsp::WindowingFunction<float>::fillWindowingTables(window.data(), fftSize, dsp::WindowingFunction<float>::WindowingMethod::hann, false);
-        fifo.resize(fftSize);                          
-        fftData.resize(2*fftSize);                          
+        //fifo.resize(fftSize);                          
+        //fftData.resize(2*fftSize);                          
         //result.resize(fftSize);
     }
 
@@ -84,9 +84,9 @@ private:
     juce::dsp::FFT forwardFFT;                    
     Converter conv;
 
-    vector<float> window;                          
-    vector<float> fifo;                          
-    vector<float> fftData;                   
+    array<float,_fftSize> window;                          
+    array<float,_fftSize> fifo;                          
+    array<float,_fftSize*2> fftData;                   
     int fifoIndex = 0;                             
     bool nextFFTBlockReady = false;                
 

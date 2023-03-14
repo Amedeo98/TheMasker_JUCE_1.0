@@ -46,8 +46,8 @@ public:
  
 
     void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float* fCenters, float* frequencies, int numInCh, int numScCh) {
-        scFT.resize(numScCh);
-        inFT.resize(numInCh);
+        //scFT.resize(numScCh);
+        //inFT.resize(numInCh);
         getATQ(fCenters, atq);
         psy.getSpreadingMtx();
         ft_in.prepare(frequencies, fCenters, sampleRate);
@@ -83,7 +83,7 @@ private:
 
     PSY psy; 
     Converter conv;
-    vector<array<float, nfilts>> inFT, scFT;
+    array<array<float, nfilts>, 2> inFT, scFT;
     array<float,nfilts> current_atq, atq;
 
     int inCh;

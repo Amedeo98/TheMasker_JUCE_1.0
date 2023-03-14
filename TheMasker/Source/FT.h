@@ -28,17 +28,13 @@ public:
         fCenters = fCents;
         F.resize(fftSize);
         F = conv.linspace(0.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
-        interp = true;
     }
 
     void getFT(AudioBuffer<float>& input, int ch, vector<float>& output, vector<float>& spectrumOutput) {
         process(input, ch);
         getResult(result);
 
-        if (interp)
-            conv.interpolateYvector(F, result, frequencies, false, result_fixed);
-        else
-            result_fixed = result;
+        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
 
         FloatVectorOperations::fill(output.data(), 0.0f, decimated ? nfilts : npoints);
 

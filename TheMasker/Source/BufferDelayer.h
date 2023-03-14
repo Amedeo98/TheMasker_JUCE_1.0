@@ -20,10 +20,10 @@ public:
         numCh = nCh;
         numSamples = samplesPerBlock;
         delaySamples = numSamplesToDelay;
-        //storedBuffer.setSize(numCh, delaySamples + numSamples);
+        storedBuffer.setSize(numCh, delaySamples + numSamples);
 
-        for (int ch=0; ch < numCh; ch++)
-        fifo[ch].resize(delaySamples + numSamples);
+        /*for (int ch=0; ch < numCh; ch++)
+        fifo[ch].resize(delaySamples + numSamples);*/
 
         readIndex = delaySamples;
     }
@@ -33,6 +33,7 @@ public:
             if (newBuffer.getNumChannels() > 0)
             {
                 auto* channelData = newBuffer.getReadPointer(ch, 0);
+                
 
                 for (auto i = 0; i < numSamples; ++i) {
                     pushNextSampleIntoFifo(channelData[i], ch);
@@ -44,8 +45,8 @@ public:
 
 
 private:
-    //AudioBuffer<float> storedBuffer;
-    array<vector<float>, 2> fifo;
+    AudioBuffer<float> storedBuffer;
+    //array<vector<float>, 2> fifo;
     int numSamples;
     int delaySamples;
     int fifoIndex = 0;
@@ -60,8 +61,8 @@ private:
         {
             fifoIndex = 0;
         }
-        //storedBuffer.setSample(ch, fifoIndex++, sample);
-        fifo[ch][fifoIndex++] = sample;
+        storedBuffer.setSample(ch, fifoIndex++, sample);
+        //fifo[ch][fifoIndex++] = sample;
     }
 
     float getNextSamplefromFifo(int ch) noexcept
@@ -70,7 +71,7 @@ private:
         {
             readIndex = 0;
         }
-        return /*storedBuffer.getSample(ch, readIndex++);*/ fifo[ch][readIndex++];
+        return storedBuffer.getSample(ch, readIndex++); //fifo[ch][readIndex++];
     }
 
 };

@@ -124,7 +124,7 @@ public:
         deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
         deltaScaler.clip(curves);
 
-        //bufferDelayer.delayBuffer(mainBuffer);
+        bufferDelayer.delayBuffer(mainBuffer);
         filters.filterBlock(mainBuffer, curves, gains_sm);
         mainBuffer.applyGain(outGain * _outExtraGain);
 
@@ -196,7 +196,7 @@ private:
     int numScChannels;
     int numSamples;
 
-    struct result
+    struct curve
     {
         vector<float> delta;
         vector<float> threshold;
@@ -208,11 +208,10 @@ private:
     array<float, npoints> frequencies;
     array<float, nfilts> fCenters;
 
-    vector<result> curves;
+    vector<curve> curves;
     vector<array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>> gains_sm;
 
-    float smoothingSeconds = 0.2f;
-    float smoothingWindow = 0.8f;
+    float smoothingSeconds = _smoothingSeconds;
 
     FilterBank fbank;
     StereoLinked stereoLinked;

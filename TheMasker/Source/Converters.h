@@ -20,6 +20,7 @@
 #define _gateThresh -40
 #define _gateKnee 10
 
+#define _smoothingSeconds 0.030f
 #define _mindBFS -100
 #define _relThreshLift 0.0f
 #define _atqLift 1.6f

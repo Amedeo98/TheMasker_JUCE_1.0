@@ -26,7 +26,6 @@ public:
         samplesPerBlock = newSamplesPerBlock;
         numInCh = numInChannels;
         numScCh = numScChannels;
-        //smoothingSeconds = samplesPerBlock / sampleRate * smoothingWindow;
         inputBuffer_copy.setSize(numInCh, samplesPerBlock);
         tempOutput.setSize(numInCh, samplesPerBlock);
         for (int i = 0; i < nfilts; i++) {
@@ -65,13 +64,15 @@ public:
             for (int ch = 0; ch < numScCh; ch++) {
 
                 gains_sm[ch][f].setTargetValue(curves[ch].delta[f]);
-                
+
                 for (int sample = 0; sample < numSamples; sample++) {
                     tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * Decibels::decibelsToGain(gains_sm[ch][f].getNextValue()));
                 }
+                //se sc mono, riempire il secondo ch del tempOutput
 
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }
+
             for (int i = numInCh; i < numScCh; ++i) {
                 buffer.addFrom(i, 0, tempOutput, numInCh - 1, 0, 1.0f);
             }

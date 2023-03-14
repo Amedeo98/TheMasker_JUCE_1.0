@@ -42,9 +42,7 @@ public:
         const int fftSize = npoints;
         const int memorySize = fftSize / nfilts;
         FloatVectorOperations::copy(frequencies.data(), freqs, npoints);
-        //frequencies = freqs;
-        //centerF.resize(nfilts);
-        //values.resize(nfilts,vector<float>(fftSize));
+
         for (int i = 0; i < nfilts; i++)
             fill(values[i].begin(), values[i].end(), 0);
         int nb = nfilts;

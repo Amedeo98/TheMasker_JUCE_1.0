@@ -21,7 +21,6 @@ public:
         samplesPerBlock = newSamplesPerBlock;
         LC_freq = lc_freq;
         HC_freq = hc_freq;
-
         spec.maximumBlockSize = samplesPerBlock;
         spec.sampleRate = sampleRate;
         LC.setType(dsp::LinkwitzRileyFilterType::highpass);
@@ -29,8 +28,6 @@ public:
         HC.setType(dsp::LinkwitzRileyFilterType::lowpass);
         HC.setCutoffFrequency(HC_freq);
         setNumChannels(nCh);
-        //HC.prepare(spec);
-        //LC.prepare(spec);
         HC.reset();
         LC.reset();
 

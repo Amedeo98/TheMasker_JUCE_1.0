@@ -24,22 +24,24 @@ public:
 
         spec.maximumBlockSize = samplesPerBlock;
         spec.sampleRate = sampleRate;
-        setNumChannels(nCh);
-
         LC.setType(dsp::LinkwitzRileyFilterType::highpass);
         LC.setCutoffFrequency(LC_freq);
         HC.setType(dsp::LinkwitzRileyFilterType::lowpass);
         HC.setCutoffFrequency(HC_freq);
-        HC.prepare(spec);
-        LC.prepare(spec);
+        setNumChannels(nCh);
+        //HC.prepare(spec);
+        //LC.prepare(spec);
+        HC.reset();
+        LC.reset();
+
     }
 
-    void process(AudioBuffer<float> inBuffer, AudioBuffer<float>& outputBuffer) {
-        juce::dsp::AudioBlock<float>              ioBuffer(inBuffer);
-        juce::dsp::ProcessContextReplacing<float> context(ioBuffer);
+    void process(AudioBuffer<float> inputBuffer, AudioBuffer<float>& outputBuffer) {
+        juce::dsp::AudioBlock<float>              ioBlock(inputBuffer);
+        juce::dsp::ProcessContextReplacing<float> context(ioBlock);
         LC.process(context);
         HC.process(context);
-        context.getOutputBlock().copyTo(outputBuffer, 0, 0, context.getOutputBlock().getNumSamples());
+        context.getOutputBlock().copyTo(outputBuffer, 0, 0, samplesPerBlock);
     }
 
     void setNumChannels(int nCh) {

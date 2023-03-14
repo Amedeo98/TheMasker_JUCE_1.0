@@ -124,7 +124,7 @@ public:
         deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
         deltaScaler.clip(curves);
 
-        bufferDelayer.delayBuffer(mainBuffer);
+        //bufferDelayer.delayBuffer(mainBuffer);
         filters.filterBlock(mainBuffer, curves, gains_sm);
         mainBuffer.applyGain(outGain * _outExtraGain);
 

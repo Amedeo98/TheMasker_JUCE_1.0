@@ -20,8 +20,11 @@ public:
         numCh = nCh;
         numSamples = samplesPerBlock;
         delaySamples = numSamplesToDelay;
-        storedBuffer.setSize(numCh, numSamples);
-        fifo.resize(delaySamples+numSamples);
+        //storedBuffer.setSize(numCh, delaySamples + numSamples);
+
+        for (int ch=0; ch < numCh; ch++)
+        fifo[ch].resize(delaySamples + numSamples);
+
         readIndex = delaySamples;
     }
 
@@ -32,8 +35,8 @@ public:
                 auto* channelData = newBuffer.getReadPointer(ch, 0);
 
                 for (auto i = 0; i < numSamples; ++i) {
-                    pushNextSampleIntoFifo(channelData[i]);
-                    newBuffer.setSample(ch, i, getNextSamplefromFifo());
+                    pushNextSampleIntoFifo(channelData[i], ch);
+                    newBuffer.setSample(ch, i, getNextSamplefromFifo(ch));
                 }
             }
 
@@ -41,8 +44,8 @@ public:
 
 
 private:
-    AudioBuffer<float> storedBuffer;
-    vector<float> fifo;
+    //AudioBuffer<float> storedBuffer;
+    array<vector<float>, 2> fifo;
     int numSamples;
     int delaySamples;
     int fifoIndex = 0;
@@ -50,23 +53,24 @@ private:
     int numCh;
 
 
-    void pushNextSampleIntoFifo(float sample) noexcept
+    void pushNextSampleIntoFifo(float sample, int ch) noexcept
     {
 
         if (fifoIndex == (delaySamples+numSamples)) 
         {
             fifoIndex = 0;
         }
-        fifo[fifoIndex++] = sample;
+        //storedBuffer.setSample(ch, fifoIndex++, sample);
+        fifo[ch][fifoIndex++] = sample;
     }
 
-    float getNextSamplefromFifo() noexcept
+    float getNextSamplefromFifo(int ch) noexcept
     {
         if (readIndex == (delaySamples + numSamples))
         {
             readIndex = 0;
         }
-        return fifo[readIndex++];
+        return /*storedBuffer.getSample(ch, readIndex++);*/ fifo[ch][readIndex++];
     }
 
 };

@@ -51,6 +51,7 @@ public:
     
     void filterBlock(AudioBuffer<float>& buffer, auto curves, auto& gains_sm) {
         int numSamples = buffer.getNumSamples();
+        inputBuffer_copy.clear();
         for (int ch = 0; ch < numInCh; ch++) 
         {
             inputBuffer_copy.copyFrom(ch, 0, buffer, ch, 0, numSamples);
@@ -63,8 +64,6 @@ public:
             
             for (int ch = 0; ch < numScCh; ch++) {
 
-                float sampleGain;
-
                 gains_sm[ch][f].setTargetValue(curves[ch].delta[f]);
                 
                 for (int sample = 0; sample < numSamples; sample++) {
@@ -73,10 +72,9 @@ public:
 
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }
-            //for (auto i = numInCh; i < numScCh; ++i) {
-            /*if (numInCh < 2) {
-                buffer.addFrom(2, 0, tempOutput, 1, 0, numSamples);
-            }*/
+            for (int i = numInCh; i < numScCh; ++i) {
+                buffer.addFrom(i, 0, tempOutput, numInCh - 1, 0, 1.0f);
+            }
             
         }
     }

@@ -9,7 +9,7 @@
 */
 
 #define nfilts 32
-#define _fftOrder 11
+#define _fftOrder 10
 #define _fftSize (1 << _fftOrder)
 #define npoints 256
 
@@ -24,7 +24,7 @@
 #define _relThreshLift 0.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
-#define _outExtraGain 6.0f
+#define _outExtraGain 7.0f
 
 #define _spectrumPaddingHighFreq 0.145f
 #define _spectrumPaddingLowFreq 0.4f

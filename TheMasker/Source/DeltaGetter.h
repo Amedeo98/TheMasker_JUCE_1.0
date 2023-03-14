@@ -46,8 +46,8 @@ public:
  
 
     void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float* fCenters, float* frequencies, int numInCh, int numScCh) {
-        scFT.resize(numScCh, vector<float>(nfilts));
-        inFT.resize(numInCh, vector<float>(nfilts));
+        scFT.resize(numScCh);
+        inFT.resize(numInCh);
         getATQ(fCenters, atq);
         psy.getSpreadingMtx();
         ft_in.prepare(frequencies, fCenters, sampleRate);
@@ -83,7 +83,7 @@ private:
 
     PSY psy; 
     Converter conv;
-    vector<vector<float>> inFT, scFT;
+    vector<array<float, nfilts>> inFT, scFT;
     array<float,nfilts> current_atq, atq;
 
     int inCh;
@@ -98,9 +98,8 @@ private:
     int minDBFS = _mindBFS;
     float atqLift = _atqLift;
 
-    void difference(vector<float> input, vector<float> rel_thresh, vector<float>& output) {
-        int size = nfilts;
-        for (int i = 0; i < size; i++)
+    void difference(array<float, nfilts> input, array<float, nfilts> rel_thresh, array<float, nfilts>& output) {
+        for (int i = 0; i < nfilts; i++)
             output[i] = input[i] - (rel_thresh[i]+rel_thresh_lift);
     }
 

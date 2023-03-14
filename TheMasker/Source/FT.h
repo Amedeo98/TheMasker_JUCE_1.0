@@ -22,23 +22,19 @@ public:
     ~FT() {}
 
     void prepare(float* freqs, float* fCents, int sampleRate) {
-        result_decim.resize(nfilts);
-        result_fixed.resize(npoints);
+        //result_decim.resize(nfilts);
+        //result_fixed.resize(npoints);
         frequencies = freqs;
         fCenters = fCents;
         F.resize(fftSize);
         F = conv.linspace(0.0f, static_cast<float>(sampleRate / 2), static_cast<float>(fftSize));
     }
 
-    void getFT(AudioBuffer<float>& input, int ch, vector<float>& output, vector<float>& spectrumOutput) {
+    void getFT(AudioBuffer<float>& input, int ch, auto& output, array<float,npoints>& spectrumOutput) {
         process(input, ch);
         getResult(result);
-
-        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
-
+        conv.interpolateYarray(F, result, frequencies, false, result_fixed);
         FloatVectorOperations::fill(output.data(), 0.0f, decimated ? nfilts : npoints);
-
-
         if (decimated)
         {
             conv.mXv_mult(fbank_values, result_fixed, npoints, output);
@@ -46,7 +42,6 @@ public:
         else {
             FloatVectorOperations::copy(output.data(), result_fixed.data(), npoints);
         }
-
         FloatVectorOperations::copy(spectrumOutput.data(), result_fixed.data(), npoints);
     }
 
@@ -60,8 +55,8 @@ public:
         decimated = true;
     }
 
-    vector<float> result_decim;
-    vector<float> result_fixed;
+    array<float, nfilts> result_decim;
+    array<float, npoints> result_fixed;
 
 private:
 

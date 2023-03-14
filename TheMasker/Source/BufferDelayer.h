@@ -16,16 +16,16 @@
 
 class BufferDelayer {
 public:
-    void prepareToPlay(int samplesPerBlock, int nCh, int numSamplesToDelay) {
+    void prepareToPlay(int samplesPerBlock, int nCh, int numSamplesToDelay, int sampleRate) {
         numCh = nCh;
         numSamples = samplesPerBlock;
-        delaySamples = numSamplesToDelay;
-        storedBuffer.setSize(numCh, delaySamples + numSamples);
-
-        /*for (int ch=0; ch < numCh; ch++)
-        fifo[ch].resize(delaySamples + numSamples);*/
-
-        readIndex = delaySamples;
+        delaySamples = numSamplesToDelay*8;
+        spec.maximumBlockSize = samplesPerBlock;
+        spec.numChannels = numCh;
+        spec.sampleRate = sampleRate;
+        delayLine.prepare(spec);
+        delayLine.setMaximumDelayInSamples(delaySamples);
+        delayLine.setDelay(delaySamples);
     }
 
     void delayBuffer(AudioBuffer<float>& newBuffer) {
@@ -33,11 +33,9 @@ public:
             if (newBuffer.getNumChannels() > 0)
             {
                 auto* channelData = newBuffer.getReadPointer(ch, 0);
-                
-
                 for (auto i = 0; i < numSamples; ++i) {
-                    pushNextSampleIntoFifo(channelData[i], ch);
-                    newBuffer.setSample(ch, i, getNextSamplefromFifo(ch));
+                    delayLine.pushSample(ch, channelData[i]);
+                    newBuffer.setSample(ch, i, delayLine.popSample(ch));
                 }
             }
 
@@ -45,33 +43,31 @@ public:
 
 
 private:
-    AudioBuffer<float> storedBuffer;
-    //array<vector<float>, 2> fifo;
     int numSamples;
     int delaySamples;
-    int fifoIndex = 0;
-    int readIndex;
     int numCh;
+    dsp::DelayLine<float> delayLine;
+    juce::dsp::ProcessSpec spec;
 
+    //void pushNextSampleIntoFifo(float sample, int ch) noexcept
+    //{
 
-    void pushNextSampleIntoFifo(float sample, int ch) noexcept
-    {
+    //    if (fifoIndex == (delaySamples+numSamples)) 
+    //    {
+    //        fifoIndex = 0;
+    //    }
+    //    //storedBuffer.setSample(ch, fifoIndex++, sample);
+    //    fifo[ch][fifoIndex++] = sample;
+    //}
 
-        if (fifoIndex == (delaySamples+numSamples)) 
-        {
-            fifoIndex = 0;
-        }
-        storedBuffer.setSample(ch, fifoIndex++, sample);
-        //fifo[ch][fifoIndex++] = sample;
-    }
-
-    float getNextSamplefromFifo(int ch) noexcept
-    {
-        if (readIndex == (delaySamples + numSamples))
-        {
-            readIndex = 0;
-        }
-        return storedBuffer.getSample(ch, readIndex++); //fifo[ch][readIndex++];
-    }
+    //float getNextSamplefromFifo(int ch) noexcept
+    //{
+    //    if (readIndex == (delaySamples + numSamples))
+    //    {
+    //        readIndex = 0;
+    //    }
+    //    //return storedBuffer.getSample(ch, readIndex++);
+    //    return fifo[ch][readIndex++];
+    //}
 
 };

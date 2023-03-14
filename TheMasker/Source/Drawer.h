@@ -30,7 +30,7 @@ public:
         }
     }
 
-    virtual void drawNextFrameOfSpectrum(vector<float> result)  {}
+    virtual void drawNextFrameOfSpectrum(array<float, npoints> result)  {}
 
     virtual void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)  {}
 
@@ -43,7 +43,7 @@ public:
     int resultSize;
 
     array<float, npoints> scopeData;
-    array<float,npoints> freqAxis;
+    array<float, npoints> freqAxis;
     float* frequencies;
 
     array<float, 2> xVal;

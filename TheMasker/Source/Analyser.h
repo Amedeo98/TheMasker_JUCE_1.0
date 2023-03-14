@@ -23,7 +23,7 @@ public:
         dsp::WindowingFunction<float>::fillWindowingTables(window.data(), fftSize, dsp::WindowingFunction<float>::WindowingMethod::hann, false);
         fifo.resize(fftSize);                          
         fftData.resize(2*fftSize);                          
-        result.resize(fftSize);
+        //result.resize(fftSize);
     }
 
 
@@ -39,7 +39,7 @@ public:
     }
 
 
-    void getResult(vector<float>& result)
+    void getResult(array<float, _fftSize>& result)
     {
         if (nextFFTBlockReady)
         {
@@ -74,7 +74,7 @@ public:
 
    
 
-    vector<float> result;
+    array<float, _fftSize> result;
     float* frequencies;
     const int fftSize;
 

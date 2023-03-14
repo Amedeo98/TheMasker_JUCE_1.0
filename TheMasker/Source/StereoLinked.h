@@ -18,7 +18,7 @@ public:
         UIsl = sl;
     }
 
-    void process(vector<float>& l, vector<float>& r) {
+    void process(array<float,nfilts>& l, array<float,nfilts>& r) {
         getMono(l, r);
         scaleChannel(l);
         scaleChannel(r);
@@ -29,14 +29,14 @@ private:
     float UIsl;  
     float silence = Decibels::gainToDecibels(0.0f);
 
-    void scaleChannel(vector<float>& in) {
+    void scaleChannel(array<float, nfilts>& in) {
         int size = in.size();
         for (int i = 0; i < size; i++) {
             in[i] = UIsl * monoValues[i] + (1 - UIsl) * in[i];
         }
     }
 
-    void getMono(vector<float> l, vector<float> r) {
+    void getMono(array<float, nfilts> l, array<float, nfilts> r) {
         FloatVectorOperations::fill(monoValues, 0.0f, nfilts);
         FloatVectorOperations::addWithMultiply(monoValues, l.data(), 0.5f, nfilts);
         FloatVectorOperations::addWithMultiply(monoValues, r.data(), 0.5f, nfilts);

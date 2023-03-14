@@ -74,8 +74,8 @@ public:
 
         int m = 1;
         for (int b = 0; b < nfilts; b++) {
-            vector<float> xw = {infr[b], centerF[b], supr[b]};
-            vector<float> yw = { (b==0 ? 1.0f : 0.0f), 1.0f, (b==(nfilts-1) ? 1.0f : 0.0f) };
+            array<float, 3> xw = {infr[b], centerF[b], supr[b]};
+            array<float, 3> yw = { (b==0 ? 1.0f : 0.0f), 1.0f, (b==(nfilts-1) ? 1.0f : 0.0f) };
             int il = findx(frequencies, infr[b]);
             int ih = findx(frequencies, supr[b]);
             int n = ih - il + 1;

@@ -18,9 +18,10 @@ public:
         mindB = _mindBFS;
         maxdB = 0.0f;
     }
+
     ~SpectrumDrawer() {}
 
-    void drawNextFrameOfSpectrum(vector<float> values)
+    void drawNextFrameOfSpectrum(array<float, npoints> values)
     {
         for (int i = 0; i < scopeSize; ++i)
         {

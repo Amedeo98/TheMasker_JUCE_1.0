@@ -60,33 +60,27 @@ public:
         fbank.getFilterBank(frequencies.data());
         fbank.getFrequencies(fCenters);
 
-        curves.resize(inCh);    
-        for (int i = 0; i < numScChannels; ++i) {
-            curves[i].delta.resize(nfilts);
-            curves[i].threshold.resize(nfilts);
-            curves[i].inSpectrum.resize(npoints);
-            curves[i].scSpectrum.resize(npoints);
-            curves[i].outSpectrum.resize(npoints);
-        }
+        curves.resize(numInChannels);    
+
         gains_sm.resize(numScChannels);
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
-                gains_sm[ch][i].reset(sampleRate, smoothingSeconds);
+                gains_sm[ch][i].reset(fs, smoothingSeconds);
             }
         }
 
-        deltaGetter.prepareToPlay(sampleRate, samplesPerBlock, fbank, fCenters.data(), frequencies.data(), numInChannels, numScChannels);
+        deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data(), numInChannels, numScChannels);
         deltaScaler.prepareToPlay(numScChannels);
 
-        bufferDelayer.prepareToPlay(samplesPerBlock, inCh, _fftSize);
-        filters.prepareToPlay(sampleRate, samplesPerBlock, numInChannels, numScChannels, fCenters.data());
+        bufferDelayer.prepareToPlay(numSamples, numInChannels, _fftSize, fs);
+        filters.prepareToPlay(fs, numSamples, numInChannels, numScChannels, fCenters.data());
 
         stereoLinked.setSL(stereoLinkAmt);
         setInGain(DEFAULT_IN);
         deltaGetter.setATQ(DEFAULT_ATQ);
 
         spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data());
-        ft_out.prepare(frequencies.data(), fCenters.data(), sampleRate);
+        ft_out.prepare(frequencies.data(), fCenters.data(), fs);
     }
 
     void numChannelsChanged(int inCh, int scCh) {
@@ -127,7 +121,6 @@ public:
         bufferDelayer.delayBuffer(mainBuffer);
         filters.filterBlock(mainBuffer, curves, gains_sm);
         mainBuffer.applyGain(outGain * _outExtraGain);
-
        
         for (int i = 0; i<2; i++)
         ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
@@ -198,11 +191,11 @@ private:
 
     struct curve
     {
-        vector<float> delta;
-        vector<float> threshold;
-        vector<float> inSpectrum;
-        vector<float> scSpectrum;
-        vector<float> outSpectrum;
+        array<float, nfilts> delta;
+        array<float, nfilts> threshold;
+        array<float, npoints> inSpectrum;
+        array<float, npoints> scSpectrum;
+        array<float, npoints> outSpectrum;
     };
 
     array<float, npoints> frequencies;

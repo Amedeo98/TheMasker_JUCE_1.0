@@ -15,9 +15,7 @@
 struct LnF : juce::LookAndFeel_V4
 {
 public:
-    LnF() {
-        sliderImg = ImageCache::getFromMemory(BinaryData::purple_slider_img_png, BinaryData::purple_slider_img_pngSize);
-    }
+    LnF() {}
     
     void drawRotarySlider(juce::Graphics&,
                             int x, int y, int width, int height,
@@ -25,9 +23,6 @@ public:
                             float rotaryStartAngle,
                             float rotaryEndAngle,
                             juce::Slider&) override;
-    
-    Image sliderImg;
-
 };
 
 
@@ -65,6 +60,7 @@ private:
     Image sliderImg;
     juce::RangedAudioParameter* param;
     juce::String suffix;
+    
 };
 
 
@@ -109,6 +105,12 @@ private:
                 expSliderAttachment,
                 stereoLinkedSliderAttachment,
                 cleanUpSliderAttachment;
+    
+    Colour bgColorLight = Colour::greyLevel(0.8);
+    Colour bgColorDark = Colour::greyLevel(0.5);
+    Colour primaryColor = Colour(97u, 18u, 167u);
+    Colour accentColor = Colour(64u, 200u, 64u);
+    
     
     std::vector<juce::Component*> getComponents();
 

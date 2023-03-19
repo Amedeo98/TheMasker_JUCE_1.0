@@ -21,19 +21,13 @@ void LnF::drawRotarySlider(juce::Graphics& g,
     const float rotaryEndAngle,
     juce::Slider& slider)
 {
-    int radius = jmin(width, height);
-    float centreX = float(sliderImg.getWidth()) * .5f;
-    float centreY = float(sliderImg.getHeight()) * .5f;
+    auto bounds = Rectangle<float>(x, y, width, height);
     
-    jassert(rotaryStartAngle < rotaryEndAngle);
-    auto rotation = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle);
+    g.setColour(Colour(97u, 18u, 167u));
+    g.fillEllipse(bounds);
 
-    sliderImg = sliderImg.rescaled(radius, radius, Graphics::ResamplingQuality::highResamplingQuality);
-
-    AffineTransform transform;
-
-    transform = transform.rotation(rotation, centreX, centreY);
-    g.drawImageTransformed(sliderImg, transform, false);
+    g.setColour(Colour(64u, 200u, 64u));
+    g.drawEllipse(bounds, 5.f);
 
 
 }
@@ -107,7 +101,7 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     {
         addAndMakeVisible(comp);
     }
-    setSize (700, 500);
+    setSize (800, 500);
     
 }
 
@@ -120,70 +114,58 @@ TheMaskerAudioProcessorEditor::~TheMaskerAudioProcessorEditor()
 //==============================================================================
 void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (Colours::orange);
-    
+    g.fillAll (Colours::black);
     auto bounds = getLocalBounds();
-    auto responseArea = bounds.removeFromTop(bounds.getHeight() * 0.33);
-    auto w = responseArea.getWidth();
     
+    //draw input area
+    auto in_area = bounds.removeFromLeft(getWidth() * 0.08);
+    g.setColour (bgColorDark);
+    g.fillRect (in_area);
+    
+    inSlider.setBounds(in_area.removeFromTop(in_area.getWidth()));
+    stereoLinkedSlider.setBounds(in_area.removeFromBottom(in_area.getWidth()));
+    
+    
+    //draw controls area
+    auto controls_area = bounds.removeFromLeft(getWidth() * 0.15);
+    g.setColour (bgColorLight);
+    g.fillRect (controls_area);
+    
+    auto nameBox = controls_area.removeFromTop(getHeight() * 0.15);
+    g.setColour (Colours::white);
+    g.fillRect (nameBox);
+    
+    scSlider.setBounds(controls_area.removeFromTop(controls_area.getWidth()));
+    compSlider.setBounds(controls_area.removeFromTop(getHeight() * 0.15));
+    expSlider.setBounds(controls_area.removeFromTop(getHeight() * 0.15));
+    
+    
+    //draw output area
+    auto out_area = bounds.removeFromRight(getWidth() * 0.08);
+    g.setColour (bgColorDark);
+    g.fillRect (out_area);
+    
+    mixSlider.setBounds(out_area.removeFromTop(out_area.getWidth()));
+    outSlider.setBounds(out_area.removeFromBottom(out_area.getWidth()));
+    
+    
+    //draw spectrum area
+    auto responseArea = bounds;
     g.setColour (juce::Colours::black);
     g.fillRect (responseArea);
     
-    bounds.removeFromTop(bounds.getHeight() * 0.15);
-    auto in_area = bounds.removeFromLeft(bounds.getWidth() * 0.33);
-    auto out_area = bounds.removeFromRight(bounds.getWidth() * 0.5);
-
-    inSlider.setBounds(in_area.removeFromTop(out_area.getHeight() * 0.5));
-    scSlider.setBounds(in_area);
-    compSlider.setBounds(out_area.removeFromTop(out_area.getHeight() * 0.33));
-    expSlider.setBounds(out_area.removeFromTop(out_area.getHeight() * 0.5));
-    mixSlider.setBounds(out_area);
-    outSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.5));
-    cleanUpSlider.setBounds(bounds.removeFromTop(bounds.getHeight() * 0.5));
-    stereoLinkedSlider.setBounds(bounds);
-
-    inLabel.setText("IN", juce::dontSendNotification);
-    inLabel.attachToComponent(&inSlider, false);
-    inLabel.setJustificationType(Justification::centred);
-    outLabel.setText("OUT", juce::dontSendNotification);
-    outLabel.attachToComponent(&outSlider, false);
-    outLabel.setJustificationType(Justification::centred);
-    scLabel.setText("SC", juce::dontSendNotification);
-    scLabel.setJustificationType(Justification::centred);
-    scLabel.attachToComponent(&scSlider, false);
-    compLabel.setText("COMP", juce::dontSendNotification);
-    compLabel.setJustificationType(Justification::centred);
-    compLabel.attachToComponent(&compSlider, false);
-    expLabel.setText("EXP", juce::dontSendNotification);
-    expLabel.setJustificationType(Justification::centred);
-    expLabel.attachToComponent(&expSlider, false);
-    cleanUpLabel.setText("Clean Up", juce::dontSendNotification);
-    cleanUpLabel.attachToComponent(&cleanUpSlider, false);
-    cleanUpLabel.setJustificationType(Justification::centred);
-    mixLabel.setText("MIX", juce::dontSendNotification);
-    mixLabel.attachToComponent(&mixSlider, false);
-    mixLabel.setJustificationType(Justification::centred);
-    stereoLabel.setText("STEREO", juce::dontSendNotification);
-    stereoLabel.attachToComponent(&stereoLinkedSlider, false);
-    stereoLabel.setJustificationType(Justification::centred);
-    
-
-    
-    //aggiungi valori numerici
-    
     auto sampleRate = audioProcessor.getSampleRate();
+    
     std:vector<double> mags;
-    
+    auto w = responseArea.getWidth();
     mags.resize(w);
-    
+       
     for(int i = 0; i < w; i ++)
     {
         double mag = 1.f;
         auto freq = mapToLog10(double(i)/double(w), 20.0, 20000.0);
         //qui viene modificata la curva
     }
-    
-    Path responseCurve;
     
     const double outputMin = responseArea.getBottom();
     const double outputMax = responseArea.getY();
@@ -192,19 +174,11 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         //mapping db to screen coordinates
         return jmap(input, -24.0, 24.0, outputMin, outputMax);
     };
-    
-    //responseCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
-    
-    for( size_t i=1; i < mags.size(); ++i)
-    {
-        responseCurve.lineTo(responseArea.getX() + i, map(mags[i]));
-    }
 
-    g.setColour(Colours::orange);
-    g.drawRoundedRectangle(responseArea.toFloat(), 4.f, 1.f);
+    Path responseCurve;
     
-    /*g.setColour(Colours::white);
-    g.strokePath(responseCurve, PathStrokeType(2.f));*/
+    g.setColour(Colours::white);
+    g.strokePath(responseCurve, PathStrokeType(2.f));
     audioProcessor.dynEQ.drawFrame(g, responseArea);
     
 }

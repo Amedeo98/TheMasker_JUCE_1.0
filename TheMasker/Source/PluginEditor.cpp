@@ -154,31 +154,8 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour (juce::Colours::black);
     g.fillRect (responseArea);
     
-    auto sampleRate = audioProcessor.getSampleRate();
-    
-    std:vector<double> mags;
-    auto w = responseArea.getWidth();
-    mags.resize(w);
-       
-    for(int i = 0; i < w; i ++)
-    {
-        double mag = 1.f;
-        auto freq = mapToLog10(double(i)/double(w), 20.0, 20000.0);
-        //qui viene modificata la curva
-    }
-    
-    const double outputMin = responseArea.getBottom();
-    const double outputMax = responseArea.getY();
-    auto map = [outputMin, outputMax](double input)
-    {
-        //mapping db to screen coordinates
-        return jmap(input, -24.0, 24.0, outputMin, outputMax);
-    };
-
-    Path responseCurve;
-    
-    g.setColour(Colours::white);
-    g.strokePath(responseCurve, PathStrokeType(2.f));
+    /*g.setColour(Colours::white);
+    g.strokePath(responseCurve, PathStrokeType(2.f));*/
     audioProcessor.dynEQ.drawFrame(g, responseArea);
     
 }

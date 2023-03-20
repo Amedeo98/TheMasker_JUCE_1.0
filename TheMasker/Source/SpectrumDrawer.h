@@ -18,6 +18,7 @@ public:
         mindB = _mindBFS;
         maxdB = 0.0f;
     }
+    
     ~SpectrumDrawer() {}
 
     void drawNextFrameOfSpectrum(vector<float> values)
@@ -37,7 +38,7 @@ public:
 
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds) override {
 
-        auto width = bounds.getWidth();
+        auto width = bounds.getWidth() + bounds.getX();
         auto height = bounds.getHeight();
         auto left = bounds.getX();
 
@@ -46,10 +47,9 @@ public:
 
         for (int i = 1; i < scopeSize; ++i)
         {
-  
-
             xVal = { jmap(freqAxis[i - 1] , 0.f, 1.f, (float)left, (float)width),
                      jmap(freqAxis[i] , 0.f, 1.f, (float)left, (float)width) };
+            
 
             g.drawLine(xVal[0], jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
                 xVal[1], jmap(scopeData[i], 0.0f, 1.0f, (float)height, 0.0f));

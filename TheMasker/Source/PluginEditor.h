@@ -23,15 +23,60 @@ public:
                             float rotaryStartAngle,
                             float rotaryEndAngle,
                             juce::Slider&) override;
+    
+    void drawLinearSlider (Graphics&,
+                                   int x, int y, int width, int height,
+                                   float sliderPos,
+                                   float minSliderPos,
+                                   float maxSliderPos,
+                                   const Slider::SliderStyle,
+                                   Slider&) override;
+};
+
+struct CustomLinearSlider : juce::Slider
+{
+    CustomLinearSlider(juce::RangedAudioParameter& rap, const juce::String& name, bool displayValue) : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
+                                        juce::Slider::TextEntryBoxPosition::NoTextBox),
+        param(&rap),
+        sliderName(name),
+        displayValue(displayValue)
+    {
+        setLookAndFeel(&lnf);
+    }
+    
+    ~CustomLinearSlider()
+    {
+        setLookAndFeel(nullptr);
+    }
+    
+    struct LabelPos
+    {
+        float pos;
+        juce::String label;
+    };
+
+    juce::Array<LabelPos> labels;
+
+    void paint(juce::Graphics& g) override;
+    int getTextHeight() const { return 14; }
+
+
+private:
+    LnF lnf;
+    juce::RangedAudioParameter* param;
+    juce::String sliderName;
+    bool displayValue;
+    
 };
 
 
 struct CustomRotarySlider : juce::Slider
 {
-    CustomRotarySlider(juce::RangedAudioParameter& rap, const juce::String& unitSuffix) : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
+    CustomRotarySlider(juce::RangedAudioParameter& rap, const juce::String& name, bool displayValue) : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
                                         juce::Slider::TextEntryBoxPosition::NoTextBox),
         param(&rap),
-        suffix(unitSuffix)
+        sliderName(name),
+        displayValue(displayValue)
     {
         setLookAndFeel(&lnf);
     }
@@ -50,16 +95,16 @@ struct CustomRotarySlider : juce::Slider
     juce::Array<LabelPos> labels;
 
     void paint(juce::Graphics& g) override;
-    juce::Rectangle<int> getSliderBounds() const;
+    juce::Rectangle<int> getSliderBounds(juce::Rectangle<int> bounds) const;
     int getTextHeight() const { return 14; }
     juce::String getDisplayString() const;
 
 
 private:
     LnF lnf;
-    Image sliderImg;
     juce::RangedAudioParameter* param;
-    juce::String suffix;
+    juce::String sliderName;
+    bool displayValue;
     
 };
 
@@ -89,8 +134,9 @@ private:
                         compSlider,
                         expSlider,
                         mixSlider,
-                        stereoLinkedSlider,
-                        cleanUpSlider;
+                        stereoLinkedSlider;
+    
+    CustomLinearSlider cleanUpSlider;
       
     Label inLabel, outLabel, scLabel, compLabel, expLabel, cleanUpLabel, mixLabel, stereoLabel;
     

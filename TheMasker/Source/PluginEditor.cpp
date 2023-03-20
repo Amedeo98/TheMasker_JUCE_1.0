@@ -102,8 +102,17 @@ void CustomLinearSlider::paint(Graphics& g)
                                       1.0,
                                       SliderStyle::LinearHorizontal,
                                       *this);
+    
+    setComponentEffect(&shadow);
 }
 
+void CustomLinearSlider::setShadowProps()
+{
+    shadowProps.radius = 4.0f;
+    shadowProps.offset = juce::Point<int>(2,2);
+    shadowProps.colour = juce::Colours::black.withAlpha(0.2f);
+    shadow.setShadowProperties(shadowProps);
+}
 
 //====================================================================================================
 void CustomRotarySlider::paint(juce::Graphics& g)
@@ -145,8 +154,8 @@ void CustomRotarySlider::paint(juce::Graphics& g)
                                       startAng,
                                       endAng,
                                       *this);
-
-
+    
+    setComponentEffect(&shadow);
     
 }
 
@@ -195,6 +204,15 @@ juce::String CustomRotarySlider::getDisplayString() const
         str << "k";
 
     return str;
+}
+
+
+void CustomRotarySlider::setShadowProps()
+{
+    shadowProps.radius = 4.0f;
+    shadowProps.offset = juce::Point<int>(2,2);
+    shadowProps.colour = juce::Colours::black.withAlpha(0.2f);
+    shadow.setShadowProperties(shadowProps);
 }
 
 

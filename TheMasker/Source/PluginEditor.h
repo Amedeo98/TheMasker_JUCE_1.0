@@ -15,7 +15,7 @@
 struct LnF : juce::LookAndFeel_V4
 {
 public:
-    LnF() {}
+    LnF(){}
     
     void drawRotarySlider(juce::Graphics&,
                             int x, int y, int width, int height,
@@ -42,6 +42,7 @@ struct CustomLinearSlider : juce::Slider
         displayValue(displayValue)
     {
         setLookAndFeel(&lnf);
+        setShadowProps();
     }
     
     ~CustomLinearSlider()
@@ -62,6 +63,10 @@ struct CustomLinearSlider : juce::Slider
 
 
 private:
+    juce::DropShadowEffect shadow;
+    juce::DropShadow shadowProps;
+    void setShadowProps();
+    
     LnF lnf;
     juce::RangedAudioParameter* param;
     juce::String sliderName;
@@ -79,6 +84,7 @@ struct CustomRotarySlider : juce::Slider
         displayValue(displayValue)
     {
         setLookAndFeel(&lnf);
+        setShadowProps();
     }
 
     ~CustomRotarySlider()
@@ -101,6 +107,11 @@ struct CustomRotarySlider : juce::Slider
 
 
 private:
+    
+    juce::DropShadowEffect shadow;
+    juce::DropShadow shadowProps;
+    void setShadowProps();
+    
     LnF lnf;
     juce::RangedAudioParameter* param;
     juce::String sliderName;

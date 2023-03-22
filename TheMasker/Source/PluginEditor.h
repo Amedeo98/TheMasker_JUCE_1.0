@@ -12,46 +12,6 @@
 #include "PluginProcessor.h"
 
 
-
-class VolumeMeter : public Component, private Timer {
-public:
-    VolumeMeter() {
-    }
-
-    void paint(Graphics& g) override {
-        g.fillAll(Colours::white);
-
-        g.setColour(Colours::black);
-
-        // Draw the left channel meter
-        float leftLevel = jmax(0.0f, jmin(1.0f, currentLevel[0]));
-        g.fillRect(Rectangle<int>(getWidth() * 0.25f - 50, getHeight() - leftLevel * getHeight(), 100, leftLevel * getHeight()));
-        // Draw the right channel meter
-        float rightLevel = jmax(0.0f, jmin(1.0f, currentLevel[1]));
-        g.fillRect(Rectangle<int>(getWidth() * 0.75f - 50, getHeight() - rightLevel * getHeight(), 100, rightLevel * getHeight()));
-    }
-
-    void resized() override {
-        // Nothing to do here, since we're not adding any child components
-    }
-
-    void setLevel(float left, float right) {
-        currentLevel[0] = left;
-        currentLevel[1] = right;
-    }
-
-private:
-    float currentLevel[2] = { 0.0f, 0.0f };
-
-    void timerCallback() override {
-        // Trigger a repaint of the component every time the timer fires
-        repaint();
-    }
-    
-};
-
-
-
 struct LnF : juce::LookAndFeel_V4
 {
 public:

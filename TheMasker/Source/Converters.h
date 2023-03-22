@@ -9,7 +9,7 @@
 */
 
 #define nfilts 32
-#define _fftOrder 10
+#define _fftOrder 11
 #define _fftSize (1 << _fftOrder)
 #define npoints 256
 

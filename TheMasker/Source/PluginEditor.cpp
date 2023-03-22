@@ -245,8 +245,10 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     for(auto* comp : getComponents())
     {
         addAndMakeVisible(comp);
-        addAndMakeVisible(inputVolume);
     }
+
+    //addAndMakeVisible(inputVolume);
+
     setSize (800, 500);
     
 }
@@ -271,7 +273,6 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     inSlider.setBounds(in_area.removeFromTop(in_area.getWidth()*1.4f));
     stereoLinkedSlider.setBounds(in_area.removeFromBottom(in_area.getWidth()*1.4f));
     
-    inputVolume.setBounds(in_area);
     
     
     //draw controls area
@@ -310,7 +311,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     
     /*g.setColour(Colours::white);
     g.strokePath(responseCurve, PathStrokeType(2.f));*/
-    audioProcessor.dynEQ.drawFrame(g, responseArea);
+    audioProcessor.dynEQ.drawFrame(g, responseArea, in_area, out_area);
     
 }
 

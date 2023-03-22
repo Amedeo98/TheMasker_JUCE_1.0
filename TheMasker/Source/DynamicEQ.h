@@ -23,6 +23,7 @@ using namespace std;
 #include "BufferDelayer.h"
 #include "DeltaDrawer.h"
 #include "Plotter.h"
+#include "VolumeMeter.h"
 
 
 
@@ -120,13 +121,18 @@ public:
         deltaScaler.clip(curves);
 
         bufferDelayer.delayBuffer(mainBuffer);
+
+        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(1, 0, numSamples));
         filters.filterBlock(mainBuffer, curves, gains_sm);
         mainBuffer.applyGain(outGain * _outExtraGain);
+        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(1, 0, numSamples));
+
        
         for (int i = 0; i < 2; i++)
         ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
 
         spectrumPlotter.drawNextFrameOfSpectrum(curves[0].inSpectrum, curves[0].scSpectrum, curves[0].outSpectrum, gains_sm[0]);
+
     }
 
 
@@ -165,9 +171,11 @@ public:
         scGain = Decibels::decibelsToGain(newScValue);
     }
 
-    void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)
+    void drawFrame(juce::Graphics& g, juce::Rectangle<int>& responseBounds, juce::Rectangle<int>& inVolBounds, juce::Rectangle<int>& outVolBounds)
     {
-        spectrumPlotter.drawFrame(g, bounds);
+        spectrumPlotter.drawFrame(g, responseBounds);
+        in_volumeMeter.draw(g, inVolBounds);
+        out_volumeMeter.draw(g, outVolBounds);
     }
 
 
@@ -214,6 +222,8 @@ private:
     MultiBandMod filters;
     BufferDelayer bufferDelayer;
     Plotter spectrumPlotter;
+    VolumeMeter in_volumeMeter;
+    VolumeMeter out_volumeMeter;
 
     FT ft_out;
 

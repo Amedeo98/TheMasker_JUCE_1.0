@@ -19,11 +19,7 @@ public:
     Analyser(const int fftOrder, const int fftSize_)
         : forwardFFT (fftOrder), fftSize (fftSize_)
     {
-        //window.resize(fftSize);
         dsp::WindowingFunction<float>::fillWindowingTables(window.data(), fftSize, dsp::WindowingFunction<float>::WindowingMethod::hann, false);
-        //fifo.resize(fftSize);                          
-        //fftData.resize(2*fftSize);                          
-        //result.resize(fftSize);
     }
 
 

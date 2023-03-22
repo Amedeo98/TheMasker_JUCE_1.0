@@ -30,6 +30,7 @@
         <FILE id="BewJcf" name="Plotter.h" compile="0" resource="0" file="Source/Plotter.h"/>
         <FILE id="nzmQnM" name="SpectrumDrawer.h" compile="0" resource="0"
               file="Source/SpectrumDrawer.h"/>
+        <FILE id="RaoLMo" name="VolumeMeter.h" compile="0" resource="0" file="Source/VolumeMeter.h"/>
       </GROUP>
       <FILE id="DlDhRW" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

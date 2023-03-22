@@ -25,9 +25,13 @@ public:
 
     void scale(auto& curves, float UIcomp, float UIexp, float UImix) {
         for (int ch = 0; ch < nCh; ch++) {
-            for (int i = 0; i < curves[ch].delta.size(); i++) {
+            float avg = 0;
+            for (int i = 0; i < nfilts; i++) {
+                avg += curves[ch].delta[i] * nfilts_inv;
+            }
+            for (int i = 0; i < nfilts; i++) {
                 float temp = curves[ch].delta[i];
-                temp = temp > 0.0f ? temp * UIcomp : temp * UIexp;
+                temp = temp > 0.0f ? (temp - avg)* UIcomp : (temp - avg) * UIexp;
                 temp = temp * UImix;
                 temp = tanh(temp / maxGain) * maxGain;
                 curves[ch].delta[i] = temp;
@@ -53,6 +57,7 @@ private:
     float maxGain = _maxGain;
     int gateThresh = _gateThresh;
     int gateKnee_inv = pow(_gateKnee,-1);
+    float nfilts_inv = pow(nfilts, -1);
     int nCh;
     array<float, nfilts> THclip;
     array<float, nfilts> newValues;

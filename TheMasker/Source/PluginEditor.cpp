@@ -10,7 +10,6 @@
 #include "PluginEditor.h"
 #include "DynamicEQ.h"
 
-
 void LnF::drawRotarySlider(juce::Graphics& g,
     int x,
     int y,
@@ -38,7 +37,7 @@ void LnF::drawRotarySlider(juce::Graphics& g,
     
     //amount indicator
     Path amt;
-    g.setColour(Colour(40u, 220u, 0u));
+    g.setColour(Colour(64u, 200u, 64u));
     auto sliderAngRad = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle);
     amt.addCentredArc(center.getX(), center.getY(), radius, radius, 0, rotaryStartAngle, sliderAngRad, true);
     auto amtStroke = PathStrokeType(8.0, juce::PathStrokeType::JointStyle::curved);
@@ -247,6 +246,7 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     for(auto* comp : getComponents())
     {
         addAndMakeVisible(comp);
+        addAndMakeVisible(inputVolume);
     }
     setSize (800, 500);
     
@@ -271,6 +271,8 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     in_area.removeFromTop(8);
     inSlider.setBounds(in_area.removeFromTop(in_area.getWidth()*1.4f));
     stereoLinkedSlider.setBounds(in_area.removeFromBottom(in_area.getWidth()*1.4f));
+    
+    inputVolume.setBounds(in_area);
     
     
     //draw controls area

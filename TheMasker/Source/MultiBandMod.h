@@ -48,7 +48,7 @@ public:
 
     }
     
-    void filterBlock(AudioBuffer<float>& buffer, auto curves, auto& gains_sm) {
+    void filterBlock(AudioBuffer<float>& buffer, auto& curves, auto& gains_sm) {
         int numSamples = buffer.getNumSamples();
         inputBuffer_copy.clear();
         for (int ch = 0; ch < numInCh; ch++) 

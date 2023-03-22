@@ -36,7 +36,7 @@ private:
         }
     }
 
-    void getMono(array<float, nfilts> l, array<float, nfilts> r) {
+    void getMono(array<float, nfilts>& l, array<float, nfilts>& r) {
         FloatVectorOperations::fill(monoValues, 0.0f, nfilts);
         FloatVectorOperations::addWithMultiply(monoValues, l.data(), 0.5f, nfilts);
         FloatVectorOperations::addWithMultiply(monoValues, r.data(), 0.5f, nfilts);

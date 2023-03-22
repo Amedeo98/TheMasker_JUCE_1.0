@@ -45,7 +45,7 @@ public:
 
  
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank fb, float* fCenters, float* frequencies, int numInCh, int numScCh) {
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies, int numInCh, int numScCh) {
         //scFT.resize(numScCh);
         //inFT.resize(numInCh);
         getATQ(fCenters, atq);
@@ -98,7 +98,7 @@ private:
     int minDBFS = _mindBFS;
     float atqLift = _atqLift;
 
-    void difference(array<float, nfilts> input, array<float, nfilts> rel_thresh, array<float, nfilts>& output) {
+    void difference(array<float, nfilts>& input, array<float, nfilts>& rel_thresh, array<float, nfilts>& output) {
         for (int i = 0; i < nfilts; i++)
             output[i] = input[i] - (rel_thresh[i]+rel_thresh_lift);
     }

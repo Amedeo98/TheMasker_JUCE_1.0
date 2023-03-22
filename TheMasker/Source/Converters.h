@@ -61,7 +61,7 @@ public:
         }
     }
 
-    void mXv_mult(auto in1, auto in2, int in2Size, auto& dest) {
+    void mXv_mult(auto& in1, auto& in2, int in2Size, auto& dest) {
         
         size_t length = nfilts;
         for (int i = 0; i < length; i++) {
@@ -85,7 +85,7 @@ public:
 
 
 
-    void interpolateYvector(auto xData, auto yData, auto xx, bool extrapolate, auto& y_int)
+    void interpolateYvector(auto& xData, auto& yData, auto& xx, bool extrapolate, auto& y_int)
     {
         int ySize=y_int.size();
         float ySize_inv = pow(ySize, -1);

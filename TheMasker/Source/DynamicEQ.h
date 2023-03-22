@@ -46,7 +46,7 @@ public:
 
 
 
-    void prepareToPlay(array<float,npoints> _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock)
+    void prepareToPlay(array<float,npoints>& _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock)
     {
         fs = sampleRate;
         numSamples = samplesPerBlock;

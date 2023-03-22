@@ -44,10 +44,10 @@ public:
     }
 
     void spread(array<float, nfilts>& input) {
-        conv.mXv_mult(spreadingMtx, input.data(), input.size(), input);
+        conv.mXv_mult(spreadingMtx, input, input.size(), input);
     }
 
-    void compareWithAtq(array<float, nfilts>& rel_t, array<float,nfilts> atq) {
+    void compareWithAtq(array<float, nfilts>& rel_t, array<float,nfilts>& atq) {
         FloatVectorOperations::max(rel_t.data(), rel_t.data(), atq.data(), nfilts);
     }
 private:

@@ -50,7 +50,7 @@ public:
         spectrumDrawer.drawFrame(g, bounds);
     }
 
-    void setFBank(FilterBank fb) {
+    void setFBank(FilterBank& fb) {
         fb.getValues(fbank_values);
         decimated = true;
     }

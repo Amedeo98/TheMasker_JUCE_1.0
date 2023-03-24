@@ -42,7 +42,6 @@ struct CustomLinearSlider : juce::Slider
         displayValue(displayValue)
     {
         setLookAndFeel(&lnf);
-        setShadowProps();
     }
     
     ~CustomLinearSlider()
@@ -84,7 +83,6 @@ struct CustomRotarySlider : juce::Slider
         displayValue(displayValue)
     {
         setLookAndFeel(&lnf);
-        setShadowProps();
     }
 
     ~CustomRotarySlider()
@@ -107,10 +105,6 @@ struct CustomRotarySlider : juce::Slider
 
 
 private:
-    
-    juce::DropShadowEffect shadow;
-    juce::DropShadow shadowProps;
-    void setShadowProps();
     
     LnF lnf;
     juce::RangedAudioParameter* param;

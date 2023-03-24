@@ -103,15 +103,6 @@ void CustomLinearSlider::paint(Graphics& g)
                                       SliderStyle::LinearHorizontal,
                                       *this);
     
-    setComponentEffect(&shadow);
-}
-
-void CustomLinearSlider::setShadowProps()
-{
-    shadowProps.radius = 4.0f;
-    shadowProps.offset = juce::Point<int>(2,2);
-    shadowProps.colour = juce::Colours::black.withAlpha(0.2f);
-    shadow.setShadowProperties(shadowProps);
 }
 
 //====================================================================================================
@@ -155,8 +146,6 @@ void CustomRotarySlider::paint(juce::Graphics& g)
                                       endAng,
                                       *this);
     
-    setComponentEffect(&shadow);
-    
 }
 
 
@@ -181,41 +170,10 @@ juce::String CustomRotarySlider::getDisplayString() const
         return choiceParam->getCurrentChoiceName();
 
     juce::String str;
-    bool addK = false;
-
-    if (auto* floatParam = dynamic_cast<juce::AudioParameterFloat*>(param))
-    {
-        float val = getValue();
-
-        if (val > 999.f)
-        {
-            val /= 1000.f; //1001 / 1000 = 1.001
-            addK = true;
-        }
-
-        str = juce::String(val, (addK ? 2 : 0));
-    }
-    else
-    {
-        jassertfalse;
-    }
-
-    if (addK)
-        str << "k";
+    str = juce::String(juce::roundFloatToInt(getValue()));
 
     return str;
 }
-
-
-void CustomRotarySlider::setShadowProps()
-{
-    shadowProps.radius = 4.0f;
-    shadowProps.offset = juce::Point<int>(2,2);
-    shadowProps.colour = juce::Colours::black.withAlpha(0.2f);
-    shadow.setShadowProperties(shadowProps);
-}
-
-
 
 
 //==============================================================================
@@ -272,7 +230,6 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     in_area.removeFromTop(8);
     inSlider.setBounds(in_area.removeFromTop(in_area.getWidth()*1.4f));
     stereoLinkedSlider.setBounds(in_area.removeFromBottom(in_area.getWidth()*1.4f));
-    
     
     
     //draw controls area

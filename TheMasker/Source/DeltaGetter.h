@@ -11,7 +11,7 @@
 #pragma once
 #include "Converters.h"
 #include "FilterBank.h"
-#include "PluginProcessor.h"
+//#include "PluginProcessor.h"
 #include "DynamicEQ.h"
 #include "FT.h"
 #include "PSY.h"
@@ -31,6 +31,10 @@ public:
             deltas[i].threshold = inFT[i];
         }
 
+        if (stereoSignals && inCh < 2)
+            deltas[1].threshold = deltas[0].threshold;
+
+
         for (int i = 0; i < scCh; i++) {
             ft_sc.getFT(sc, i, scFT[i], deltas[i].scSpectrum);
             psy.spread(scFT[i]);
@@ -38,14 +42,21 @@ public:
             psy.compareWithAtq(scFT[i], current_atq);
         }
 
-        for (int i = 0; i < maxCh; i++) {
-            difference(inFT[i], scFT[i], deltas[i].delta);
+        if (stereoSignals && scCh < 2) 
+        {
+            deltas[1].scSpectrum = deltas[0].scSpectrum;
+            scFT[1] = scFT[0];
         }
+
+        for (int i = 0; i < maxCh; i++) {
+            difference(deltas[i].threshold, scFT[i], deltas[i].delta);
+        }
+
     }
 
  
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies, int numInCh, int numScCh) {
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies, int numInCh, int numScCh, bool stereoSignals) {
         //scFT.resize(numScCh);
         //inFT.resize(numInCh);
         getATQ(fCenters, atq);
@@ -54,15 +65,16 @@ public:
         ft_sc.prepare(frequencies, fCenters, sampleRate);
         ft_in.setFBank(fb);
         ft_sc.setFBank(fb);
-        setNumChannels(numInCh, numScCh);
+        setNumChannels(numInCh, numScCh, stereoSignals);
 
 
     }
 
-    void setNumChannels(int _inCh, int _scCh) {
+    void setNumChannels(int _inCh, int _scCh, bool stereo) {
         scCh = _scCh;
         inCh = _inCh;
         maxCh = jmax(inCh, scCh);
+        stereoSignals = stereo;
     }
 
     void setATQ(float UIatqWeight) {
@@ -89,6 +101,7 @@ private:
     int inCh;
     int scCh;
     int maxCh;
+    bool stereoSignals;
 
     float maxGain = _maxGain;
     int gateThresh = _gateThresh;

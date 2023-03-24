@@ -73,9 +73,9 @@ public:
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }
 
-            for (int i = numInCh; i < numScCh; ++i) {
+         /*   for (int i = numInCh; i < numScCh; ++i) {
                 buffer.addFrom(i, 0, tempOutput, numInCh - 1, 0, 1.0f);
-            }
+            }*/
             
         }
     }

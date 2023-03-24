@@ -27,8 +27,8 @@ using namespace std;
 
 
 
-#define DEFAULT_COMP 0.0f
-#define DEFAULT_EXP 0.0f
+#define DEFAULT_MASKEDF 0.0f
+#define DEFAULT_CLEARF 0.0f
 #define DEFAULT_ATQ 0.0f
 #define DEFAULT_SL 0.0f
 #define DEFAULT_MIX 1.0f
@@ -46,22 +46,21 @@ public:
 
 
 
-    void prepareToPlay(array<float,npoints>& _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock)
+    void prepareToPlay(array<float,npoints>& _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock, bool _stereoSignals)
     {
         fs = sampleRate;
         numSamples = samplesPerBlock;
 
         numInChannels = inCh;
-        if (scCh > 0)
-            numScChannels = scCh;
-        else
-            numScChannels = numInChannels;
+        numScChannels = scCh;
+
+        stereoSignals = _stereoSignals;
 
         frequencies = _frequencies;
         fbank.getFilterBank(frequencies.data());
         fbank.getFrequencies(fCenters);
 
-        smoothingSeconds = smoothingWindow * _fftSize * pow(fs, -1);
+        //smoothingSeconds = smoothingWindow * _fftSize * pow(fs, -1);
 
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
@@ -69,10 +68,10 @@ public:
             }
         }
 
-        deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data(), numInChannels, numScChannels);
+        deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data(), numInChannels, numScChannels, stereoSignals);
         deltaScaler.prepareToPlay(numScChannels);
 
-        bufferDelayer.prepareToPlay(numSamples, numInChannels, _fftSize, fs);
+        bufferDelayer.prepareToPlay(numSamples, stereoSignals, _fftSize, fs);
         filters.prepareToPlay(fs, numSamples, numInChannels, numScChannels, fCenters.data());
 
         stereoLinked.setSL(stereoLinkAmt);
@@ -86,8 +85,12 @@ public:
     void numChannelsChanged(int inCh, int scCh) {
         numInChannels = inCh;
         numScChannels = scCh;
-        deltaGetter.setNumChannels(numInChannels, numScChannels);
+        stereoSignals = inCh > 1 || scCh > 1;
+
+
+        deltaGetter.setNumChannels(numInChannels, numScChannels, stereoSignals);
         deltaScaler.setNumChannels(numScChannels);
+        bufferDelayer.setStereo(stereoSignals);
         filters.setNumChannels(numInChannels, numScChannels);
 
         for (int i = 0; i < nfilts; i++) {
@@ -110,15 +113,15 @@ public:
 
         deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
-        if (numScChannels == 2 && stereoLinkAmt > 0.0f)
+        if (stereoSignals && stereoLinkAmt > 0.0f)
         {
             stereoLinked.process(curves[0].delta, curves[1].delta);
         }
 
-        deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
+        deltaScaler.scale(curves, maskedFreqsAmount, clearFreqsAmount, mixAmount);
         deltaScaler.clip(curves);
 
-        bufferDelayer.delayBuffer(mainBuffer);
+        bufferDelayer.delayBuffer(mainBuffer, curves);
 
         in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(1, 0, numSamples));
         filters.filterBlock(mainBuffer, curves, gains_sm);
@@ -135,12 +138,12 @@ public:
 
 
 
-    void setComp(float newValue) {
-        compAmount = newValue;
+    void setMaskedFreqs(float newValue) {
+        maskedFreqsAmount = newValue;
     }
 
-    void setExp(float newValue) {
-        expAmount = newValue;
+    void setClearFreqs(float newValue) {
+        clearFreqsAmount = newValue;
     }
 
     void setAtq(float newValue) {
@@ -181,8 +184,8 @@ public:
 
 private:
 
-    float compAmount = DEFAULT_COMP;
-    float expAmount = DEFAULT_EXP;
+    float maskedFreqsAmount = DEFAULT_MASKEDF;
+    float clearFreqsAmount = DEFAULT_CLEARF;
     float atqWeight = DEFAULT_ATQ;
     float stereoLinkAmt = DEFAULT_SL;
     float mixAmount = DEFAULT_MIX;
@@ -191,9 +194,11 @@ private:
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
 
-    int fs;
     int numInChannels = 2;
     int numScChannels;
+    bool stereoSignals;
+
+    int fs;
     int numSamples;
 
     struct curve
@@ -219,10 +224,11 @@ private:
     DeltaGetter deltaGetter;
     DeltaScaler deltaScaler;
     MultiBandMod filters;
-    BufferDelayer bufferDelayer;
     Plotter spectrumPlotter;
     VolumeMeter in_volumeMeter;
     VolumeMeter out_volumeMeter;
+
+    BufferDelayer bufferDelayer;
 
     FT ft_out;
 

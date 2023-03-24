@@ -182,8 +182,8 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     inSlider(*audioProcessor.parameters.getParameter(NAME_IN), NAME_IN, true),
     outSlider(*audioProcessor.parameters.getParameter(NAME_OUT), NAME_OUT, true),
     scSlider(*audioProcessor.parameters.getParameter(NAME_SC), NAME_SC, true),
-    compSlider(*audioProcessor.parameters.getParameter(NAME_COMP), NAME_COMP, false),
-    expSlider(*audioProcessor.parameters.getParameter(NAME_EXP), NAME_EXP, false),
+    compSlider(*audioProcessor.parameters.getParameter(NAME_MASKEDF), NAME_MASKEDF, false),
+    expSlider(*audioProcessor.parameters.getParameter(NAME_CLEARF), NAME_CLEARF, false),
     mixSlider(*audioProcessor.parameters.getParameter(NAME_MIX), NAME_MIX, false),
     stereoLinkedSlider(*audioProcessor.parameters.getParameter(NAME_SL), NAME_SL, false),
     cleanUpSlider(*audioProcessor.parameters.getParameter(NAME_ATQ), NAME_ATQ, false),
@@ -192,8 +192,8 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     outSliderAttachment(audioProcessor.parameters, NAME_OUT, outSlider),
     scSliderAttachment(audioProcessor.parameters, NAME_SC, scSlider),
     mixSliderAttachment(audioProcessor.parameters, NAME_MIX, mixSlider),
-    compSliderAttachment(audioProcessor.parameters, NAME_COMP, compSlider),
-    expSliderAttachment(audioProcessor.parameters, NAME_EXP, expSlider),
+    compSliderAttachment(audioProcessor.parameters, NAME_MASKEDF, compSlider),
+    expSliderAttachment(audioProcessor.parameters, NAME_CLEARF, expSlider),
     cleanUpSliderAttachment(audioProcessor.parameters, NAME_ATQ, cleanUpSlider),
     stereoLinkedSliderAttachment(audioProcessor.parameters, NAME_SL, stereoLinkedSlider)
 {

@@ -15,8 +15,8 @@
 #define PLUGIN_NAME "TheMasker"
 #define PLUGIN_V 1
 
-#define NAME_COMP "MASKED FREQS"
-#define NAME_EXP  "CLEAR FREQS"
+#define NAME_MASKEDF "MASKED FREQS"
+#define NAME_CLEARF  "CLEAR FREQS"
 #define NAME_ATQ "ATQ"
 #define NAME_SL "STEREO"
 #define NAME_MIX "MIX"
@@ -77,13 +77,14 @@ public:
     void getFrequencies();
     
     DynamicEQ dynEQ;
+    bool stereoSignals;
 
 private:
     
     int sampleRate = 0;
     int samplesPerBlock = 0;
-    int numScChannels;
-    int numInChannels;
+    int inCh;
+    int scCh;
     Converter conv;
 
     //float frequencies[npoints];

@@ -61,9 +61,8 @@ public:
         fbank.getFilterBank(frequencies.data());
         fbank.getFrequencies(fCenters);
 
-        //curves.resize(numInChannels);    
+        smoothingSeconds = smoothingWindow * _fftSize * pow(fs, -1);
 
-        //gains_sm.resize(numScChannels);
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
                 gains_sm[ch][i].reset(fs, smoothingSeconds);
@@ -90,8 +89,7 @@ public:
         deltaGetter.setNumChannels(numInChannels, numScChannels);
         deltaScaler.setNumChannels(numScChannels);
         filters.setNumChannels(numInChannels, numScChannels);
-        //curves.resize(numScChannels);
-        //gains_sm.resize(numScChannels);
+
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
                 gains_sm[ch][i].reset(fs, smoothingSeconds);
@@ -214,6 +212,7 @@ private:
     array<array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>, 2> gains_sm;
 
     float smoothingSeconds = _smoothingSeconds;
+    float smoothingWindow = _overlapRatio;
 
     FilterBank fbank;
     StereoLinked stereoLinked;
@@ -226,6 +225,8 @@ private:
     VolumeMeter out_volumeMeter;
 
     FT ft_out;
+
+    Converter conv;
 
     
 

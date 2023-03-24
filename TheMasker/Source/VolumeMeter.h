@@ -50,8 +50,8 @@ public:
     //}
 
     void setLevel(float left, float right) {
-        currentLevel[0] = left;
-        currentLevel[1] = right;
+        currentLevel[0] = juce::jmap(Decibels::gainToDecibels(left), (float) _mindBFS, 0.0f, 0.0f, 1.0f);
+        currentLevel[1] = juce::jmap(Decibels::gainToDecibels(right), (float)_mindBFS, 0.0f, 0.0f, 1.0f);
     }
 
 private:

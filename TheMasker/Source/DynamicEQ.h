@@ -24,7 +24,7 @@ using namespace std;
 #include "DeltaDrawer.h"
 #include "Plotter.h"
 #include "VolumeMeter.h"
-
+#include "CustomSmoothedValue.h"
 
 
 #define DEFAULT_MASKEDF 0.0f
@@ -64,7 +64,7 @@ public:
 
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
-                gains_sm[ch][i].reset(fs, smoothingSeconds);
+                gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
 
@@ -95,7 +95,7 @@ public:
 
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
-                gains_sm[ch][i].reset(fs, smoothingSeconds);
+                gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
     }
@@ -214,9 +214,10 @@ private:
     array<float, nfilts> fCenters;
 
     array<curve,2> curves;
-    array<array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>, 2> gains_sm;
+    array<array<CustomSmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>, 2> gains_sm;
 
-    float smoothingSeconds = _smoothingSeconds;
+    float atkSmoothingSeconds = _atkSmoothingSeconds;
+    float relSmoothingSeconds = _relSmoothingSeconds;
     float smoothingWindow = _overlapRatio;
 
     FilterBank fbank;

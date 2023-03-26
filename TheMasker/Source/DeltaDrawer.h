@@ -11,6 +11,7 @@
 #pragma once
 #include "Drawer.h"
 #include "Converters.h"
+//#include <CustomSmoothedValue.h>
 
 class DeltaDrawer : public Drawer {
 public:
@@ -22,7 +23,7 @@ public:
     ~DeltaDrawer() {}
 
 
-    void drawNextFrameOfSpectrum(array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts> result)
+    void drawNextFrameOfSpectrum(auto result)
     {
 
 

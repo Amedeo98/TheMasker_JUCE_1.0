@@ -31,8 +31,10 @@ public:
             deltas[i].threshold = inFT[i];
         }
 
-        if (stereoSignals && inCh < 2)
+        if (stereoSignals && inCh < 2) {
             deltas[1].threshold = deltas[0].threshold;
+            inFT[1] = inFT[0];
+        }
 
 
         for (int i = 0; i < scCh; i++) {

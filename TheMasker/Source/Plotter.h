@@ -10,7 +10,9 @@
 
 #include "SpectrumDrawer.h"
 #include "DeltaDrawer.h"
-#include <JuceHeader.h>
+//#include <JuceHeader.h>
+//#include "CustomSmoothedValue.h"
+
 
 
 #pragma once
@@ -24,7 +26,7 @@ public:
         deltaSpectrum.prepareToPlay(fCenters, delta_colour);
     }
 
-    void drawNextFrameOfSpectrum(array<float,npoints> in, array<float, npoints> sc, array<float, npoints> out, array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts> delta) {
+    void drawNextFrameOfSpectrum(array<float,npoints> in, array<float, npoints> sc, array<float, npoints> out, auto& delta) {
         inSpectrum.drawNextFrameOfSpectrum(in);
         scSpectrum.drawNextFrameOfSpectrum(sc);
         outSpectrum.drawNextFrameOfSpectrum(out);

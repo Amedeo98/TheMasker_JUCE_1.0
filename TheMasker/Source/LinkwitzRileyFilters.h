@@ -21,11 +21,15 @@ public:
         samplesPerBlock = newSamplesPerBlock;
         LC_freq = lc_freq;
         HC_freq = hc_freq;
+
+        isFirstBand = (LC_freq - minFreq) < 1.0f;
+        isLastBand = (HC_freq - maxFreq) < 1.0f;
+
         spec.maximumBlockSize = samplesPerBlock;
         spec.sampleRate = sampleRate;
-        LC.setType(dsp::LinkwitzRileyFilterType::highpass);
+        LC.setType(isFirstBand ? dsp::LinkwitzRileyFilterType::allpass : dsp::LinkwitzRileyFilterType::highpass);
         LC.setCutoffFrequency(LC_freq);
-        HC.setType(dsp::LinkwitzRileyFilterType::lowpass);
+        HC.setType(isLastBand ? dsp::LinkwitzRileyFilterType::allpass : dsp::LinkwitzRileyFilterType::lowpass);
         HC.setCutoffFrequency(HC_freq);
         setNumChannels(nCh);
         HC.reset();
@@ -56,5 +60,7 @@ private:
     LWR HC;
     float LC_freq;
     float HC_freq;
+    bool isFirstBand = false;
+    bool isLastBand = false;
 
 };

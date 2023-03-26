@@ -68,14 +68,9 @@ public:
                 for (int sample = 0; sample < numSamples; sample++) {
                     tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * Decibels::decibelsToGain(gains_sm[ch][f].getNextValue()));
                 }
-                //se sc mono, riempire il secondo ch del tempOutput
 
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }
-
-         /*   for (int i = numInCh; i < numScCh; ++i) {
-                buffer.addFrom(i, 0, tempOutput, numInCh - 1, 0, 1.0f);
-            }*/
             
         }
     }
@@ -100,10 +95,7 @@ private:
     int fs;
     int samplesPerBlock;
 
-
-
     array<LinkwitzRileyFilters, nfilts> filters;
-
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;
 

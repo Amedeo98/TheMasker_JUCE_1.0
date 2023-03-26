@@ -117,7 +117,8 @@ private:
 //==============================================================================
 /**
 */
-class TheMaskerAudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Timer
+class TheMaskerAudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Timer,
+                                       public juce::Button::Listener
 {
 public:
     TheMaskerAudioProcessorEditor (TheMaskerAudioProcessor&);
@@ -126,7 +127,7 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    
+    void buttonClicked (Button*) override;
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -134,6 +135,8 @@ private:
     TheMaskerAudioProcessor& audioProcessor;
     
     VolumeMeter inputVolume, outputVolume;
+    
+    juce::TextButton undoButton, redoButton, loadButton, saveButton;
     
     CustomRotarySlider  inSlider,
                         outSlider,
@@ -144,8 +147,6 @@ private:
                         stereoLinkedSlider;
     
     CustomLinearSlider cleanUpSlider;
-      
-    Label inLabel, outLabel, scLabel, compLabel, expLabel, cleanUpLabel, mixLabel, stereoLabel;
     
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;

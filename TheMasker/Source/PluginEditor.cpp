@@ -170,7 +170,7 @@ juce::String CustomRotarySlider::getDisplayString() const
         return choiceParam->getCurrentChoiceName();
 
     juce::String str;
-    str = juce::String(juce::roundFloatToInt(getValue()));
+    str = juce::String(juce::roundToInt(getValue()));
 
     return str;
 }
@@ -204,9 +204,16 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     {
         addAndMakeVisible(comp);
     }
-
-    //addAndMakeVisible(inputVolume);
-
+    
+    undoButton.setButtonText("undo");
+    undoButton.addListener(this);
+    redoButton.setButtonText("redo");
+    redoButton.addListener(this);
+    loadButton.setButtonText("load");
+    loadButton.addListener(this);
+    saveButton.setButtonText("save");
+    saveButton.addListener(this);
+    
     setSize (800, 500);
     
 }
@@ -214,6 +221,8 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
 
 TheMaskerAudioProcessorEditor::~TheMaskerAudioProcessorEditor()
 {
+    undoButton.removeListener(this);
+    redoButton.removeListener(this);
 }
 
 
@@ -229,8 +238,12 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillRect (in_area);
     in_area.removeFromTop(8);
     inSlider.setBounds(in_area.removeFromTop(in_area.getWidth()*1.4f));
-    stereoLinkedSlider.setBounds(in_area.removeFromBottom(in_area.getWidth()*1.4f));
+    //stereoLinkedSlider.setBounds(in_area.removeFromBottom(in_area.getWidth()*1.4f));
     
+    undoButton.setBounds(in_area.removeFromBottom(in_area.getWidth()*0.25f));
+    redoButton.setBounds(in_area.removeFromBottom(in_area.getWidth()*0.25f));
+    loadButton.setBounds(in_area.removeFromBottom(in_area.getWidth()*0.25f));
+    saveButton.setBounds(in_area.removeFromBottom(in_area.getWidth()*0.25f));
     
     //draw controls area
     auto controls_area = bounds.removeFromLeft(getWidth() * 0.15);
@@ -272,6 +285,43 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     
 }
 
+void TheMaskerAudioProcessorEditor::buttonClicked (Button*button)// [2]
+{
+    if (button->getButtonText() == undoButton.getButtonText()) {
+        audioProcessor.parameters.undoManager->undo();
+    }
+    else if (button->getButtonText() == redoButton.getButtonText()) {
+        audioProcessor.parameters.undoManager->redo();
+    }
+    else if (button->getButtonText() == loadButton.getButtonText())
+    {
+        auto defaultPresetLocation = File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory);
+        juce::FileChooser chooser("Select preset to load...", defaultPresetLocation, "*.xml");
+        if (chooser.browseForFileToOpen()) {
+            auto fileToLoad = chooser.getResult();
+            MemoryBlock sourceData;
+            fileToLoad.loadFileAsData(sourceData); processor.setStateInformation(sourceData.getData(), sourceData.getSize());
+        }
+    }
+    else if (button->getButtonText() == saveButton.getButtonText()) {
+        auto defaultPresetLocation = File::getSpecialLocation(File::SpecialLocationType::commonDocumentsDirectory);
+        juce::FileChooser chooser("Select save position...", defaultPresetLocation, "*.xml");
+        if (chooser.browseForFileToSave(true)) {
+            auto file = chooser.getResult();
+            if (file.exists())
+                file.deleteFile();
+            
+            juce::FileOutputStream outputStream(file);
+            if (outputStream.openedOk())
+            {
+                MemoryBlock destData; processor.getStateInformation(destData); outputStream.write(destData.getData(), destData.getSize());
+            }
+        }
+    }
+
+
+}
+
 
 void TheMaskerAudioProcessorEditor::resized()
 {
@@ -285,7 +335,7 @@ std::vector<juce::Component*> TheMaskerAudioProcessorEditor::getComponents()
     {
        &inSlider,& outSlider,& mixSlider,
         & scSlider,& compSlider,& expSlider,& cleanUpSlider,
-        & inLabel,& outSlider,& mixLabel,
-        & scLabel,& compLabel,& expLabel,& cleanUpLabel,& stereoLinkedSlider
+        & outSlider,& stereoLinkedSlider,
+        & undoButton, & redoButton, & loadButton, & saveButton
     };
 }

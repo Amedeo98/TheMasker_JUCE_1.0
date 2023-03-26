@@ -89,6 +89,8 @@ private:
     //float frequencies[npoints];
     array<float,npoints> frequencies;
     AudioBuffer<float> auxBuffer;
+    
+    UndoManager undoManager;
 
 
     //==============================================================================

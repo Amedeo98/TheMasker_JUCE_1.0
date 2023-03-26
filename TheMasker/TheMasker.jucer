@@ -3,7 +3,8 @@
 <JUCERPROJECT id="L9vGCF" name="TheMasker" projectType="audioplug" displaySplashScreen="1"
               jucerFormatVersion="1" cppLanguageStandard="20" pluginFormats="buildAU,buildStandalone,buildVST3"
               pluginManufacturer="Cinemystics" pluginManufacturerCode="Cmyx"
-              pluginVST3Category="Analyzer,Dynamics,EQ" pluginAAXCategory="1">
+              pluginVST3Category="Analyzer,Dynamics,EQ" pluginAAXCategory="1"
+              defines="JUCE_MODAL_LOOPS_PERMITTED = 1">
   <MAINGROUP id="EtDrka" name="TheMasker">
     <GROUP id="{D0F8B5F3-955C-44AC-04A3-B12E30F491D6}" name="Source">
       <GROUP id="{5690FD2C-CC54-F01C-870D-A722F213A002}" name="IMG"/>

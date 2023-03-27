@@ -18,7 +18,7 @@ TheMaskerAudioProcessor::TheMaskerAudioProcessor()
                        .withOutput  ("Output", juce::AudioChannelSet::stereo(), true)
                        .withInput("SideChain", juce::AudioChannelSet::stereo(), true)
      ),
-parameters(*this, nullptr, "TheMaskerCompressor", {
+parameters(*this, &undoManager, "TheMaskerCompressor", {
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_MASKEDF, PLUGIN_V}, "Masked Freqs", -1.0f, 1.0f, DEFAULT_MASKEDF),
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_CLEARF, PLUGIN_V}, "Clear Freqs", -1.0f, 1.0f, DEFAULT_CLEARF),
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_ATQ, PLUGIN_V}, "CleanUp", 0.0f, 1.0f, DEFAULT_ATQ),

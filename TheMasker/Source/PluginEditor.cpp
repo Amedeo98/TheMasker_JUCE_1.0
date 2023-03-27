@@ -214,8 +214,8 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
 
 TheMaskerAudioProcessorEditor::~TheMaskerAudioProcessorEditor()
 {
-    undoButton.removeListener(this);
     redoButton.removeListener(this);
+    undoButton.removeListener(this);
     saveButton.removeListener(this);
     loadButton.removeListener(this);
 }
@@ -244,6 +244,16 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     
     //load, save, ecc
     auto settings_area = in_area.removeFromTop(80);
+    settings_area.removeFromTop(20);
+    settings_area.removeFromBottom(12);
+    settings_area.removeFromLeft(8);
+    settings_area.removeFromRight(8);
+    
+    g.setColour(Colours::red.withAlpha(0.5f));
+    undoButton.setBounds(settings_area.getX(), settings_area.getY(), 28, 24);
+    redoButton.setBounds(settings_area.getX(), settings_area.getY() + 26, 28, 24);
+    saveButton.setBounds(settings_area.getX() + 30, settings_area.getY(), 28, 24);
+    loadButton.setBounds(settings_area.getX() + 30, settings_area.getY() + 26, 28, 24);
     
     auto in_slider_area = in_area.removeFromBottom(100);
     in_slider_area.removeFromTop(20);
@@ -276,7 +286,6 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     auto out_slider_area = out_area.removeFromBottom(100);
     out_slider_area.removeFromTop(20);
     outSlider.setBounds(out_slider_area);
-    
     
     //draw spectrum area
     bounds.removeFromTop(24);

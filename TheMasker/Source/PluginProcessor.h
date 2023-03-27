@@ -41,9 +41,7 @@ public:
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-#ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
-#endif
 
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
@@ -77,14 +75,13 @@ public:
     void getFrequencies();
     
     DynamicEQ dynEQ;
-    bool stereoSignals;
 
 private:
     
     int sampleRate = 0;
     int samplesPerBlock = 0;
-    int inCh;
-    int scCh;
+    int inCh = 0;
+    int scCh = 0;
     Converter conv;
 
     //float frequencies[npoints];

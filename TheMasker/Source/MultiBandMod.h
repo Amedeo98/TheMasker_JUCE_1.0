@@ -21,29 +21,24 @@ public:
     MultiBandMod() {}
     ~MultiBandMod() {}
 
-    void prepareToPlay(double sampleRate, int newSamplesPerBlock, int numInChannels, int numScChannels, float* fCenters) {
+    void prepareToPlay(double sampleRate, int newSamplesPerBlock, float* fCenters) {
         fs = sampleRate;
         samplesPerBlock = newSamplesPerBlock;
-        numInCh = numInChannels;
-        numScCh = numScChannels;
-        inputBuffer_copy.setSize(numInCh, samplesPerBlock);
-        tempOutput.setSize(numInCh, samplesPerBlock);
         for (int i = 0; i < nfilts; i++) {
             freqs[i].fCenter = fCenters[i];
         }
         getBandFreqs();
         for (int i = 0; i < nfilts; i++) {
-            filters[i].prepareToPlay(sampleRate, samplesPerBlock, freqs[i].f_lc, freqs[i].f_hc, numInCh);
+            filters[i].prepareToPlay(sampleRate, samplesPerBlock, freqs[i].f_lc, freqs[i].f_hc);
         }
     }
 
-    void setNumChannels(int inCh, int scCh) {
-        numInCh = inCh;
-        numScCh = scCh;
-        inputBuffer_copy.setSize(numInCh, samplesPerBlock);
-        tempOutput.setSize(numInCh, samplesPerBlock);
+    void setNumChannels(int nCh) {
+        numCh = nCh;
+        inputBuffer_copy.setSize(numCh, samplesPerBlock);
+        tempOutput.setSize(numCh, samplesPerBlock);
         for (int i = 0; i < nfilts; i++) {
-            filters[i].setNumChannels(numInCh);
+            filters[i].setNumChannels(numCh);
         }
 
     }
@@ -51,7 +46,7 @@ public:
     void filterBlock(AudioBuffer<float>& buffer, auto& curves, auto& gains_sm) {
         int numSamples = buffer.getNumSamples();
         inputBuffer_copy.clear();
-        for (int ch = 0; ch < numInCh; ch++) 
+        for (int ch = 0; ch < numCh; ch++) 
         {
             inputBuffer_copy.copyFrom(ch, 0, buffer, ch, 0, numSamples);
         }
@@ -61,13 +56,15 @@ public:
             tempOutput.clear();
             filters[f].process(inputBuffer_copy, tempOutput);
             
-            for (int ch = 0; ch < numScCh; ch++) {
+            for (int ch = 0; ch < numCh; ch++) {
 
-                gains_sm[ch][f].setTargetValue(curves[ch].delta[f]);
+                gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
 
                 for (int sample = 0; sample < numSamples; sample++) {
-                    tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * Decibels::decibelsToGain(gains_sm[ch][f].getNextValue()));
+                    tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
                 }
+
+                curves[ch].delta[f] = gains_sm[ch][f].getCurrentValue();
 
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
             }
@@ -90,8 +87,7 @@ public:
 
 private:
 
-    int numInCh;
-    int numScCh;
+    int numCh = 0;
     int fs;
     int samplesPerBlock;
 
@@ -99,11 +95,11 @@ private:
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;
 
-    struct freq 
+    struct freq
     {
-        float f_lc;  
-        float fCenter; 
-        float f_hc; 
+        float f_lc;
+        float fCenter;
+        float f_hc;
     };
 
     array<freq, nfilts> freqs;

@@ -13,11 +13,6 @@
 class DeltaScaler {
 public:
 
-    void prepareToPlay(int numChannels) {
-        //newValues.resize(nfilts);
-        //THclip.resize(nfilts);
-        setNumChannels(numChannels);
-    }
 
     void setNumChannels(int numChannels) {
         nCh = numChannels;
@@ -58,7 +53,7 @@ private:
     int gateThresh = _gateThresh;
     int gateKnee_inv = pow(_gateKnee,-1);
     float nfilts_inv = pow(nfilts, -1);
-    int nCh;
+    int nCh = 0;
     array<float, nfilts> THclip;
     array<float, nfilts> newValues;
 };

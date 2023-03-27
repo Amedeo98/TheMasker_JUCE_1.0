@@ -46,15 +46,11 @@ public:
 
 
 
-    void prepareToPlay(array<float,npoints>& _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock, bool _stereoSignals)
+    void prepareToPlay(array<float,npoints>& _frequencies, int sampleRate, int samplesPerBlock)
     {
         fs = sampleRate;
         numSamples = samplesPerBlock;
 
-        numInChannels = inCh;
-        numScChannels = scCh;
-
-        stereoSignals = _stereoSignals;
 
         frequencies = _frequencies;
         fbank.getFilterBank(frequencies.data());
@@ -68,11 +64,9 @@ public:
             }
         }
 
-        deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data(), numInChannels, numScChannels, stereoSignals);
-        deltaScaler.prepareToPlay(numScChannels);
-
-        bufferDelayer.prepareToPlay(numSamples, stereoSignals, _fftSize, fs);
-        filters.prepareToPlay(fs, numSamples, numInChannels, numScChannels, fCenters.data());
+        deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
+        bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
+        filters.prepareToPlay(fs, numSamples, fCenters.data());
 
         stereoLinked.setSL(stereoLinkAmt);
         setInGain(DEFAULT_IN);
@@ -85,16 +79,16 @@ public:
     void numChannelsChanged(int inCh, int scCh) {
         numInChannels = inCh;
         numScChannels = scCh;
-        stereoSignals = inCh > 1 || scCh > 1;
+        numChannels = max(numInChannels, numScChannels);
 
-
-        deltaGetter.setNumChannels(numInChannels, numScChannels, stereoSignals);
-        deltaScaler.setNumChannels(numScChannels);
-        bufferDelayer.setStereo(stereoSignals);
-        filters.setNumChannels(numInChannels, numScChannels);
+        deltaGetter.setNumChannels(numInChannels, numScChannels, numChannels);
+        deltaScaler.setNumChannels(numChannels);
+        bufferDelayer.setNumChannels(numChannels);
+        filters.setNumChannels(numChannels);
+        spectrumPlotter.setNumChannels(numChannels);
 
         for (int i = 0; i < nfilts; i++) {
-            for (int ch = 0; ch < numScChannels; ch++) {
+            for (int ch = 0; ch < numChannels; ch++) {
                 gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
@@ -113,7 +107,7 @@ public:
 
         deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
-        if (stereoSignals && stereoLinkAmt > 0.0f)
+        if (numChannels == 2 && stereoLinkAmt > 0.0f)
         {
             stereoLinked.process(curves[0].delta, curves[1].delta);
         }
@@ -123,16 +117,16 @@ public:
 
         bufferDelayer.delayBuffer(mainBuffer, curves);
 
-        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(1, 0, numSamples));
+        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
         filters.filterBlock(mainBuffer, curves, gains_sm);
         mainBuffer.applyGain(outGain * _outExtraGain);
-        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(1, 0, numSamples));
+        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
 
        
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < numChannels; i++)
         ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
 
-        spectrumPlotter.drawNextFrameOfSpectrum(curves[0].inSpectrum, curves[0].scSpectrum, curves[0].outSpectrum, gains_sm[0]);
+        spectrumPlotter.drawNextFrameOfSpectrum(curves);
 
     }
 
@@ -194,9 +188,9 @@ private:
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
 
-    int numInChannels = 2;
-    int numScChannels;
-    bool stereoSignals;
+    int numInChannels = 0;
+    int numScChannels = 0;
+    int numChannels = 0;
 
     int fs;
     int numSamples;

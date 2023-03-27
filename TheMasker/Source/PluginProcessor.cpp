@@ -58,15 +58,10 @@ void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSample
     sampleRate = newSampleRate;
     samplesPerBlock = newSamplesPerBlock;
 
-    inCh = getMainBusNumInputChannels();
-    scCh = getTotalNumInputChannels() - inCh > 0 ? getTotalNumInputChannels() - inCh : inCh;
-
-    stereoSignals = inCh > 1 || scCh > 1;
-
-    auxBuffer.setSize(scCh, samplesPerBlock);
+    auxBuffer.setSize(2, samplesPerBlock);
     
     getFrequencies();
-    dynEQ.prepareToPlay(frequencies, sampleRate, inCh, scCh, samplesPerBlock, stereoSignals);
+    dynEQ.prepareToPlay(frequencies, sampleRate, samplesPerBlock);
     setLatencySamples(_fftSize);
 }
 
@@ -77,9 +72,17 @@ void TheMaskerAudioProcessor::releaseResources()
 
 }
 
-#ifndef JucePlugin_PreferredChannelConfigurations
 bool TheMaskerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
+    if (layouts.inputBuses[1] != juce::AudioChannelSet::mono()
+        && layouts.inputBuses[1] != juce::AudioChannelSet::stereo()
+        && layouts.inputBuses[1] != juce::AudioChannelSet::disabled())
+        return false;
+
+    if (layouts.inputBuses[0] != juce::AudioChannelSet::mono()
+        && layouts.inputBuses[0] != juce::AudioChannelSet::stereo())
+        return false;
+
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
      && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
@@ -92,14 +95,12 @@ bool TheMaskerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
     return true;
   
 }
-#endif
 
 void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
     
     auto numSamples = buffer.getNumSamples();
     auxBuffer.clear();
@@ -189,9 +190,6 @@ void TheMaskerAudioProcessor::setStateInformation (const void* data, int sizeInB
             parameters.replaceState(ValueTree::fromXml(*xmlState));
     
 }
-
-//DynamicEQ& TheMaskerAudioProcessor::getDynEQ() { return dynEQ; }
-
 
 void TheMaskerAudioProcessor::getFrequencies() {
 

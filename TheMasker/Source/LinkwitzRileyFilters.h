@@ -17,7 +17,7 @@ public:
 
 
 
-    void prepareToPlay(double sampleRate, int newSamplesPerBlock, float lc_freq, float hc_freq, int nCh) {
+    void prepareToPlay(double sampleRate, int newSamplesPerBlock, float lc_freq, float hc_freq) {
         samplesPerBlock = newSamplesPerBlock;
         LC_freq = lc_freq;
         HC_freq = hc_freq;
@@ -31,7 +31,6 @@ public:
         LC.setCutoffFrequency(LC_freq);
         HC.setType(isLastBand ? dsp::LinkwitzRileyFilterType::allpass : dsp::LinkwitzRileyFilterType::lowpass);
         HC.setCutoffFrequency(HC_freq);
-        setNumChannels(nCh);
         HC.reset();
         LC.reset();
 

@@ -20,7 +20,7 @@
 #define _gateThresh -40
 #define _gateKnee 10
 
-#define _atkSmoothingSeconds 0.010f
+#define _atkSmoothingSeconds 0.030f
 #define _relSmoothingSeconds 0.100f
 #define _overlapRatio 0.5f
 #define _mindBFS -100

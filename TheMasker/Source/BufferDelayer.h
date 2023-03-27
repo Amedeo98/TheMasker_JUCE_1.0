@@ -16,58 +16,54 @@
 
 class BufferDelayer {
 public:
-    void prepareToPlay(int samplesPerBlock, int nCh, int numSamplesToDelay, int sampleRate) {
-        numCh = nCh;
+    void prepareToPlay(int samplesPerBlock, int numSamplesToDelay, int sampleRate) {
         numSamples = samplesPerBlock;
-        delaySamples = numSamplesToDelay*8;
-        spec.maximumBlockSize = samplesPerBlock;
-        spec.numChannels = numCh;
-        spec.sampleRate = sampleRate;
-        delayLine.prepare(spec);
-        delayLine.setMaximumDelayInSamples(delaySamples);
-        delayLine.setDelay(delaySamples);
+        delaySamples = numSamplesToDelay;
+        bufferSpec.maximumBlockSize = samplesPerBlock;
+        bufferSpec.sampleRate = sampleRate;
     }
 
-    void delayBuffer(AudioBuffer<float>& newBuffer) {
+    void delayBuffer(AudioBuffer<float>& newBuffer, auto& curves) {
         for(int ch=0; ch < numCh; ch++)
-            if (newBuffer.getNumChannels() > 0)
             {
                 auto* channelData = newBuffer.getReadPointer(ch, 0);
+                auto* inSpectrumData = curves[ch].inSpectrum.data();
+                auto* scSpectrumData = curves[ch].scSpectrum.data();
                 for (auto i = 0; i < numSamples; ++i) {
-                    delayLine.pushSample(ch, channelData[i]);
-                    newBuffer.setSample(ch, i, delayLine.popSample(ch));
+                    bufferDelayLine.pushSample(ch, channelData[i]);
+                    /*inDelayLine.pushSample(ch, inSpectrumData[i]);
+                    scDelayLine.pushSample(ch, scSpectrumData[i]);*/
+                    newBuffer.setSample(ch, i, bufferDelayLine.popSample(ch));
+                   /* curves[ch].inSpectrum[i] = inDelayLine.popSample(ch);
+                    curves[ch].scSpectrum[i] = scDelayLine.popSample(ch);*/
                 }
             }
 
     }
 
+  
+    void setNumChannels(int nCh) {
+        numCh = nCh;
+
+        bufferSpec.numChannels = numCh;
+        bufferDelayLine.prepare(bufferSpec);
+        bufferDelayLine.setMaximumDelayInSamples(delaySamples);
+
+        //inDelayLine.prepare(bufferSpec);
+        //inDelayLine.setMaximumDelayInSamples(delaySamples);
+
+        //scDelayLine.prepare(bufferSpec);
+        //scDelayLine.setMaximumDelayInSamples(delaySamples);
+    }
 
 private:
     int numSamples;
     int delaySamples;
-    int numCh;
-    dsp::DelayLine<float> delayLine;
-    juce::dsp::ProcessSpec spec;
+    int numCh = 0;
+    dsp::DelayLine<float> bufferDelayLine;
+    dsp::DelayLine<float> inDelayLine;
+    dsp::DelayLine<float> scDelayLine;
+    juce::dsp::ProcessSpec bufferSpec;
 
-    //void pushNextSampleIntoFifo(float sample, int ch) noexcept
-    //{
-
-    //    if (fifoIndex == (delaySamples+numSamples)) 
-    //    {
-    //        fifoIndex = 0;
-    //    }
-    //    //storedBuffer.setSample(ch, fifoIndex++, sample);
-    //    fifo[ch][fifoIndex++] = sample;
-    //}
-
-    //float getNextSamplefromFifo(int ch) noexcept
-    //{
-    //    if (readIndex == (delaySamples + numSamples))
-    //    {
-    //        readIndex = 0;
-    //    }
-    //    //return storedBuffer.getSample(ch, readIndex++);
-    //    return fifo[ch][readIndex++];
-    //}
 
 };

@@ -11,7 +11,7 @@
 #pragma once
 #include "Converters.h"
 #include "FilterBank.h"
-#include "PluginProcessor.h"
+//#include "PluginProcessor.h"
 #include "DynamicEQ.h"
 #include "FT.h"
 #include "PSY.h"
@@ -28,8 +28,14 @@ public:
         for (int i = 0; i < inCh; i++) {
             ft_in.getFT(in, i, inFT[i], deltas[i].inSpectrum);
             conv.magnitudeToDb(inFT[i]);
-            deltas[i].threshold = inFT[i];
+            FloatVectorOperations::copy(deltas[i].threshold.data(), inFT[i].data(), nfilts);
         }
+
+        if (inCh < maxCh) {
+            FloatVectorOperations::copy(deltas[1].inSpectrum.data(), deltas[0].inSpectrum.data(), npoints);
+            FloatVectorOperations::copy(deltas[1].threshold.data(), deltas[0].threshold.data(), nfilts);
+        }
+
 
         for (int i = 0; i < scCh; i++) {
             ft_sc.getFT(sc, i, scFT[i], deltas[i].scSpectrum);
@@ -38,31 +44,33 @@ public:
             psy.compareWithAtq(scFT[i], current_atq);
         }
 
-        for (int i = 0; i < maxCh; i++) {
-            difference(inFT[i], scFT[i], deltas[i].delta);
+        if (scCh < maxCh) 
+        {
+            FloatVectorOperations::copy(deltas[1].scSpectrum.data(), deltas[0].scSpectrum.data(), npoints);
+            FloatVectorOperations::copy(scFT[1].data(), scFT[0].data(), nfilts);
         }
+
+        for (int i = 0; i < maxCh; i++) {
+            difference(deltas[i].threshold, scFT[i], deltas[i].delta);
+        }
+
     }
 
  
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies, int numInCh, int numScCh) {
-        //scFT.resize(numScCh);
-        //inFT.resize(numInCh);
+    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies) {
         getATQ(fCenters, atq);
         psy.getSpreadingMtx();
         ft_in.prepare(frequencies, fCenters, sampleRate);
         ft_sc.prepare(frequencies, fCenters, sampleRate);
         ft_in.setFBank(fb);
         ft_sc.setFBank(fb);
-        setNumChannels(numInCh, numScCh);
-
-
     }
 
-    void setNumChannels(int _inCh, int _scCh) {
+    void setNumChannels(int _inCh, int _scCh, int _maxCh) {
         scCh = _scCh;
         inCh = _inCh;
-        maxCh = jmax(inCh, scCh);
+        maxCh = _maxCh;
     }
 
     void setATQ(float UIatqWeight) {
@@ -86,9 +94,9 @@ private:
     array<array<float, nfilts>, 2> inFT, scFT;
     array<float,nfilts> current_atq, atq;
 
-    int inCh;
-    int scCh;
-    int maxCh;
+    int inCh = 0;
+    int scCh = 0;
+    int maxCh = 0;
 
     float maxGain = _maxGain;
     int gateThresh = _gateThresh;

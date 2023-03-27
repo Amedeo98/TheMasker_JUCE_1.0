@@ -20,12 +20,14 @@
 #define _gateThresh -40
 #define _gateKnee 10
 
-#define _smoothingSeconds 0.100f
+#define _atkSmoothingSeconds 0.030f
+#define _relSmoothingSeconds 0.100f
+#define _overlapRatio 0.5f
 #define _mindBFS -100
 #define _relThreshLift 0.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
-#define _outExtraGain 7.0f
+#define _outExtraGain 1.0f
 
 #define _spectrumPaddingHighFreq 0.145f
 #define _spectrumPaddingLowFreq 0.4f

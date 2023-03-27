@@ -15,8 +15,8 @@
 #define PLUGIN_NAME "TheMasker"
 #define PLUGIN_V 1
 
-#define NAME_COMP "MASKED FREQS"
-#define NAME_EXP  "CLEAR FREQS"
+#define NAME_MASKEDF "MASKED FREQS"
+#define NAME_CLEARF  "CLEAR FREQS"
 #define NAME_ATQ "ATQ"
 #define NAME_SL "STEREO"
 #define NAME_MIX "MIX"
@@ -41,9 +41,7 @@ public:
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-#ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
-#endif
 
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
@@ -82,8 +80,8 @@ private:
     
     int sampleRate = 0;
     int samplesPerBlock = 0;
-    int numScChannels;
-    int numInChannels;
+    int inCh = 0;
+    int scCh = 0;
     Converter conv;
 
     //float frequencies[npoints];

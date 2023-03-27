@@ -24,11 +24,11 @@ using namespace std;
 #include "DeltaDrawer.h"
 #include "Plotter.h"
 #include "VolumeMeter.h"
+#include "CustomSmoothedValue.h"
 
 
-
-#define DEFAULT_COMP 0.0f
-#define DEFAULT_EXP 0.0f
+#define DEFAULT_MASKEDF 0.0f
+#define DEFAULT_CLEARF 0.0f
 #define DEFAULT_ATQ 0.0f
 #define DEFAULT_SL 0.0f
 #define DEFAULT_MIX 1.0f
@@ -46,35 +46,27 @@ public:
 
 
 
-    void prepareToPlay(array<float,npoints>& _frequencies, int sampleRate, int inCh, int scCh, int samplesPerBlock)
+    void prepareToPlay(array<float,npoints>& _frequencies, int sampleRate, int samplesPerBlock)
     {
         fs = sampleRate;
         numSamples = samplesPerBlock;
 
-        numInChannels = inCh;
-        if (scCh > 0)
-            numScChannels = scCh;
-        else
-            numScChannels = numInChannels;
 
         frequencies = _frequencies;
         fbank.getFilterBank(frequencies.data());
         fbank.getFrequencies(fCenters);
 
-        //curves.resize(numInChannels);    
+        //smoothingSeconds = smoothingWindow * _fftSize * pow(fs, -1);
 
-        //gains_sm.resize(numScChannels);
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
-                gains_sm[ch][i].reset(fs, smoothingSeconds);
+                gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
 
-        deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data(), numInChannels, numScChannels);
-        deltaScaler.prepareToPlay(numScChannels);
-
-        bufferDelayer.prepareToPlay(numSamples, numInChannels, _fftSize, fs);
-        filters.prepareToPlay(fs, numSamples, numInChannels, numScChannels, fCenters.data());
+        deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
+        bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
+        filters.prepareToPlay(fs, numSamples, fCenters.data());
 
         stereoLinked.setSL(stereoLinkAmt);
         setInGain(DEFAULT_IN);
@@ -87,14 +79,17 @@ public:
     void numChannelsChanged(int inCh, int scCh) {
         numInChannels = inCh;
         numScChannels = scCh;
-        deltaGetter.setNumChannels(numInChannels, numScChannels);
-        deltaScaler.setNumChannels(numScChannels);
-        filters.setNumChannels(numInChannels, numScChannels);
-        //curves.resize(numScChannels);
-        //gains_sm.resize(numScChannels);
+        numChannels = max(numInChannels, numScChannels);
+
+        deltaGetter.setNumChannels(numInChannels, numScChannels, numChannels);
+        deltaScaler.setNumChannels(numChannels);
+        bufferDelayer.setNumChannels(numChannels);
+        filters.setNumChannels(numChannels);
+        spectrumPlotter.setNumChannels(numChannels);
+
         for (int i = 0; i < nfilts; i++) {
-            for (int ch = 0; ch < numScChannels; ch++) {
-                gains_sm[ch][i].reset(fs, smoothingSeconds);
+            for (int ch = 0; ch < numChannels; ch++) {
+                gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
     }
@@ -112,37 +107,37 @@ public:
 
         deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
-        if (numScChannels == 2 && stereoLinkAmt > 0.0f)
+        if (numChannels == 2 && stereoLinkAmt > 0.0f)
         {
             stereoLinked.process(curves[0].delta, curves[1].delta);
         }
 
-        deltaScaler.scale(curves, compAmount, expAmount, mixAmount);
+        deltaScaler.scale(curves, maskedFreqsAmount, clearFreqsAmount, mixAmount);
         deltaScaler.clip(curves);
 
-        bufferDelayer.delayBuffer(mainBuffer);
+        bufferDelayer.delayBuffer(mainBuffer, curves);
 
-        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(1, 0, numSamples));
+        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
         filters.filterBlock(mainBuffer, curves, gains_sm);
         mainBuffer.applyGain(outGain * _outExtraGain);
-        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(1, 0, numSamples));
+        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
 
        
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < numChannels; i++)
         ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
 
-        spectrumPlotter.drawNextFrameOfSpectrum(curves[0].inSpectrum, curves[0].scSpectrum, curves[0].outSpectrum, gains_sm[0]);
+        spectrumPlotter.drawNextFrameOfSpectrum(curves);
 
     }
 
 
 
-    void setComp(float newValue) {
-        compAmount = newValue;
+    void setMaskedFreqs(float newValue) {
+        maskedFreqsAmount = newValue;
     }
 
-    void setExp(float newValue) {
-        expAmount = newValue;
+    void setClearFreqs(float newValue) {
+        clearFreqsAmount = newValue;
     }
 
     void setAtq(float newValue) {
@@ -183,8 +178,8 @@ public:
 
 private:
 
-    float compAmount = DEFAULT_COMP;
-    float expAmount = DEFAULT_EXP;
+    float maskedFreqsAmount = DEFAULT_MASKEDF;
+    float clearFreqsAmount = DEFAULT_CLEARF;
     float atqWeight = DEFAULT_ATQ;
     float stereoLinkAmt = DEFAULT_SL;
     float mixAmount = DEFAULT_MIX;
@@ -193,9 +188,11 @@ private:
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
 
+    int numInChannels = 0;
+    int numScChannels = 0;
+    int numChannels = 0;
+
     int fs;
-    int numInChannels = 2;
-    int numScChannels;
     int numSamples;
 
     struct curve
@@ -211,21 +208,26 @@ private:
     array<float, nfilts> fCenters;
 
     array<curve,2> curves;
-    array<array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>, 2> gains_sm;
+    array<array<CustomSmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>, 2> gains_sm;
 
-    float smoothingSeconds = _smoothingSeconds;
+    float atkSmoothingSeconds = _atkSmoothingSeconds;
+    float relSmoothingSeconds = _relSmoothingSeconds;
+    float smoothingWindow = _overlapRatio;
 
     FilterBank fbank;
     StereoLinked stereoLinked;
     DeltaGetter deltaGetter;
     DeltaScaler deltaScaler;
     MultiBandMod filters;
-    BufferDelayer bufferDelayer;
     Plotter spectrumPlotter;
     VolumeMeter in_volumeMeter;
     VolumeMeter out_volumeMeter;
 
+    BufferDelayer bufferDelayer;
+
     FT ft_out;
+
+    Converter conv;
 
     
 

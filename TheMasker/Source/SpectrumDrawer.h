@@ -21,7 +21,7 @@ public:
 
     ~SpectrumDrawer() {}
 
-    void drawNextFrameOfSpectrum(array<float, npoints> values)
+    void drawNextFrameOfSpectrum(array<float, npoints>& values)
     {
         for (int i = 0; i < scopeSize; ++i)
         {
@@ -47,8 +47,6 @@ public:
 
         for (int i = 1; i < scopeSize; ++i)
         {
-  
-
             xVal = { jmap(freqAxis[i - 1] , 0.f, 1.f, (float)left, (float)width),
                      jmap(freqAxis[i] , 0.f, 1.f, (float)left, (float)width) };
 
@@ -56,6 +54,5 @@ public:
                 xVal[1], jmap(scopeData[i], 0.0f, 1.0f, (float)height, 0.0f));
         }
     }
-
 
 };

@@ -11,6 +11,7 @@
 #pragma once
 #include "Drawer.h"
 #include "Converters.h"
+//#include <CustomSmoothedValue.h>
 
 class DeltaDrawer : public Drawer {
 public:
@@ -22,7 +23,7 @@ public:
     ~DeltaDrawer() {}
 
 
-    void drawNextFrameOfSpectrum(array<SmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts> result)
+    void drawNextFrameOfSpectrum(auto result)
     {
 
 
@@ -30,7 +31,7 @@ public:
         {
             auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i * scope_step) * _spectrumSkew);
             auto fftDataIndex = juce::jlimit(0, resultSize, (int)(_spectrumPaddingLowFreq + skewedProportionX * (float)resultSize * (0.5f + _spectrumPaddingHighFreq)));
-            auto level = juce::jmap(result[fftDataIndex].getCurrentValue(), mindB, maxdB, 0.0f, 1.0f);
+            auto level = juce::jmap(result[fftDataIndex], mindB, maxdB, 0.0f, 1.0f);
 
             scopeData[i] = level;
         }

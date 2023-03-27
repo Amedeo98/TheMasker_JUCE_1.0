@@ -12,6 +12,8 @@
               file="Source/TheMasker_bg.svg"/>
       </GROUP>
       <GROUP id="{224B1F6F-B4C2-67BA-F881-EA7DFDFCB85F}" name="DSP">
+        <FILE id="RTaeX0" name="CustomSmoothedValue.h" compile="0" resource="0"
+              file="Source/CustomSmoothedValue.h"/>
         <FILE id="MbqDjv" name="BufferDelayer.h" compile="0" resource="0" file="Source/BufferDelayer.h"/>
         <FILE id="PrmF30" name="LinkwitzRileyFilters.h" compile="0" resource="0"
               file="Source/LinkwitzRileyFilters.h"/>

@@ -143,10 +143,9 @@ private:
                         scSlider,
                         compSlider,
                         expSlider,
-                        mixSlider,
-                        stereoLinkedSlider;
+                        mixSlider;
     
-    CustomLinearSlider cleanUpSlider;
+    CustomLinearSlider cleanUpSlider, stereoLinkedSlider;
     
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
@@ -171,6 +170,8 @@ private:
     void timerCallback() final {
         repaint();
     }
-
+    
+    std::unique_ptr<juce::Drawable> svgDrawable;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMaskerAudioProcessorEditor)
 };

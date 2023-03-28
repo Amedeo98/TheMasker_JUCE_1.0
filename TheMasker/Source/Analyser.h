@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include "Converters.h"
+#include "Constants.h"
 
 
 class Analyser
@@ -78,7 +78,6 @@ public:
 
 private:
     juce::dsp::FFT forwardFFT;                    
-    Converter conv;
 
     array<float,_fftSize> window;                          
     array<float,_fftSize> fifo;                          

@@ -25,6 +25,7 @@ using namespace std;
 #include "Plotter.h"
 #include "VolumeMeter.h"
 #include "CustomSmoothedValue.h"
+#include "Constants.h"
 
 
 #define DEFAULT_MASKEDF 0.0f
@@ -187,6 +188,7 @@ private:
     float outGain = Decibels::decibelsToGain(DEFAULT_OUT);
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
+    float extraGain = 1.0f;
 
     int numInChannels = 0;
     int numScChannels = 0;

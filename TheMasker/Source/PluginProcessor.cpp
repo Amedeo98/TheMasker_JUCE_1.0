@@ -193,13 +193,11 @@ void TheMaskerAudioProcessor::setStateInformation (const void* data, int sizeInB
 
 void TheMaskerAudioProcessor::getFrequencies() {
 
-    //frequencies.resize(_fftSize);
     float maxbark, minbark;
     conv.hz2bark(maxFreq, maxbark);
     conv.hz2bark(minFreq, minbark);
     float step_bark = (maxbark - minbark) / (npoints - 1);
     for (int i = 0; i < npoints; ++i){
-        //frequencies[i] =;
         conv.bark2hz(minbark + step_bark * i, frequencies[i]);
     }
 }

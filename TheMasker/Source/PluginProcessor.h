@@ -12,17 +12,7 @@
 #include "DynamicEQ.h"
 #include "Converters.h"
 
-#define PLUGIN_NAME "TheMasker"
-#define PLUGIN_V 1
 
-#define NAME_MASKEDF "MASKED FREQS"
-#define NAME_CLEARF  "CLEAR FREQS"
-#define NAME_ATQ "ATQ"
-#define NAME_SL "STEREO"
-#define NAME_MIX "MIX"
-#define NAME_IN "IN"
-#define NAME_OUT "OUT"
-#define NAME_SC "SIDECHAIN"
 
 /*
  Maschera > IN -> IN Masked        ->  MASKED PARTS: -1 = reveal … +1 = bury

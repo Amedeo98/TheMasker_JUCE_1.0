@@ -8,31 +8,7 @@
   ==============================================================================
 */
 
-#define nfilts 32
-#define _fftOrder 11
-#define _fftSize (1 << _fftOrder)
-#define npoints 256
-
-#define maxFreq 22000
-#define minFreq 20
-
-#define _maxGain 20
-#define _gateThresh -40
-#define _gateKnee 10
-
-#define _atkSmoothingSeconds 0.030f
-#define _relSmoothingSeconds 0.100f
-#define _overlapRatio 0.5f
-#define _mindBFS -100
-#define _relThreshLift 0.0f
-#define _atqLift 1.6f
-#define _spreadExp 0.6f
-#define _outExtraGain 8.0f
-
-#define _spectrumPaddingHighFreq 0.145f
-#define _spectrumPaddingLowFreq 0.4f
-#define _spectrumSkew 1.0f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
-                            // se = 1.0f -> basse "strette", se 0.1f basse "larghe", (default 0.2f)
+#include "Constants.h"
 
 #pragma once
 class Converter {

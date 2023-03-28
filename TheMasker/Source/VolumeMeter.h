@@ -19,29 +19,33 @@ public:
 
     void draw(Graphics& g, juce::Rectangle<int>& bounds) {
         
-        g.setColour(Colours::white.withAlpha(0.5f));
+        g.setColour(Colours::white.withAlpha(0.8f));
         
         auto top = bounds.getY()+16;
-        auto left = bounds.getX()+14;
+        auto left = bounds.getX()+20;
         auto height = bounds.getHeight();
         auto width = bounds.getWidth();
         
-        auto chWidth = width * 0.2;
+        auto chWidth = 6;
         auto chHeight = height - 32;
         
-        g.fillRect(Rectangle<int>(left, top, chWidth, chHeight));
-        g.fillRect(Rectangle<int>(left + width - (chWidth + 28), top, chWidth, chHeight));
+        Path bkg;
+        g.setColour(Colours::white.withAlpha(0.8f));
+        bkg.addRoundedRectangle(left, top, chWidth, chHeight, 6, 2.0f);
+        bkg.addRoundedRectangle(left + chWidth + 18, top, chWidth, chHeight, 6, 2.0f);
+        PathStrokeType(8.0);
+        g.fillPath(bkg);
+        
+        g.setColour(Colour(40u, 220u, 0u));
         
         // Draw the left channel meter
-        g.setColour(Colours::green);
         float leftLevel = jmax(0.0f, jmin(1.0f, currentLevel[0]));
         leftLevel *= chHeight;
         g.fillRect(Rectangle<int>(left, top + chHeight - leftLevel + 1, chWidth, leftLevel));
         
         // Draw the right channel meter
-        g.setColour(Colours::red);
         float rightLevel = jmax(0.0f, jmin(1.0f, currentLevel[1])) * chHeight;
-        g.fillRect(Rectangle<int>(left + width - (chWidth + 28), top + chHeight - rightLevel + 1, chWidth, rightLevel));
+        g.fillRect(Rectangle<int>(left + chWidth + 18, top + chHeight - rightLevel + 1, chWidth, rightLevel));
         
     }
 

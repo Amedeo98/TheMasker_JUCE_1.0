@@ -33,6 +33,23 @@ public:
                                    Slider&) override;
 };
 
+class CustomSettingsButton : public juce::Button
+{
+public:
+    static constexpr int customButtonColourId = 0xdeadbeef;
+    
+    CustomSettingsButton(const juce::String& buttonName = juce::String())
+            : juce::Button(buttonName)
+    {
+        setColour(customButtonColourId, juce::Colours::transparentBlack);
+    }
+    
+    void paintButton(juce::Graphics& g, bool isMouseOverButton, bool isButtonDown) override
+    {}
+    
+};
+
+
 struct CustomLinearSlider : juce::Slider
 {
     CustomLinearSlider(juce::RangedAudioParameter& rap, const juce::String& name, bool displayValue) : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
@@ -48,14 +65,6 @@ struct CustomLinearSlider : juce::Slider
     {
         setLookAndFeel(nullptr);
     }
-    
-    struct LabelPos
-    {
-        float pos;
-        juce::String label;
-    };
-
-    juce::Array<LabelPos> labels;
 
     void paint(juce::Graphics& g) override;
     int getTextHeight() const { return 14; }
@@ -136,17 +145,16 @@ private:
     
     VolumeMeter inputVolume, outputVolume;
     
-    juce::TextButton undoButton, redoButton, loadButton, saveButton;
+    CustomSettingsButton undoButton, redoButton, loadButton, saveButton;
     
     CustomRotarySlider  inSlider,
                         outSlider,
                         scSlider,
                         compSlider,
                         expSlider,
-                        mixSlider,
-                        stereoLinkedSlider;
+                        mixSlider;
     
-    CustomLinearSlider cleanUpSlider;
+    CustomLinearSlider cleanUpSlider, stereoLinkedSlider;
     
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
@@ -160,17 +168,14 @@ private:
                 stereoLinkedSliderAttachment,
                 cleanUpSliderAttachment;
     
-    Colour bgColorLight = Colour::greyLevel(0.8);
-    Colour bgColorDark = Colour::greyLevel(0.5);
-    Colour primaryColor = Colour(97u, 18u, 167u);
-    Colour accentColor = Colour(64u, 200u, 64u);
-    
     
     std::vector<juce::Component*> getComponents();
 
     void timerCallback() final {
         repaint();
     }
-
+    
+    std::unique_ptr<juce::Drawable> svgDrawable;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMaskerAudioProcessorEditor)
 };

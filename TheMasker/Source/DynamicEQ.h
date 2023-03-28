@@ -172,8 +172,11 @@ public:
         in_volumeMeter.draw(g, inVolBounds);
         out_volumeMeter.draw(g, outVolBounds);
     }
-
-
+    
+    void toggleSpectrumView(juce::String btn)
+    {
+        spectrumPlotter.toggleSpectrumView(btn);
+    }
 
 
 private:

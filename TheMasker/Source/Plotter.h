@@ -48,10 +48,18 @@ public:
     
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds)
     {
-        inSpectrum.drawFrame(g, bounds);
-        scSpectrum.drawFrame(g, bounds);
-        outSpectrum.drawFrame(g, bounds);
-        deltaSpectrum.drawFrame(g, bounds);
+        if(!hide_in){
+            inSpectrum.drawFrame(g, bounds);
+        }
+        if(!hide_sc){
+            scSpectrum.drawFrame(g, bounds);
+        }
+        if(!hide_d){
+            deltaSpectrum.drawFrame(g, bounds);
+        }
+        if(!hide_out){
+            outSpectrum.drawFrame(g, bounds);
+        }
     }
 
     void setNumChannels(int nCh) {
@@ -62,6 +70,22 @@ public:
         FloatVectorOperations::fill(dest.data(), 0.0f, size);
         FloatVectorOperations::addWithMultiply(dest.data(), left.data(), 0.5f, size);
         FloatVectorOperations::addWithMultiply(dest.data(), right.data(), 0.5f, size);
+    }
+    
+    void toggleSpectrumView(juce::String btn)
+    {
+        if(btn == "in"){
+            hide_in = !hide_in;
+        }
+        else if(btn == "sc"){
+            hide_sc = !hide_sc;
+        }
+        else if(btn == "delta"){
+            hide_d = !hide_d;
+        }
+        else if(btn == "out"){
+            hide_out = !hide_out;
+        }
     }
 
 
@@ -78,9 +102,14 @@ private:
 
     int numCh = 0;
 
-    juce::Colour in_colour = Colour(0.5f, 1.0f, 1.0f, 1.0f);
-    juce::Colour sc_colour = Colour(0.07f, 1.0f, 1.0f, 1.0f);
-    juce::Colour out_colour = Colour(0.3f, 1.0f, 1.0f, 1.0f);
-    juce::Colour delta_colour = Colour(1.0f, 1.0f, 1.0f, 1.0f);
+    juce::Colour in_colour = Colour(Colours::white.withAlpha(0.7f));
+    juce::Colour sc_colour = Colour(255u, 200u, 100u);
+    juce::Colour out_colour = Colour(40u, 220u, 0u);
+    juce::Colour delta_colour = Colour(200u, 40u, 160u);
+    
+    bool hide_in = false;
+    bool hide_sc = false;
+    bool hide_d = false;
+    bool hide_out = false;
 
 };

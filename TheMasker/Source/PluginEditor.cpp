@@ -184,26 +184,34 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
 
     compSliderAttachment(audioProcessor.parameters, NAME_MASKEDF, compSlider),
     expSliderAttachment(audioProcessor.parameters, NAME_CLEARF, expSlider),
-    cleanUpSliderAttachment(audioProcessor.parameters, NAME_ATQ, cleanUpSlider),
-    stereoLinkedSliderAttachment(audioProcessor.parameters, NAME_SL, stereoLinkedSlider)
+    stereoLinkedSliderAttachment(audioProcessor.parameters, NAME_SL, stereoLinkedSlider),
+    cleanUpSliderAttachment(audioProcessor.parameters, NAME_ATQ, cleanUpSlider)
+
 {
     
     startTimerHz(25);
+    
+    undoButton.setButtonText("undo");
+    redoButton.setButtonText("redo");
+    loadButton.setButtonText("load");
+    saveButton.setButtonText("save");
+    toggleIn.setButtonText("in");
+    toggleSc.setButtonText("sc");
+    toggleD.setButtonText("delta");
+    toggleOut.setButtonText("out");
+    
     
     for(auto* comp : getComponents())
     {
         addAndMakeVisible(comp);
     }
     
-    undoButton.setButtonText("undo");
-    undoButton.addListener(this);
-    redoButton.setButtonText("redo");
-    redoButton.addListener(this);
-    loadButton.setButtonText("load");
-    loadButton.addListener(this);
-    saveButton.setButtonText("save");
-    saveButton.addListener(this);
-    
+    for(auto* btn: getButtons())
+    {
+        addAndMakeVisible(btn);
+        btn->addListener(this);
+    }
+
     
     // Carica il file SVG dal disco
     svgDrawable = Drawable::createFromImageData (BinaryData::TheMasker_bg_svg, BinaryData::TheMasker_bg_svgSize);
@@ -214,10 +222,10 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
 
 TheMaskerAudioProcessorEditor::~TheMaskerAudioProcessorEditor()
 {
-    redoButton.removeListener(this);
-    undoButton.removeListener(this);
-    saveButton.removeListener(this);
-    loadButton.removeListener(this);
+    for(auto* btn: getButtons())
+    {
+        btn->removeListener(this);
+    }
 }
 
 
@@ -248,8 +256,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     settings_area.removeFromBottom(12);
     settings_area.removeFromLeft(8);
     settings_area.removeFromRight(8);
-    
-    g.setColour(Colours::red.withAlpha(0.5f));
+
     undoButton.setBounds(settings_area.getX(), settings_area.getY(), 28, 24);
     redoButton.setBounds(settings_area.getX(), settings_area.getY() + 26, 28, 24);
     saveButton.setBounds(settings_area.getX() + 30, settings_area.getY(), 28, 24);
@@ -258,7 +265,6 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     auto in_slider_area = in_area.removeFromBottom(100);
     in_slider_area.removeFromTop(20);
     inSlider.setBounds(in_slider_area);
-    
     
     //draw controls area
     auto controls_area = bounds.removeFromLeft(174);
@@ -288,12 +294,18 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     outSlider.setBounds(out_slider_area);
     
     //draw spectrum area
-    bounds.removeFromTop(24);
     bounds.removeFromBottom(24);
+    auto legend_area = bounds.removeFromBottom(18);
+    toggleIn.setBounds(legend_area.getX()+24, legend_area.getY(), 48, 24);
+    toggleSc.setBounds(legend_area.getX()+76, legend_area.getY(), 48, 24);
+    toggleD.setBounds(legend_area.getX()+legend_area.getWidth()-128, legend_area.getY(), 58, 24);
+    toggleOut.setBounds(legend_area.getX()+legend_area.getWidth()-72, legend_area.getY(), 58, 24);
+    
     auto responseArea = bounds;
 
     audioProcessor.dynEQ.drawFrame(g, responseArea, in_area, out_area);
 }
+
 
 void TheMaskerAudioProcessorEditor::buttonClicked (Button*button)// [2]
 {
@@ -328,6 +340,17 @@ void TheMaskerAudioProcessorEditor::buttonClicked (Button*button)// [2]
             }
         }
     }
+    else {
+        audioProcessor.dynEQ.toggleSpectrumView(button->getButtonText());
+        if(button->getButtonText() == toggleIn.getButtonText())
+            toggleIn.toggle();
+        if(button->getButtonText() == toggleSc.getButtonText())
+            toggleSc.toggle();
+        if(button->getButtonText() == toggleD.getButtonText())
+            toggleD.toggle();
+        if(button->getButtonText() == toggleOut.getButtonText())
+            toggleOut.toggle();
+    }
 
 
 }
@@ -345,7 +368,17 @@ std::vector<juce::Component*> TheMaskerAudioProcessorEditor::getComponents()
     {
        &inSlider,& outSlider,& mixSlider,
         & scSlider,& compSlider,& expSlider,& cleanUpSlider,
-        & outSlider,& stereoLinkedSlider,
-        & undoButton, & redoButton, & loadButton, & saveButton
+        & outSlider,& stereoLinkedSlider
     };
 }
+
+
+std::vector<CustomButton*> TheMaskerAudioProcessorEditor::getButtons()
+{
+    return
+    {
+        & undoButton, &redoButton, & loadButton, & saveButton,
+        &toggleIn, &toggleSc, &toggleD, &toggleOut
+    };
+}
+

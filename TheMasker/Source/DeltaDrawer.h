@@ -51,8 +51,10 @@ public:
         g.setColour(colour
             //.withAlpha(0.5f) 
         );
-        g.drawLine(xVal[0], jmap(scopeData[0], 0.0f, 1.0f, (float)height, 0.0f) , //oppure (float)height * 0.5f al posto del jmap
+        juce::Line<float> line (xVal[0], jmap(scopeData[0], 0.0f, 1.0f, (float)height, 0.0f) , //oppure (float)height * 0.5f al posto del jmap
             xVal[1], jmap(scopeData[0], 0.0f, 1.0f, (float)height, 0.0f));
+        
+        g.drawLine (line, 2.0f);
 
         //altre linee
         for (int i = 1; i < scopeSize; ++i)
@@ -64,8 +66,11 @@ public:
             g.setColour(colour
                 //.withAlpha(jlimit(0.0f, 1.0f, abs(scopeData[i]-0.5f) * 1.5f)) //1.5f : moltiplicatore dell'alfa del rosso - poi clippato tra 0 e 1
             );
-            g.drawLine(xVal[0], jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
+            
+            juce::Line<float> line (xVal[0], jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
                 xVal[1], jmap(scopeData[i], 0.0f, 1.0f, (float)height, 0.0f));
+            
+            g.drawLine (line, 2.0f);
         }
     }
 

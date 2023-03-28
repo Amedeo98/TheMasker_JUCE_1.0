@@ -22,8 +22,8 @@ public:
         LC_freq = lc_freq;
         HC_freq = hc_freq;
 
-        isFirstBand = (LC_freq - minFreq) < 1.0f;
-        isLastBand = (HC_freq - maxFreq) < 1.0f;
+        isFirstBand = abs(LC_freq - minFreq) < 1.0f;
+        isLastBand = abs(HC_freq - maxFreq) < 1.0f;
 
         spec.maximumBlockSize = samplesPerBlock;
         spec.sampleRate = sampleRate;

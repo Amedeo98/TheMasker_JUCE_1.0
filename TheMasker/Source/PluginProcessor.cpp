@@ -88,8 +88,8 @@ bool TheMaskerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
         return false;
 
     // This checks if the input layout matches the output layout
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
+    //if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+    //    return false;
    
 
     return true;

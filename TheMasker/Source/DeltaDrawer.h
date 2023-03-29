@@ -38,7 +38,7 @@ public:
 
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds) override {
 
-        auto width = bounds.getX() + bounds.getWidth();
+        auto width = bounds.getX() + bounds.getWidth() + 4;
         auto height = bounds.getHeight() - bounds.getY();
         auto left = bounds.getX();
         

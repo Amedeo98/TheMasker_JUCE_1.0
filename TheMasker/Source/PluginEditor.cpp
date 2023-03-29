@@ -290,11 +290,11 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     
     //draw controls area
     auto controls_area = bounds.removeFromLeft(174);
-    controls_area.removeFromTop(104);
+    controls_area.removeFromTop(100);
     auto sc_area = controls_area.removeFromTop(110);
     scSlider.setBounds(sc_area);
     
-    controls_area.removeFromTop(8);
+    controls_area.removeFromTop(12);
     auto comp_area = controls_area.removeFromTop(66);
     compSlider.setBounds(comp_area);
     
@@ -316,16 +316,16 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     outSlider.setBounds(out_slider_area);
     
     //draw spectrum area
-    bounds.removeFromBottom(24);
+    bounds.removeFromBottom(18);
     auto legend_area = bounds.removeFromBottom(18);
     toggleIn.setBounds(legend_area.getX()+24, legend_area.getY(), 48, 24);
     toggleSc.setBounds(legend_area.getX()+76, legend_area.getY(), 48, 24);
     toggleD.setBounds(legend_area.getX()+legend_area.getWidth()-128, legend_area.getY(), 58, 24);
     toggleOut.setBounds(legend_area.getX()+legend_area.getWidth()-72, legend_area.getY(), 58, 24);
     
-    bounds.removeFromTop(16);
-    bounds.removeFromLeft(12);
-    bounds.removeFromRight(8);
+    bounds.removeFromTop(28);
+    bounds.removeFromLeft(20);
+    bounds.removeFromRight(16);
     auto responseArea = bounds;
     
     //grid
@@ -362,7 +362,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         g.drawHorizontalLine(y, responseArea.getX(), responseArea.getX() + responseArea.getWidth());
     }
 
-    g.setColour(Colours::lightgrey);
+    g.setColour(Colour(255u, 200u, 100u));
     const int fontHeight = 10;
     g.setFont(fontHeight);
 
@@ -390,7 +390,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         Rectangle<int> r;
         r.setSize(textWidth, fontHeight);
         r.setCentre(x, 0);
-        r.setY(1);
+        r.setY(4);
 
         g.drawFittedText(str, r, juce::Justification::centred, 1);
     }
@@ -418,12 +418,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         
         str.clear();
         str << (gDb - 24.f);
-        
-        r.setX(1);
-        textWidth = g.getCurrentFont().getStringWidth(str);
-        r.setSize(textWidth, fontHeight);
-        g.setColour(Colours::lightgrey);
-        g.drawFittedText(str, r, juce::Justification::centred, 1);
+    
     }
     
 

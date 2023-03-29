@@ -31,6 +31,7 @@ public:
                                    float maxSliderPos,
                                    const Slider::SliderStyle,
                                    Slider&) override;
+    
 };
 
 class CustomButton : public juce::Button
@@ -67,9 +68,9 @@ private:
 };
 
 
-
-struct CustomLinearSlider : juce::Slider
+class CustomLinearSlider : public juce::Slider
 {
+public:
     CustomLinearSlider(juce::RangedAudioParameter& rap, const juce::String& name, bool displayValue) : juce::Slider(juce::Slider::SliderStyle::LinearHorizontal,
                                         juce::Slider::TextEntryBoxPosition::NoTextBox),
         param(&rap),
@@ -89,10 +90,6 @@ struct CustomLinearSlider : juce::Slider
 
 
 private:
-    juce::DropShadowEffect shadow;
-    juce::DropShadow shadowProps;
-    void setShadowProps();
-    
     LnF lnf;
     juce::RangedAudioParameter* param;
     juce::String sliderName;
@@ -101,12 +98,13 @@ private:
 };
 
 
-struct CustomRotarySlider : juce::Slider
+class CustomRotarySlider : public juce::Slider
 {
+public:
     CustomRotarySlider(juce::RangedAudioParameter& rap, const juce::String& name, bool displayValue) : juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
                                         juce::Slider::TextEntryBoxPosition::NoTextBox),
-        param(&rap),
         sliderName(name),
+        param(&rap),
         displayValue(displayValue)
     {
         setLookAndFeel(&lnf);
@@ -117,29 +115,18 @@ struct CustomRotarySlider : juce::Slider
         setLookAndFeel(nullptr);
     }
 
-    struct LabelPos
-    {
-        float pos;
-        juce::String label;
-    };
-
-    juce::Array<LabelPos> labels;
-
     void paint(juce::Graphics& g) override;
     juce::Rectangle<int> getSliderBounds(juce::Rectangle<int> bounds) const;
     int getTextHeight() const { return 14; }
     juce::String getDisplayString() const;
-
+    juce::String sliderName;
 
 private:
     
     LnF lnf;
     juce::RangedAudioParameter* param;
-    juce::String sliderName;
     bool displayValue;
-    
 };
-
 
 //==============================================================================
 /**

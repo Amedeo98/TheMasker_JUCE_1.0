@@ -204,8 +204,6 @@ void TheMaskerAudioProcessor::getFrequencies() {
 
 
 
-
-
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

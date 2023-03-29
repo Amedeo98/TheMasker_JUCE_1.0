@@ -26,7 +26,6 @@ public:
     void drawNextFrameOfSpectrum(auto result)
     {
 
-
         for (int i = 0; i < scopeSize; ++i)
         {
             auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i * scope_step) * _spectrumSkew);
@@ -40,21 +39,35 @@ public:
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds) override {
 
         auto width = bounds.getX() + bounds.getWidth();
-        auto height = bounds.getHeight();
+        auto height = bounds.getHeight() - bounds.getY();
         auto left = bounds.getX();
         
         //linea sotto la prima frequenza di fCenters (60Hz circa)
         xVal = {(float)left, 
-                jmap(freqAxis[0] , 0.f, 1.f, (float)left, (float)width) 
+                jmap(freqAxis[0] , 0.f, 1.f, (float)left, (float)width)
         };
-
-        g.setColour(colour
-            //.withAlpha(0.5f) 
-        );
-        juce::Line<float> line (xVal[0], jmap(scopeData[0], 0.0f, 1.0f, (float)height, 0.0f) , //oppure (float)height * 0.5f al posto del jmap
-            xVal[1], jmap(scopeData[0], 0.0f, 1.0f, (float)height, 0.0f));
         
-        g.drawLine (line, 2.0f);
+        yVal = { (float)height*0.5f,
+                 jmap(scopeData[0], 0.0f, 1.0f, (float)height, 0.0f)
+        };
+        
+
+        /*g.setColour(colour
+            .withAlpha(jlimit(0.0f, 1.0f, abs(scopeData[0]-0.525f)*40.0f))
+        );*/
+        
+        g.setColour(colour);
+        
+        juce::Line<float> line (xVal[0], yVal[1], xVal[1], yVal[1]);
+        
+        //g.drawLine (line, 3.0f);
+        Path p;
+        p.startNewSubPath (xVal[0], yVal[1]);
+        p.cubicTo (xVal[0], yVal[1], xVal[0], yVal[1], xVal[1], yVal[1]);
+        g.strokePath (p, PathStrokeType (2.0));
+        
+        
+        //g.fillRect(xVal[0], yVal[1], xVal[1]-xVal[0], float(height)-yVal[1]);
 
         //altre linee
         for (int i = 1; i < scopeSize; ++i)
@@ -63,14 +76,26 @@ public:
             xVal = { jmap(freqAxis[i - 1] , 0.f, 1.f, (float)left, (float)width),
                      jmap(freqAxis[i] , 0.f, 1.f, (float)left, (float)width) 
             };
-            g.setColour(colour
-                //.withAlpha(jlimit(0.0f, 1.0f, abs(scopeData[i]-0.5f) * 1.5f)) //1.5f : moltiplicatore dell'alfa del rosso - poi clippato tra 0 e 1
-            );
+            /*g.setColour(colour
+                .withAlpha(jlimit(0.0f, 1.0f, abs(scopeData[i]-0.525f)*40.0f))
+            ); */
             
-            juce::Line<float> line (xVal[0], jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
-                xVal[1], jmap(scopeData[i], 0.0f, 1.0f, (float)height, 0.0f));
+            g.setColour(colour);
             
-            g.drawLine (line, 2.0f);
+            yVal = { jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f),
+                          jmap(scopeData[i], 0.0f, 1.0f, (float)height, 0.0f)
+            };
+            
+            juce::Line<float> line (xVal[0], yVal[0], xVal[1], yVal[1]);
+            //g.drawLine (line, 3.0f);
+            
+            Path p;
+            p.startNewSubPath (xVal[0], yVal[0]);
+            p.quadraticTo (xVal[1], yVal[1], xVal[1], yVal[1]);
+            g.strokePath (p, PathStrokeType (2.0));
+            
+            
+            //g.fillRect(xVal[0], yVal[0], xVal[1]-xVal[0], float(height)-yVal[0]);
         }
     }
 

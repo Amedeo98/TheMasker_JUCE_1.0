@@ -46,7 +46,7 @@ public:
     array<float, npoints> freqAxis;
     float* frequencies;
 
-    array<float, 2> xVal;
+    array<float, 2> xVal, yVal;
 
     float scope_step;
 

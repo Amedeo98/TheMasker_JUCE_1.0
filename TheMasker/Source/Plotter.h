@@ -24,17 +24,25 @@ public:
         deltaSpectrum.prepareToPlay(fCenters, delta_colour);
     }
 
-    void drawNextFrameOfSpectrum(auto& curves) {
+    void drawNextFrameOfSpectrum(auto& curves, auto& gains_sm) {
         
         if (numCh == 2) {
-            averageValues(deltaScope, curves[0].delta, curves[1].delta, nfilts);
+            
+            for (int i = 0; i < nfilts; i++) {
+                deltaScope[i] = Decibels::gainToDecibels(gains_sm[0][i].getCurrentValue());
+
+            }
+            //averageValues(deltaScope, gains_sm[0], gains_sm[1], nfilts);
             averageValues(inScope, curves[0].inSpectrum, curves[1].inSpectrum, npoints);
             averageValues(scScope, curves[0].scSpectrum, curves[1].scSpectrum, npoints);
             averageValues(outScope, curves[0].outSpectrum, curves[1].outSpectrum, npoints);
         } 
-        else 
+        else
         {
-            FloatVectorOperations::copy(deltaScope.data(), curves[0].delta.data(), nfilts);
+            for (int i = 0; i < nfilts; i++) {
+                deltaScope[i] = Decibels::gainToDecibels((gains_sm[0][i].getCurrentValue() + gains_sm[1][i].getCurrentValue()) * 0.5f);
+            }
+            //FloatVectorOperations::copy(deltaScope.data(), gains_sm[0].data(), nfilts);
             FloatVectorOperations::copy(inScope.data(), curves[0].inSpectrum.data(), npoints);
             FloatVectorOperations::copy(scScope.data(), curves[0].scSpectrum.data(), npoints);
             FloatVectorOperations::copy(outScope.data(), curves[0].outSpectrum.data(), npoints);
@@ -94,6 +102,8 @@ private:
     SpectrumDrawer scSpectrum;
     SpectrumDrawer outSpectrum;
     DeltaDrawer deltaSpectrum;
+
+    Converter conv;
 
     array<float, npoints> inScope;
     array<float, npoints> scScope;

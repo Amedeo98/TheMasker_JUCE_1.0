@@ -70,8 +70,6 @@ public:
                     tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
                 }
 
-                curves[ch].delta[f] = gains_sm[ch][f].getCurrentValue();
-
                 buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples, gainAdjustments[f]);
 
             }

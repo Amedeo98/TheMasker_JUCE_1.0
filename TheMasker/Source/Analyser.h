@@ -37,6 +37,7 @@ public:
 
     void getResult(array<float, _fftSize>& result)
     {
+        if (nextFFTBlockReady) {
             FloatVectorOperations::multiply(fftData.data(), window.data(), fftSize);
 
             forwardFFT.performFrequencyOnlyForwardTransform(fftData.data(), false);  // [2]
@@ -44,7 +45,7 @@ public:
             FloatVectorOperations::copy(result.data(), fftData.data(), fftSize);
 
             nextFFTBlockReady = false;
-
+        }
     }
 
     void pushNextSampleIntoFifo(float sample) noexcept

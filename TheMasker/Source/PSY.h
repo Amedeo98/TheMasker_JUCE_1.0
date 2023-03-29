@@ -48,6 +48,13 @@ public:
     }
 
     void compareWithAtq(array<float, nfilts>& rel_t, array<float,nfilts>& atq) {
+        for (int i = 0; i < nfilts; i++) {
+            ATQclip[i] = (1.0f + tanh((rel_t[i] - gateThresh) * gateKnee_inv)) * 0.5f;
+        }
+
+        std::transform(atq.begin(), atq.end(),
+            ATQclip.begin(), atq_gated.data(),
+            std::multiplies<float>());
         FloatVectorOperations::max(rel_t.data(), rel_t.data(), atq.data(), nfilts);
     }
 private:
@@ -56,4 +63,9 @@ private:
     float descendent[nfilts];
     Converter conv;
     float spread_exp = _spreadExp;
+    array<float, nfilts> ATQclip;
+    array<float, nfilts> atq_gated;
+    float gateKnee_inv = pow(_gateKnee, 1);
+    float gateThresh = _gateATQ;
+
 };

@@ -22,6 +22,15 @@
 #define NAME_OUT "OUT"
 #define NAME_SC "SIDECHAIN"
 
+#define DEFAULT_MASKEDF 0.0f
+#define DEFAULT_CLEARF 0.0f
+#define DEFAULT_ATQ 0.0f
+#define DEFAULT_SL 0.0f
+#define DEFAULT_MIX 1.0f
+#define DEFAULT_IN 0.0f
+#define DEFAULT_OUT 0.0f
+#define DEFAULT_SC 0.0f
+
 
 #define nfilts 32
 #define _fftOrder 11
@@ -33,6 +42,7 @@
 
 #define _maxGain 20
 #define _gateThresh -40
+#define _gateATQ -60
 #define _gateKnee 10
 
 #define _atkSmoothingSeconds 0.100f
@@ -44,7 +54,7 @@
 #define _spreadExp 0.6f
 #define _outExtraGain 7.6f
 
-#define _spectrumPaddingHighFreq 0.145f
+#define _spectrumPaddingHighFreq 0.3f
 #define _spectrumPaddingLowFreq 0.4f
 #define _spectrumSkew 1.0f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
 // se = 1.0f -> basse "strette", se 0.1f basse "larghe", (default 0.2f)

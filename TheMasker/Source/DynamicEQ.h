@@ -27,18 +27,6 @@ using namespace std;
 #include "CustomSmoothedValue.h"
 #include "Constants.h"
 
-
-#define DEFAULT_MASKEDF 0.0f
-#define DEFAULT_CLEARF 0.0f
-#define DEFAULT_ATQ 0.0f
-#define DEFAULT_SL 0.0f
-#define DEFAULT_MIX 1.0f
-#define DEFAULT_IN 0.0f
-#define DEFAULT_OUT 0.0f
-#define DEFAULT_SC 0.0f
-
-
-
 class DynamicEQ {
 public:
     
@@ -70,7 +58,7 @@ public:
 
         stereoLinked.setSL(stereoLinkAmt);
         setInGain(DEFAULT_IN);
-        deltaGetter.setATQ(DEFAULT_ATQ);
+        //deltaGetter.setATQ(DEFAULT_ATQ);
 
         spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data());
         ft_out.prepare(frequencies.data(), fCenters.data(), fs);
@@ -126,7 +114,7 @@ public:
         for (int i = 0; i < numChannels; i++)
         ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
 
-        spectrumPlotter.drawNextFrameOfSpectrum(curves);
+        spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
 
     }
 
@@ -190,7 +178,6 @@ private:
     float outGain = Decibels::decibelsToGain(DEFAULT_OUT);
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
-    float extraGain = 1.0f;
 
     int numInChannels = 0;
     int numScChannels = 0;
@@ -198,6 +185,8 @@ private:
 
     int fs;
     int numSamples;
+
+    bool nextFFTBlockReady = false;
 
     struct curve
     {

@@ -74,27 +74,29 @@ void TheMaskerAudioProcessor::releaseResources()
 
 bool TheMaskerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-    if (layouts.inputBuses[1] != juce::AudioChannelSet::mono()
-        && layouts.inputBuses[1] != juce::AudioChannelSet::stereo()
-        && layouts.inputBuses[1] != juce::AudioChannelSet::disabled())
-        return false;
 
-    if (layouts.inputBuses[0] != juce::AudioChannelSet::mono()
-        && layouts.inputBuses[0] != juce::AudioChannelSet::stereo())
-        return false;
+        if (layouts.inputBuses[1] != juce::AudioChannelSet::mono()
+            && layouts.inputBuses[1] != juce::AudioChannelSet::stereo()
+            && layouts.inputBuses[1] != juce::AudioChannelSet::disabled())
+            return false;
 
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
-        return false;
+        if (layouts.getMainInputChannelSet() != juce::AudioChannelSet::mono()
+            && layouts.getMainInputChannelSet() != juce::AudioChannelSet::stereo())
+            return false;
 
-    // This checks if the input layout matches the output layout
-    //if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-    //    return false;
-   
+        if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
+         && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+            return false;
+
+        // This checks if the input layout matches the output layout
+        /*if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+            return false;
+   */
 
     return true;
   
 }
+
 
 void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -127,7 +129,6 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     for (int ch = 0; ch < scCh; ch++) {
         auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1.0f);
     }
-
 
     dynEQ.processBlock(mainBuffer, auxBuffer);
 

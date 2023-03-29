@@ -10,6 +10,7 @@
 
 #pragma once
 #include "Converters.h"
+#include "Constants.h"
 #include "FilterBank.h"
 //#include "PluginProcessor.h"
 #include "DynamicEQ.h"
@@ -60,6 +61,7 @@ public:
 
     void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies) {
         getATQ(fCenters, atq);
+        setATQ(DEFAULT_ATQ);
         psy.getSpreadingMtx();
         ft_in.prepare(frequencies, fCenters, sampleRate);
         ft_sc.prepare(frequencies, fCenters, sampleRate);
@@ -80,8 +82,6 @@ public:
         juce::FloatVectorOperations::add(current_atq.data(), minDBFS, nfilts);
         FloatVectorOperations::clip(current_atq.data(), current_atq.data(), minDBFS, 0.0f, nfilts);
     }
-    void drawGrid() {}
-
 
 
 private:

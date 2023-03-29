@@ -51,7 +51,6 @@ public:
         fs = sampleRate;
         numSamples = samplesPerBlock;
 
-
         frequencies = _frequencies;
         fbank.getFilterBank(frequencies.data());
         fbank.getFrequencies(fCenters);

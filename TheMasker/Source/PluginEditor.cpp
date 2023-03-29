@@ -38,9 +38,31 @@ void LnF::drawRotarySlider(juce::Graphics& g,
     
     //amount indicator
     Path amt;
-    g.setColour(Colour(64u, 200u, 64u));
+
     auto sliderAngRad = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle);
-    amt.addCentredArc(center.getX(), center.getY(), radius, radius, 0, rotaryStartAngle, sliderAngRad, true);
+     
+    if(auto* s = dynamic_cast<CustomRotarySlider*>(&slider)) {
+        if(s->sliderName == NAME_CLEARF || s->sliderName == NAME_MASKEDF)
+        {
+            auto avg = (rotaryEndAngle+rotaryStartAngle)*0.5f;
+            if(sliderAngRad<avg)
+            {
+                g.setColour(Colour(200u, 64u, 164u));
+                amt.addCentredArc(center.getX(), center.getY(), radius, radius, 0, sliderAngRad, avg, true);
+            }
+            else
+            {
+                g.setColour(Colour(64u, 200u, 64u));
+                amt.addCentredArc(center.getX(), center.getY(), radius, radius, 0, avg, sliderAngRad, true);
+            }
+        }
+        else
+        {
+            g.setColour(Colour(64u, 200u, 64u));
+            amt.addCentredArc(center.getX(), center.getY(), radius, radius, 0, rotaryStartAngle, sliderAngRad, true);
+        }
+    }
+    
     auto amtStroke = PathStrokeType(4.0, juce::PathStrokeType::JointStyle::curved);
     amtStroke.createStrokedPath(amt, amt);
     g.fillPath(amt);
@@ -55,7 +77,7 @@ void LnF::drawLinearSlider(Graphics& g,
                            float minSliderPos,
                            float maxSliderPos,
                            const Slider::SliderStyle,
-                           Slider &)
+                           juce::Slider& slider)
 {
     auto bounds = Rectangle<float>(x, y, width, height);
     auto center = bounds.getCentre();
@@ -74,10 +96,10 @@ void LnF::drawLinearSlider(Graphics& g,
     Path amt;
     g.setColour(Colour(40u, 220u, 0u));
     auto currentPos = jmap(sliderPos, minSliderPos, maxSliderPos);
+
     amt.addRoundedRectangle(minSliderPos, center.getY(), currentPos, 6, 4.0f);
     auto amtStroke = PathStrokeType(8.0);
     g.fillPath(amt);
-    
 }
 
 
@@ -351,8 +373,6 @@ void TheMaskerAudioProcessorEditor::buttonClicked (Button*button)// [2]
         if(button->getButtonText() == toggleOut.getButtonText())
             toggleOut.toggle();
     }
-
-
 }
 
 

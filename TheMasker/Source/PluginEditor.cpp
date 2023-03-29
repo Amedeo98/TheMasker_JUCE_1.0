@@ -324,7 +324,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     toggleOut.setBounds(legend_area.getX()+legend_area.getWidth()-72, legend_area.getY(), 58, 24);
     
     bounds.removeFromTop(28);
-    bounds.removeFromLeft(20);
+    bounds.removeFromLeft(16);
     bounds.removeFromRight(16);
     auto responseArea = bounds;
     
@@ -409,7 +409,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         
         Rectangle<int> r;
         r.setSize(textWidth, fontHeight);
-        r.setX(responseArea.getX() - textWidth);
+        r.setX(responseArea.getX());
         r.setCentre(r.getCentreX(), y);
         
         g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::lightgrey);

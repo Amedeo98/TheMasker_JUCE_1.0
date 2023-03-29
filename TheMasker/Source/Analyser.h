@@ -37,8 +37,6 @@ public:
 
     void getResult(array<float, _fftSize>& result)
     {
-        if (nextFFTBlockReady)
-        {
             FloatVectorOperations::multiply(fftData.data(), window.data(), fftSize);
 
             forwardFFT.performFrequencyOnlyForwardTransform(fftData.data(), false);  // [2]
@@ -46,9 +44,6 @@ public:
             FloatVectorOperations::copy(result.data(), fftData.data(), fftSize);
 
             nextFFTBlockReady = false;
-
-        }
-
 
     }
 
@@ -73,6 +68,7 @@ public:
     array<float, _fftSize> result;
     float* frequencies;
     const int fftSize;
+    bool nextFFTBlockReady = false;
 
 
 
@@ -83,7 +79,6 @@ private:
     array<float,_fftSize> fifo;                          
     array<float,_fftSize*2> fftData;                   
     int fifoIndex = 0;                             
-    bool nextFFTBlockReady = false;                
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Analyser)
 };

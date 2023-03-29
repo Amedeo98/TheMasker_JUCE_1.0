@@ -31,8 +31,8 @@
 #define maxFreq 22000
 #define minFreq 20
 
-#define _maxGain 20
-#define _gateThresh -40
+#define _maxGain 30
+#define _gateThresh -50
 #define _gateKnee 10
 
 #define _atkSmoothingSeconds 0.100f

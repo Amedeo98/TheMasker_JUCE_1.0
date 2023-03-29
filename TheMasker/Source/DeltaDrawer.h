@@ -38,7 +38,7 @@ public:
 
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds) override {
 
-        auto width = bounds.getX() + bounds.getWidth();
+        auto width = bounds.getX() + bounds.getWidth() + 4;
         auto height = bounds.getHeight() - bounds.getY();
         auto left = bounds.getX();
         
@@ -53,7 +53,7 @@ public:
         
 
         /*g.setColour(colour
-            .withAlpha(jlimit(0.0f, 1.0f, abs(scopeData[0]-0.525f)*40.0f))
+                    .withAlpha(jlimit(0.0f, 1.0f, 40*(abs(scopeData[i]-0.516f))))
         );*/
         
         g.setColour(colour);
@@ -63,7 +63,7 @@ public:
         //g.drawLine (line, 3.0f);
         Path p;
         p.startNewSubPath (xVal[0], yVal[1]);
-        p.cubicTo (xVal[0], yVal[1], xVal[0], yVal[1], xVal[1], yVal[1]);
+        p.quadraticTo (xVal[1], yVal[1], xVal[1], yVal[1]);
         g.strokePath (p, PathStrokeType (2.0));
         
         
@@ -76,9 +76,10 @@ public:
             xVal = { jmap(freqAxis[i - 1] , 0.f, 1.f, (float)left, (float)width),
                      jmap(freqAxis[i] , 0.f, 1.f, (float)left, (float)width) 
             };
+            
             /*g.setColour(colour
-                .withAlpha(jlimit(0.0f, 1.0f, abs(scopeData[i]-0.525f)*40.0f))
-            ); */
+                        .withAlpha(jlimit(0.0f, 1.0f, 40*(abs(scopeData[i]-0.516f))))
+            );*/
             
             g.setColour(colour);
             

@@ -290,11 +290,11 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     
     //draw controls area
     auto controls_area = bounds.removeFromLeft(174);
-    controls_area.removeFromTop(104);
+    controls_area.removeFromTop(100);
     auto sc_area = controls_area.removeFromTop(110);
     scSlider.setBounds(sc_area);
     
-    controls_area.removeFromTop(8);
+    controls_area.removeFromTop(12);
     auto comp_area = controls_area.removeFromTop(66);
     compSlider.setBounds(comp_area);
     
@@ -309,21 +309,118 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     //draw output area
     auto out_area = bounds.removeFromRight(74);
     out_area.removeFromTop(24);
-    mixSlider.setBounds(out_area.removeFromTop(60));
+    mixSlider.setBounds(out_area.removeFromTop(62));
     
     auto out_slider_area = out_area.removeFromBottom(100);
     out_slider_area.removeFromTop(20);
     outSlider.setBounds(out_slider_area);
     
     //draw spectrum area
-    bounds.removeFromBottom(24);
+    bounds.removeFromBottom(18);
     auto legend_area = bounds.removeFromBottom(18);
     toggleIn.setBounds(legend_area.getX()+24, legend_area.getY(), 48, 24);
     toggleSc.setBounds(legend_area.getX()+76, legend_area.getY(), 48, 24);
     toggleD.setBounds(legend_area.getX()+legend_area.getWidth()-128, legend_area.getY(), 58, 24);
     toggleOut.setBounds(legend_area.getX()+legend_area.getWidth()-72, legend_area.getY(), 58, 24);
     
+    bounds.removeFromTop(28);
+    bounds.removeFromLeft(16);
+    bounds.removeFromRight(16);
     auto responseArea = bounds;
+    
+    //grid
+    Array<float> freqs
+    {
+        20, /*30, 40,*/  50, 100,
+        200, /*300, 400,*/  500, 1000,
+        2000, /*3000, 4000, */ 5000, 10000,
+        20000
+    };
+    
+    Array<float> xs;
+    for (auto f : freqs)
+    {
+        auto normX = mapFromLog10(f, 20.f, 20000.f);
+        xs.add(responseArea.getX() + responseArea.getWidth() * normX);
+    }
+
+    g.setColour(Colours::darkgrey.withAlpha(0.5f));
+    for (auto x : xs)
+    {
+        g.drawVerticalLine(x, responseArea.getY(), responseArea.getHeight());
+    }
+    
+    Array<float> gain
+    {
+        -24, -18, -12, -6, 0, 6, 12, 18, 24
+    };
+
+    for (auto gDb : gain)
+    {
+        auto y = jmap(gDb, -24.f, 24.f, float(responseArea.getHeight()), float(responseArea.getY()));
+        g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::darkgrey.withAlpha(0.3f));
+        g.drawHorizontalLine(y, responseArea.getX(), responseArea.getX() + responseArea.getWidth());
+    }
+
+    g.setColour(Colour(255u, 200u, 100u));
+    const int fontHeight = 10;
+    g.setFont(fontHeight);
+
+    for (int i = 0; i < freqs.size(); ++i)
+    {
+        auto f = freqs[i];
+        auto x = xs[i];
+
+        bool addK = false;
+        String str;
+
+        if (f>999.f)
+        {
+            addK = true;
+            f /= 1000.f;
+        }
+
+        str << f;
+        if (addK)
+            str << "k";
+        str << "Hz";
+
+        auto textWidth = g.getCurrentFont().getStringWidth(str);
+
+        Rectangle<int> r;
+        r.setSize(textWidth, fontHeight);
+        r.setCentre(x, 0);
+        r.setY(4);
+
+        g.drawFittedText(str, r, juce::Justification::centred, 1);
+    }
+
+    for (auto gDb : gain)
+    {
+        auto y = jmap(gDb, -24.f, 24.f, float(responseArea.getHeight()), float(responseArea.getY()));
+        
+        String str;
+        if (gDb > 0)
+            str << "+";
+        
+        str << gDb;
+        
+        auto textWidth = g.getCurrentFont().getStringWidth(str);
+        
+        Rectangle<int> r;
+        r.setSize(textWidth, fontHeight);
+        r.setX(responseArea.getX());
+        r.setCentre(r.getCentreX(), y);
+        
+        g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::lightgrey);
+        
+        g.drawFittedText(str, r, juce::Justification::centred, 1);
+        
+        str.clear();
+        str << (gDb - 24.f);
+    
+    }
+    
 
     audioProcessor.dynEQ.drawFrame(g, responseArea, in_area, out_area);
 }

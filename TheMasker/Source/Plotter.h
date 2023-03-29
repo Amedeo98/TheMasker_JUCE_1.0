@@ -10,8 +10,6 @@
 
 #include "SpectrumDrawer.h"
 #include "DeltaDrawer.h"
-//#include <JuceHeader.h>
-//#include "CustomSmoothedValue.h"
 
 
 

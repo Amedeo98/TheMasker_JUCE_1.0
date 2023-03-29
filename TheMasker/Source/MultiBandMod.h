@@ -30,7 +30,13 @@ public:
         getBandFreqs();
         for (int i = 0; i < nfilts; i++) {
             filters[i].prepareToPlay(sampleRate, samplesPerBlock, freqs[i].f_lc, freqs[i].f_hc);
+            gainAdjustments[i] = 1.0f;
         }
+
+        gainAdjustments[0] = 0.2f;
+        gainAdjustments[1] = 0.5f;
+        gainAdjustments[2] = 0.8f;
+        //gainAdjustments[nfilts-1] = 0.8f;
     }
 
     void setNumChannels(int nCh) {
@@ -66,7 +72,8 @@ public:
 
                 curves[ch].delta[f] = gains_sm[ch][f].getCurrentValue();
 
-                buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples);
+                buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples, gainAdjustments[f]);
+
             }
             
         }
@@ -94,6 +101,8 @@ private:
     array<LinkwitzRileyFilters, nfilts> filters;
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;
+
+    float gainAdjustments[nfilts];
 
     struct freq
     {

@@ -39,8 +39,8 @@ public:
     void process(AudioBuffer<float> inputBuffer, AudioBuffer<float>& outputBuffer) {
         juce::dsp::AudioBlock<float>              ioBlock(inputBuffer);
         juce::dsp::ProcessContextReplacing<float> context(ioBlock);
-        LC.process(context);
-        HC.process(context);
+        if (!isFirstBand) LC.process(context);
+        if (!isLastBand) HC.process(context);
         context.getOutputBlock().copyTo(outputBuffer, 0, 0, samplesPerBlock);
     }
 

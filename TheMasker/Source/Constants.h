@@ -37,7 +37,7 @@
 #define _fftSize (1 << _fftOrder)
 #define npoints 256
 
-#define maxFreq 22000
+#define maxFreq 20000
 #define minFreq 20
 
 #define _maxGain 20
@@ -49,7 +49,7 @@
 #define _relSmoothingSeconds 0.100f
 #define _overlapRatio 0.5f
 #define _mindBFS -100
-#define _relThreshLift 0.0f
+#define _relThreshLift -5.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
 #define _outExtraGain 7.6f

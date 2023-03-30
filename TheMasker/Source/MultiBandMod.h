@@ -36,7 +36,12 @@ public:
         gainAdjustments[0] = 0.2f;
         gainAdjustments[1] = 0.5f;
         gainAdjustments[2] = 0.8f;
-        //gainAdjustments[nfilts-1] = 0.8f;
+        gainAdjustments[nfilts-6] = 1.05f;
+        gainAdjustments[nfilts-5] = 1.1f;
+        gainAdjustments[nfilts-4] = 1.2f;
+        gainAdjustments[nfilts-3] = 1.3f;
+        gainAdjustments[nfilts-2] = 1.4f;
+        gainAdjustments[nfilts-1] = 1.6f;
     }
 
     void setNumChannels(int nCh) {

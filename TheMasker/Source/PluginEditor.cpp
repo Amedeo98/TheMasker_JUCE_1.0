@@ -303,8 +303,8 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     expSlider.setBounds(exp_area);
     
     controls_area.removeFromBottom(16);
-    stereoLinkedSlider.setBounds(controls_area.removeFromBottom(44));
     cleanUpSlider.setBounds(controls_area.removeFromBottom(44));
+    stereoLinkedSlider.setBounds(controls_area.removeFromBottom(44));
     
     //draw output area
     auto out_area = bounds.removeFromRight(74);
@@ -358,7 +358,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     for (auto gDb : gain)
     {
         auto y = jmap(gDb, -24.f, 24.f, float(responseArea.getHeight()), float(responseArea.getY()));
-        g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::darkgrey.withAlpha(0.3f));
+        g.setColour(gDb == 0.f ? Colours::grey : Colours::darkgrey.withAlpha(0.3f));
         g.drawHorizontalLine(y, responseArea.getX(), responseArea.getX() + responseArea.getWidth());
     }
 
@@ -412,7 +412,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         r.setX(responseArea.getX());
         r.setCentre(r.getCentreX(), y);
         
-        g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::lightgrey);
+        g.setColour(gDb == 0.f ? Colours::grey : Colours::lightgrey);
         
         g.drawFittedText(str, r, juce::Justification::centred, 1);
         

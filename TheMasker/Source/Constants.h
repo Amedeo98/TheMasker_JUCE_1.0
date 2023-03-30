@@ -54,8 +54,8 @@
 #define _spreadExp 0.6f
 #define _outExtraGain 7.6f
 
-#define _spectrumPaddingHighFreq 0.3f
-#define _spectrumPaddingLowFreq 0.4f
+#define _spectrumPaddingHighFreq 0.5f
+#define _spectrumPaddingLowFreq 0.5f
 #define _spectrumSkew 1.0f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
 // se = 1.0f -> basse "strette", se 0.1f basse "larghe", (default 0.2f)
 

@@ -42,14 +42,14 @@ public:
             }
 
             std::transform(curves[ch].delta.begin(), curves[ch].delta.end(),
-                THclip.begin(), newValues.data(),
+                THclip.begin(), newValues[ch].data(),
                 std::multiplies<float>());
 
-            /*std::transform(newValues.begin(), newValues.end(),
-                SCclip.begin(), newValues.data(),
-                std::multiplies<float>());*/
+            std::transform(newValues[ch].begin(), newValues[ch].end(),
+                SCclip.begin(), newValues[ch].data(),
+                std::multiplies<float>());
 
-            FloatVectorOperations::copy(curves[ch].delta.data(), newValues.data(), nfilts);
+            FloatVectorOperations::copy(curves[ch].delta.data(), newValues[ch].data(), nfilts);
         }
     }
 
@@ -61,7 +61,7 @@ private:
     int nCh = 0;
     array<float, nfilts> THclip;
     array<float, nfilts> SCclip;
-    array<float, nfilts> newValues;
+    array<array<float, nfilts>, 2> newValues;
 };
 
 

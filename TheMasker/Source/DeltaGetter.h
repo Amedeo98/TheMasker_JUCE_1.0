@@ -40,10 +40,10 @@ public:
 
         for (int i = 0; i < scCh; i++) {
             ft_sc.getFT(sc, i, scFT[i], deltas[i].scSpectrum);
-            FloatVectorOperations::copy(deltas[i].scDecimated.data(), scFT[i].data(), nfilts);
             psy.spread(scFT[i]);
             conv.magnitudeToDb(scFT[i]);
             psy.compareWithAtq(scFT[i], current_atq);
+            FloatVectorOperations::copy(deltas[i].scDecimated.data(), scFT[i].data(), nfilts);
         }
 
         if (scCh < maxCh) 
@@ -81,7 +81,7 @@ public:
         current_atq = atq;
         juce::FloatVectorOperations::multiply(current_atq.data(), UIatqWeight, nfilts);
         juce::FloatVectorOperations::multiply(current_atq.data(), atqLift, nfilts);
-        juce::FloatVectorOperations::add(current_atq.data(), minDBFS, nfilts);
+        juce::FloatVectorOperations::add(current_atq.data(), minDBFS+5.0f, nfilts);
         FloatVectorOperations::clip(current_atq.data(), current_atq.data(), minDBFS, 0.0f, nfilts);
     }
 

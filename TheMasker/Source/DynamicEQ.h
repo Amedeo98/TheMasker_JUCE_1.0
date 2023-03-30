@@ -191,7 +191,8 @@ private:
     struct curve
     {
         array<float, nfilts> delta;
-        array<float, nfilts> threshold;
+        array<float, nfilts> inputDecimated;
+        array<float, nfilts> scDecimated;
         array<float, npoints> inSpectrum;
         array<float, npoints> scSpectrum;
         array<float, npoints> outSpectrum;

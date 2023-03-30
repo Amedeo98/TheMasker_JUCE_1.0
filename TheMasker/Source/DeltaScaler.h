@@ -36,14 +36,19 @@ public:
 
     void clip(auto& curves) {
         for (int ch = 0; ch < nCh; ch++) {
-            int size = curves[ch].threshold.size();
-            for (int i = 0; i < size; i++) {
-                THclip[i] = (1.0f + tanh((curves[ch].threshold[i] - gateThresh) * gateKnee_inv)) * 0.5f;
+            for (int i = 0; i < nfilts; i++) {
+                THclip[i] = (1.0f + tanh((curves[ch].inputDecimated[i] - gateThresh) * gateKnee_inv)) * 0.5f;
+                SCclip[i] = (1.0f + tanh((curves[ch].scDecimated[i] - gateThresh) * gateKnee_inv)) * 0.5f;
             }
 
             std::transform(curves[ch].delta.begin(), curves[ch].delta.end(),
                 THclip.begin(), newValues.data(),
                 std::multiplies<float>());
+
+            /*std::transform(newValues.begin(), newValues.end(),
+                SCclip.begin(), newValues.data(),
+                std::multiplies<float>());*/
+
             FloatVectorOperations::copy(curves[ch].delta.data(), newValues.data(), nfilts);
         }
     }
@@ -55,6 +60,7 @@ private:
     float nfilts_inv = pow(nfilts, -1);
     int nCh = 0;
     array<float, nfilts> THclip;
+    array<float, nfilts> SCclip;
     array<float, nfilts> newValues;
 };
 

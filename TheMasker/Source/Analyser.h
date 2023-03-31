@@ -23,35 +23,41 @@ public:
     }
 
 
-    void process(AudioBuffer<float>& bufferToFill, int ch, bool& nextFFTBlockReady)
+    void process(AudioBuffer<float>& bufferToFill, int ch)
     {
         if (bufferToFill.getNumChannels() > 0)
         {
             auto* channelData = bufferToFill.getReadPointer(ch, 0);
 
             for (auto i = 0; i < bufferToFill.getNumSamples(); ++i)
-                pushNextSampleIntoFifo(channelData[i], nextFFTBlockReady);
+                pushNextSampleIntoFifo(channelData[i]);
         }
     }
 
 
     void getResult(array<float, _fftSize>& result)
     {
+        if (nextFFTBlockReady) {
             FloatVectorOperations::multiply(fftData.data(), window.data(), fftSize);
 
             forwardFFT.performFrequencyOnlyForwardTransform(fftData.data(), false);  // [2]
 
             FloatVectorOperations::copy(result.data(), fftData.data(), fftSize);
+
+            nextFFTBlockReady = false;
+        }
     }
 
-    void pushNextSampleIntoFifo(float sample, bool& nextFFTBlockReady) noexcept
+    void pushNextSampleIntoFifo(float sample) noexcept
     {
         if (fifoIndex == fftSize)               
         {
-            if (!nextFFTBlockReady) nextFFTBlockReady = true;
-           
-            FloatVectorOperations::fill(fftData.data(), 0.0f, fftSize * 2);
-            memcpy(fftData.data(), fifo.data(), fftSize);
+            if (!nextFFTBlockReady)            
+            {
+                FloatVectorOperations::fill(fftData.data(), 0.0f, fftSize * 2);
+                memcpy(fftData.data(), fifo.data(), fftSize);
+                nextFFTBlockReady = true;
+            }
             fifoIndex = 0;
         }
         fifo[fifoIndex++] = sample;            
@@ -63,7 +69,7 @@ public:
     array<float, _fftSize> result;
     float* frequencies;
     const int fftSize;
-    //bool nextFFTBlockReady = false;
+    bool nextFFTBlockReady = false;
 
 
 

@@ -24,43 +24,37 @@
 class DeltaGetter  {
 
 public:
-    void getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, auto& deltas, bool& nextFFTBlockReady) {
+    void getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, auto& deltas) {
 
         for (int i = 0; i < inCh; i++) {
-            ft_in.getFT(in, i, inFT[i], deltas[i].inSpectrum, nextFFTBlockReady);
-            if (nextFFTBlockReady) {
-                conv.magnitudeToDb(inFT[i]);
-                FloatVectorOperations::copy(deltas[i].inputDecimated.data(), inFT[i].data(), nfilts);
-            }
+            ft_in.getFT(in, i, inFT[i], deltas[i].inSpectrum);
+            conv.magnitudeToDb(inFT[i]);
+            FloatVectorOperations::copy(deltas[i].inputDecimated.data(), inFT[i].data(), nfilts);
         }
 
-        if (nextFFTBlockReady) {
-            if (inCh < maxCh) {
-                FloatVectorOperations::copy(deltas[1].inSpectrum.data(), deltas[0].inSpectrum.data(), npoints);
-                FloatVectorOperations::copy(deltas[1].inputDecimated.data(), deltas[0].inputDecimated.data(), nfilts);
-            }
+        if (inCh < maxCh) {
+            FloatVectorOperations::copy(deltas[1].inSpectrum.data(), deltas[0].inSpectrum.data(), npoints);
+            FloatVectorOperations::copy(deltas[1].inputDecimated.data(), deltas[0].inputDecimated.data(), nfilts);
         }
+
 
         for (int i = 0; i < scCh; i++) {
-            ft_sc.getFT(sc, i, scFT[i], deltas[i].scSpectrum, nextFFTBlockReady);
-            if (nextFFTBlockReady) {
-                psy.spread(scFT[i]);
-                conv.magnitudeToDb(scFT[i]);
-                psy.compareWithAtq(scFT[i], current_atq);
-                FloatVectorOperations::copy(deltas[i].scDecimated.data(), scFT[i].data(), nfilts);
-            }
+            ft_sc.getFT(sc, i, scFT[i], deltas[i].scSpectrum);
+            psy.spread(scFT[i]);
+            conv.magnitudeToDb(scFT[i]);
+            psy.compareWithAtq(scFT[i], current_atq);
+            FloatVectorOperations::copy(deltas[i].scDecimated.data(), scFT[i].data(), nfilts);
         }
-        if (nextFFTBlockReady) {
-            if (scCh < maxCh)
-            {
-                FloatVectorOperations::copy(deltas[1].scSpectrum.data(), deltas[0].scSpectrum.data(), npoints);
-                FloatVectorOperations::copy(deltas[1].scDecimated.data(), deltas[0].scDecimated.data(), npoints);
-                FloatVectorOperations::copy(scFT[1].data(), scFT[0].data(), nfilts);
-            }
 
-            for (int i = 0; i < maxCh; i++) {
-                difference(deltas[i].inputDecimated, scFT[i], deltas[i].delta);
-            }
+        if (scCh < maxCh) 
+        {
+            FloatVectorOperations::copy(deltas[1].scSpectrum.data(), deltas[0].scSpectrum.data(), npoints);
+            FloatVectorOperations::copy(deltas[1].scDecimated.data(), deltas[0].scDecimated.data(), npoints);
+            FloatVectorOperations::copy(scFT[1].data(), scFT[0].data(), nfilts);
+        }
+
+        for (int i = 0; i < maxCh; i++) {
+            difference(deltas[i].inputDecimated, scFT[i], deltas[i].delta);
         }
 
     }

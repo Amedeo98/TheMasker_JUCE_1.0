@@ -93,17 +93,16 @@ public:
         mainBuffer.applyGain(inGain);
         scBuffer.applyGain(scGain);
 
-        deltaGetter.getDelta(mainBuffer, scBuffer, curves, nextFFTBlockReady);
+        deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
-        if (nextFFTBlockReady) {
-            if (numChannels == 2 && stereoLinkAmt > 0.0f)
-            {
-                stereoLinked.process(curves[0].delta, curves[1].delta);
-            }
 
-            deltaScaler.scale(curves, maskedFreqsAmount, clearFreqsAmount, mixAmount);
-            //deltaScaler.clip(curves);
+        if (numChannels == 2 && stereoLinkAmt > 0.0f)
+        {
+            stereoLinked.process(curves[0].delta, curves[1].delta);
         }
+
+        deltaScaler.scale(curves, maskedFreqsAmount, clearFreqsAmount, mixAmount);
+        deltaScaler.clip(curves);
 
         bufferDelayer.delayBuffer(mainBuffer, curves);
 
@@ -114,13 +113,9 @@ public:
 
        
         for (int i = 0; i < numChannels; i++)
-        ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum, nextFFTBlockReady);
-        
-        spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
+        ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
 
-        if (nextFFTBlockReady) {
-            nextFFTBlockReady = false;
-        }
+        spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
 
     }
 

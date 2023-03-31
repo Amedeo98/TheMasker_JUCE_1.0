@@ -51,6 +51,16 @@ public:
                 gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
+        
+        max_in_L.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
+        max_in_R.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
+        max_in_L.setCurrentAndTargetValue(0.f);
+        max_in_R.setCurrentAndTargetValue(0.f);
+        
+        max_out_L.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
+        max_out_R.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
+        max_out_L.setCurrentAndTargetValue(0.f);
+        max_out_R.setCurrentAndTargetValue(0.f);
 
         deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
         bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
@@ -89,7 +99,11 @@ public:
 
     void processBlock(AudioBuffer<float>& mainBuffer, AudioBuffer<float>& scBuffer)
     {
-
+        max_in_L.skip(mainBuffer.getNumSamples());
+        max_in_R .skip(mainBuffer.getNumSamples());
+        max_out_L.skip(mainBuffer.getNumSamples());
+        max_out_R.skip(mainBuffer.getNumSamples());
+        
         mainBuffer.applyGain(inGain);
         scBuffer.applyGain(scGain);
 
@@ -105,11 +119,37 @@ public:
 
         bufferDelayer.delayBuffer(mainBuffer, curves);
 
-        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
+        auto val_L = mainBuffer.getRMSLevel(0, 0, numSamples);
+        auto val_R = mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples);
+        
+        if(val_L > max_in_L.getCurrentValue())
+            max_in_L.setTargetValue(val_L);
+        else
+            max_in_L.setCurrentAndTargetValue(max_in_L.getCurrentValue()-(max_in_L.getCurrentValue() * 0.01f));
+        
+        if(val_L > max_in_R.getCurrentValue())
+            max_in_R.setTargetValue(val_R);
+        else
+            max_in_R.setCurrentAndTargetValue(max_in_R.getCurrentValue()-(max_in_R.getCurrentValue() * 0.01f));
+        
+        in_volumeMeter.setLevel(val_L, val_R, max_in_L.getCurrentValue(), max_in_R.getCurrentValue());
         filters.filterBlock(mainBuffer, curves, gains_sm);
         mainBuffer.applyGain(outGain * _outExtraGain);
-        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
-
+    
+        val_L = mainBuffer.getRMSLevel(0, 0, numSamples);
+        val_R = mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples);
+        
+        if(val_L > max_out_L.getCurrentValue())
+            max_out_L.setTargetValue(val_L);
+        else
+            max_out_L.setCurrentAndTargetValue(max_out_L.getCurrentValue()-(max_out_L.getCurrentValue() * 0.01f));
+        
+        if(val_R > max_out_R.getCurrentValue())
+            max_out_R.setTargetValue(val_R);
+        else
+            max_out_R.setCurrentAndTargetValue(max_out_R.getCurrentValue()-(max_out_R.getCurrentValue() * 0.01f));
+        
+        out_volumeMeter.setLevel(val_L, val_R, max_out_L.getCurrentValue(), max_out_R.getCurrentValue());
        
         for (int i = 0; i < numChannels; i++)
         ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
@@ -164,6 +204,20 @@ public:
     void toggleSpectrumView(juce::String btn)
     {
         spectrumPlotter.toggleSpectrumView(btn);
+    }
+    
+    void resetMaxVolume(juce::String meter)
+    {
+        if(meter == "in")
+        {
+            max_in_L.setCurrentAndTargetValue(0.f);
+            max_in_R.setCurrentAndTargetValue(0.f);
+        }
+        if(meter == "out")
+        {
+            max_out_L.setCurrentAndTargetValue(0.f);
+            max_out_R.setCurrentAndTargetValue(0.f);
+        }
     }
 
 
@@ -222,7 +276,7 @@ private:
     FT ft_out;
 
     Converter conv;
-
+    CustomSmoothedValue<float> max_in_L, max_in_R, max_out_L, max_out_R;
     
 
 };

@@ -95,6 +95,7 @@ public:
 
         deltaGetter.getDelta(mainBuffer, scBuffer, curves);
 
+
         if (numChannels == 2 && stereoLinkAmt > 0.0f)
         {
             stereoLinked.process(curves[0].delta, curves[1].delta);

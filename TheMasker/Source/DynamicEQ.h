@@ -109,7 +109,7 @@ public:
         bufferDelayer.delayBuffer(mainBuffer, curves);
 
         in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
-        filters.filterBlock(mainBuffer, curves, gains_sm);
+        filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
         mainBuffer.applyGain(outGain * _outExtraGain);
         out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
 

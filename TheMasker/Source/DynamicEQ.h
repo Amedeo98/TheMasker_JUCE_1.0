@@ -117,9 +117,11 @@ public:
             for (int i = 0; i < numChannels; i++)
                 ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum, processFFTresult);
 
-            spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
             processFFTresult = false;
         }
+
+        spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
+
 
     }
 

@@ -182,6 +182,22 @@ private:
         repaint();
     }
     
+    Array<float> gain
+    {
+        -24, -18, -12, -6, 0, 6, 12, 18, 24
+    };
+
+    
+    Array<float> freqs
+    {
+        20, 50, 100,
+        200, 500, 1000,
+        2000, 5000, 10000,
+        20000
+    };
+    
+    const int fontHeight = 10;
+    
     std::unique_ptr<juce::Drawable> svgDrawable;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMaskerAudioProcessorEditor)

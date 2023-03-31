@@ -285,6 +285,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     loadButton.setBounds(settings_area.getX() + 30, settings_area.getY() + 26, 28, 24);
     
     auto in_slider_area = in_area.removeFromBottom(100);
+    g.setFont(fontHeight);
     in_slider_area.removeFromTop(20);
     inSlider.setBounds(in_slider_area);
     
@@ -329,14 +330,6 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     auto responseArea = bounds;
     
     //grid
-    Array<float> freqs
-    {
-        20, /*30, 40,*/  50, 100,
-        200, /*300, 400,*/  500, 1000,
-        2000, /*3000, 4000, */ 5000, 10000,
-        20000
-    };
-    
     Array<float> xs;
     for (auto f : freqs)
     {
@@ -349,11 +342,6 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     {
         g.drawVerticalLine(x, responseArea.getY(), responseArea.getHeight());
     }
-    
-    Array<float> gain
-    {
-        -24, -18, -12, -6, 0, 6, 12, 18, 24
-    };
 
     for (auto gDb : gain)
     {
@@ -363,8 +351,6 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
     }
 
     g.setColour(Colour(255u, 200u, 100u));
-    const int fontHeight = 10;
-    g.setFont(fontHeight);
 
     for (int i = 0; i < freqs.size(); ++i)
     {
@@ -418,10 +404,8 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         
         str.clear();
         str << (gDb - 24.f);
-    
     }
     
-
     audioProcessor.dynEQ.drawFrame(g, responseArea, in_area, out_area);
 }
 

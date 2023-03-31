@@ -40,7 +40,7 @@ public:
 
         auto left = bounds.getX();
         auto width = bounds.getWidth() + left;
-        auto height = bounds.getHeight() + bounds.getY();
+        auto height = bounds.getHeight();
 
         g.setColour(colour);
 

@@ -23,7 +23,7 @@ public:
     }
 
 
-    void process(AudioBuffer<float>& bufferToFill, int ch)
+    void process(AudioBuffer<float>& bufferToFill, int ch, bool& processFFTresult)
     {
         if (bufferToFill.getNumChannels() > 0)
         {
@@ -32,6 +32,7 @@ public:
             for (auto i = 0; i < bufferToFill.getNumSamples(); ++i)
                 pushNextSampleIntoFifo(channelData[i]);
         }
+        if (nextFFTBlockReady) processFFTresult = true;
     }
 
 

@@ -28,8 +28,8 @@ public:
         F = conv.linspace(0.0f, static_cast<float>(sampleRate * 0.5f), static_cast<float>(fftSize * 0.5f));
     }
 
-    void getFT(AudioBuffer<float>& input, int ch, auto& output, array<float,npoints>& spectrumOutput) {
-        process(input, ch);
+    void getFT(AudioBuffer<float>& input, int ch, auto& output, array<float,npoints>& spectrumOutput, bool& processFFTresult) {
+        process(input, ch, processFFTresult);
         getResult(result);
         conv.interpolateYvector(F, result, frequencies, false, result_fixed);
         FloatVectorOperations::fill(output.data(), 0.0f, decimated ? nfilts : npoints);

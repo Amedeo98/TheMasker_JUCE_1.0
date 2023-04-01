@@ -35,7 +35,7 @@ public:
 
 
 
-    void prepareToPlay(array<float,npoints>& _frequencies, int sampleRate, int samplesPerBlock)
+    void prepareToPlay(array<float,npoints>& _frequencies, double sampleRate, int samplesPerBlock)
     {
         fs = sampleRate;
         numSamples = samplesPerBlock;
@@ -52,8 +52,8 @@ public:
             }
         }
         
-        in_volumeMeter.prepareToPlay(sampleRate, 5.f, true);
-        out_volumeMeter.prepareToPlay(sampleRate, 5.f, false);
+        in_volumeMeter.prepareToPlay(fs, 5.f, true);
+        out_volumeMeter.prepareToPlay(fs, 5.f, false);
         
         deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
         bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
@@ -63,7 +63,7 @@ public:
         setInGain(DEFAULT_IN);
         //deltaGetter.setATQ(DEFAULT_ATQ);
 
-        spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data());
+        spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data(), fs, numSamples);
         ft_out.prepare(frequencies.data(), fCenters.data(), fs);
     }
 
@@ -211,7 +211,7 @@ private:
     int numScChannels = 0;
     int numChannels = 0;
 
-    int fs;
+    double fs;
     int numSamples;
 
     bool processFFTresult = false;

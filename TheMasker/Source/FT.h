@@ -21,7 +21,7 @@ public:
     {}
     ~FT() {}
 
-    void prepare(float* freqs, float* fCents, int sampleRate) {
+    void prepare(float* freqs, float* fCents, double sampleRate) {
         frequencies = freqs;
         fCenters = fCents;
         F.resize(fftSize);

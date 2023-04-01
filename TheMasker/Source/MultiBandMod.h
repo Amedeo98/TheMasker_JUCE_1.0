@@ -100,7 +100,7 @@ public:
 private:
 
     int numCh = 0;
-    int fs;
+    double fs;
     int samplesPerBlock;
 
     array<LinkwitzRileyFilters, nfilts> filters;

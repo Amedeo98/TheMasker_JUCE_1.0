@@ -16,7 +16,7 @@
 
 class BufferDelayer {
 public:
-    void prepareToPlay(int samplesPerBlock, int numSamplesToDelay, int sampleRate) {
+    void prepareToPlay(int samplesPerBlock, int numSamplesToDelay, double sampleRate) {
         numSamples = samplesPerBlock;
         delaySamples = numSamplesToDelay;
         bufferSpec.maximumBlockSize = samplesPerBlock;

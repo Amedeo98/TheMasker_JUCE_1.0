@@ -46,6 +46,8 @@
 
 #define _atkSmoothingSeconds 0.030f
 #define _relSmoothingSeconds 0.100f
+#define _atkSpectrumSeconds 0.030f
+#define _relSpectrumSeconds 2.000f
 #define _overlapRatio 0.5f
 #define _mindBFS -100
 #define _relThreshLift -5.0f

@@ -81,12 +81,20 @@ public:
         }
         // Draw db value
         String str_L;
-        if (int(dB_L) > 0) str_L << "+";
-        str_L << int(dB_L);
+        if (int(dB_L) > 0)
+            str_L << "+";
+        if (dB_L <= -96)
+            str_L << "-inf";
+        else
+            str_L << int(dB_L);
         
         String str_R;
-        if (int(dB_R) > 0) str_R << "+";
-        str_R << int(dB_R);
+        if (int(dB_R) > 0)
+            str_R << "+";
+        if (dB_R <= -96)
+            str_R << "-inf";
+        else
+            str_R << int(dB_R);
         
         g.setColour(Colours::black);
         g.drawFittedText(str_L, left - 12, chHeight + top + 4, 24, 16, juce::Justification::centred, 1);
@@ -176,7 +184,7 @@ private:
     bool hasSC = true;
     
     Converter conv;
-    float dB_L, dB_R;
+    float dB_L = _mindBFS, dB_R = _mindBFS;
     float max_L, max_R;
     ColourGradient gradient{};
     

@@ -102,9 +102,21 @@ public:
     }
     
 
-    void setLevel(float left, float right, float max_lev_L, float max_lev_R) {
-        dB_L = Decibels::gainToDecibels(max_lev_L);
-        dB_R = Decibels::gainToDecibels(max_lev_R);
+    void setLevel(float left, float right, auto& max_lev_L, auto& max_lev_R) {
+        
+         if(left > max_lev_L.getCurrentValue())
+             max_lev_L.setTargetValue(left);
+         else
+             max_lev_L.setTargetValue(0.f);
+         
+         if(right> max_lev_R.getCurrentValue())
+             max_lev_R.setTargetValue(right);
+         else
+             max_lev_R.setTargetValue(0.f);
+         
+        
+        dB_L = Decibels::gainToDecibels(max_lev_L.getCurrentValue());
+        dB_R = Decibels::gainToDecibels(max_lev_R.getCurrentValue());
 
         currentLevel[0] = juce::jmap(Decibels::gainToDecibels(left), (float)_mindBFS, 6.0f, 0.0f, 1.0f);
         currentLevel[1] = juce::jmap(Decibels::gainToDecibels(right), (float)_mindBFS, 6.0f, 0.0f, 1.0f);

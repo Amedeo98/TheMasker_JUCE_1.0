@@ -42,7 +42,6 @@
 
 #define _maxGain 20
 #define _gateThresh -40
-#define _gateATQ -60
 #define _gateKnee 10
 
 #define _atkSmoothingSeconds 0.030f

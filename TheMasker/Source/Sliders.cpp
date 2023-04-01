@@ -48,7 +48,7 @@ void LnF::drawRotarySlider(juce::Graphics& g,
             auto avg = (rotaryEndAngle+rotaryStartAngle)*0.5f;
             if(sliderAngRad<avg)
             {
-                g.setColour(Colour(200u, 64u, 164u));
+                g.setColour(_purple);
                 amt.addCentredArc(center.getX(), center.getY(), radius, radius, 0, sliderAngRad, avg, true);
             }
             else
@@ -95,7 +95,7 @@ void LnF::drawLinearSlider(Graphics& g,
     
     //slider amount
     Path amt;
-    g.setColour(Colour(40u, 220u, 0u));
+    g.setColour(_green);
     auto currentPos = jmap(sliderPos, minSliderPos, maxSliderPos);
 
     amt.addRoundedRectangle(minSliderPos, center.getY(), currentPos, 6, 4.0f);

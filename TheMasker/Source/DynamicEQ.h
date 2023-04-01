@@ -52,12 +52,9 @@ public:
             }
         }
         
-        max_in_L.reset(fs, 0.f, 5.f);
-        max_in_R.reset(fs, 0.f, 5.f);
+        in_volumeMeter.prepareToPlay(sampleRate, 5.f, true);
+        out_volumeMeter.prepareToPlay(sampleRate, 5.f, false);
         
-        max_out_L.reset(fs, 0.f, 2.f);
-        max_out_R.reset(fs, 0.f, 2.f);
-
         deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
         bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
         filters.prepareToPlay(fs, numSamples, fCenters.data());
@@ -95,10 +92,9 @@ public:
 
     void processBlock(AudioBuffer<float>& mainBuffer, AudioBuffer<float>& scBuffer)
     {
-        max_in_L.skip(mainBuffer.getNumSamples());
-        max_in_R.skip(mainBuffer.getNumSamples());
-        max_out_L.skip(mainBuffer.getNumSamples());
-        max_out_R.skip(mainBuffer.getNumSamples());
+        
+        in_volumeMeter.skip(mainBuffer);
+        out_volumeMeter.skip(mainBuffer);
         
         mainBuffer.applyGain(inGain);
         scBuffer.applyGain(scGain);
@@ -118,11 +114,13 @@ public:
 
         bufferDelayer.delayBuffer(mainBuffer, curves);
         
-        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples), max_in_L, max_in_R);
+        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
+        in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, numSamples), scBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
+        
         filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
         mainBuffer.applyGain(outGain * _outExtraGain);
 
-        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples), max_out_L, max_out_R);
+        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
        
         if (processFFTresult) {
             for (int i = 0; i < numChannels; i++)
@@ -188,13 +186,11 @@ public:
     {
         if(meter == "in")
         {
-            max_in_L.setCurrentAndTargetValue(0.f);
-            max_in_R.setCurrentAndTargetValue(0.f);
+            in_volumeMeter.resetMaxVolume();
         }
         if(meter == "out")
         {
-            max_out_L.setCurrentAndTargetValue(0.f);
-            max_out_R.setCurrentAndTargetValue(0.f);
+            out_volumeMeter.resetMaxVolume();
         }
     }
 
@@ -254,7 +250,6 @@ private:
     FT ft_out;
 
     Converter conv;
-    CustomSmoothedValue<float, ValueSmoothingTypes::Linear> max_in_L, max_in_R, max_out_L, max_out_R;
     
 
 };

@@ -13,8 +13,8 @@
 #include "Sliders.h"
 
 //==============================================================================
-TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p),
+TheMaskerComponent::TheMaskerComponent (TheMaskerAudioProcessor& p)
+    : audioProcessor (p), 
     inSlider(*audioProcessor.parameters.getParameter(NAME_IN), NAME_IN, true),
     outSlider(*audioProcessor.parameters.getParameter(NAME_OUT), NAME_OUT, true),
     scSlider(*audioProcessor.parameters.getParameter(NAME_SC), NAME_SC, true),
@@ -63,14 +63,11 @@ TheMaskerAudioProcessorEditor::TheMaskerAudioProcessorEditor (TheMaskerAudioProc
     }
 
     
-    // Carica il file SVG dal disco
     svgDrawable = Drawable::createFromImageData (BinaryData::TheMasker_bg_svg, BinaryData::TheMasker_bg_svgSize);
-    setSize (824, 476);
-    
 }
 
 
-TheMaskerAudioProcessorEditor::~TheMaskerAudioProcessorEditor()
+TheMaskerComponent::~TheMaskerComponent()
 {
     for(auto* btn: getButtons())
     {
@@ -80,7 +77,7 @@ TheMaskerAudioProcessorEditor::~TheMaskerAudioProcessorEditor()
 
 
 //==============================================================================
-void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
+void TheMaskerComponent::paint (juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
     
@@ -96,7 +93,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         svgDrawable->setTransform(transform);
         svgDrawable->draw(g, 1.0f);
     }
-    
+
     //draw input area
     auto in_area = bounds.removeFromLeft(74);
     auto settings_area = in_area.removeFromTop(80);
@@ -179,7 +176,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
         g.drawHorizontalLine(y, responseArea.getX(), responseArea.getX() + responseArea.getWidth());
     }
 
-    g.setColour(Colour(255u, 200u, 100u));
+    g.setColour(_yellow);
 
     for (int i = 0; i < freqs.size(); ++i)
     {
@@ -241,7 +238,7 @@ void TheMaskerAudioProcessorEditor::paint (juce::Graphics& g)
 }
 
 
-void TheMaskerAudioProcessorEditor::buttonClicked (Button*button)// [2]
+void TheMaskerComponent::buttonClicked (Button*button)// [2]
 {
     if (button->getButtonText() == undoButton.getButtonText()) {
         audioProcessor.parameters.undoManager->undo();
@@ -256,7 +253,7 @@ void TheMaskerAudioProcessorEditor::buttonClicked (Button*button)// [2]
         if (chooser.browseForFileToOpen()) {
             auto fileToLoad = chooser.getResult();
             MemoryBlock sourceData;
-            fileToLoad.loadFileAsData(sourceData); processor.setStateInformation(sourceData.getData(), sourceData.getSize());
+            fileToLoad.loadFileAsData(sourceData); audioProcessor.setStateInformation(sourceData.getData(), sourceData.getSize());
         }
     }
     else if (button->getButtonText() == saveButton.getButtonText()) {
@@ -270,7 +267,7 @@ void TheMaskerAudioProcessorEditor::buttonClicked (Button*button)// [2]
             juce::FileOutputStream outputStream(file);
             if (outputStream.openedOk())
             {
-                MemoryBlock destData; processor.getStateInformation(destData); outputStream.write(destData.getData(), destData.getSize());
+                MemoryBlock destData; audioProcessor.getStateInformation(destData); outputStream.write(destData.getData(), destData.getSize());
             }
         }
     }
@@ -296,14 +293,14 @@ void TheMaskerAudioProcessorEditor::buttonClicked (Button*button)// [2]
 }
 
 
-void TheMaskerAudioProcessorEditor::resized()
+void TheMaskerComponent::resized()
 {
 }
 
 
-std::vector<juce::Component*> TheMaskerAudioProcessorEditor::getComponents()
+std::vector<juce::Component*> TheMaskerComponent::getComponents()
 {
-    return
+    return 
     {
        &inSlider,& outSlider,& mixSlider,
         & scSlider,& compSlider,& expSlider,& cleanUpSlider,
@@ -312,7 +309,7 @@ std::vector<juce::Component*> TheMaskerAudioProcessorEditor::getComponents()
 }
 
 
-std::vector<CustomButton*> TheMaskerAudioProcessorEditor::getButtons()
+std::vector<CustomButton*> TheMaskerComponent::getButtons()
 {
     return
     {
@@ -320,4 +317,32 @@ std::vector<CustomButton*> TheMaskerAudioProcessorEditor::getButtons()
         &toggleIn, &toggleSc, &toggleD, &toggleOut, &resetInButton, &resetOutButton
     };
 }
+
+
+
+Wrapper::Wrapper(TheMaskerAudioProcessor& p) : AudioProcessorEditor(p), theMaskerComponent(p)
+{
+    addAndMakeVisible(theMaskerComponent);
+    
+    if(auto * constrainer = getConstrainer())
+    {
+        constrainer->setFixedAspectRatio(static_cast<double>(originalWidth)/static_cast<double>(originalHeight));
+        constrainer->setSizeLimits(originalWidth/2, originalHeight/2,
+                                   originalWidth * 1.5, originalHeight * 1.5);
+    }
+    
+    setResizable(true, true);
+    setSize(originalWidth, originalHeight);
+}
+
+void Wrapper::resized()
+{
+    const auto scaleFactor = static_cast<float>(getWidth()) / static_cast<float> (originalWidth);
+    theMaskerComponent.setTransform(AffineTransform::scale(scaleFactor));
+    theMaskerComponent.setBounds(0, 0, originalWidth, originalHeight);
+}
+
+
+
+
 

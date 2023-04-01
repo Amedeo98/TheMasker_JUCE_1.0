@@ -58,3 +58,10 @@
 #define _spectrumSkew 1.0f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
 // se = 1.0f -> basse "strette", se 0.1f basse "larghe", (default 0.2f)
 
+#define _purple Colour(200u, 64u, 164u)
+#define _green Colour(40u, 220u, 0u)
+#define _yellow Colour(255u, 200u, 100u)
+#define _lightGrey Colours::lightgrey
+#define _grey Colours::grey
+
+

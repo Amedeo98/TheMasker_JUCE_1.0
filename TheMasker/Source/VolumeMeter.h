@@ -9,12 +9,20 @@
 */
 #include <JuceHeader.h>
 #include "Converters.h"
+#include "CustomSmoothedValue.h"
+#include "Constants.h"
 
 #pragma once
 
 class VolumeMeter {
 public:
     VolumeMeter() {
+    }
+    
+    void prepareToPlay(int fs, float relSmoothingSeconds, bool sc) {
+        hasSC = sc;
+        max_lev_L.reset(fs, 0.f, relSmoothingSeconds);
+        max_lev_R.reset(fs, 0.f, relSmoothingSeconds);
     }
 
     void draw(Graphics& g, juce::Rectangle<int>& bounds) {
@@ -42,23 +50,33 @@ public:
         PathStrokeType(8.0);
         g.fillPath(bkg);
     
-        g.setColour(Colour(200u, 64u, 164u).withAlpha(0.8f));
+        g.setColour(_purple);
         
-        // Draw the left channel meter
+        // Draw the left channel meter (max_L)
         float leftLevel = currentLevel[0] * chHeight;
         g.fillRect(Rectangle<int>(left, top + chHeight - max_L* chHeight, chWidth, max_L* chHeight));
         
-        // Draw the right channel meter
-        //float rightLevel = mapToLog10(currentLevel[1], 0.01f, 1.0f) * chHeight;
+        // Draw the right channel meter (max_R)
         float rightLevel = currentLevel[1] * chHeight;
         g.fillRect(Rectangle<int>(left + chWidth + 14, top + chHeight - max_R* chHeight, chWidth, max_R* chHeight));
-        
-        gradient = ColourGradient(Colour(255u, 100u, 200u), left, top, Colour(40u, 220u, 0u), left+chWidth, top+chHeight, false);
+
+         
+        //real time rms
+        gradient = ColourGradient(_yellow, left, top, _green, left+chWidth, top+chHeight, false);
         g.setGradientFill(gradient);
-        
         g.fillRect(Rectangle<int>(left, top + chHeight - leftLevel, chWidth, leftLevel));
         g.fillRect(Rectangle<int>(left + chWidth + 14, top + chHeight - rightLevel, chWidth, rightLevel));
         
+        
+        //sc
+         if(hasSC)
+        {
+            float scL = scLevel[0] * chHeight;
+            float scR = scLevel[1] * chHeight;
+            g.setColour(_yellow);
+            g.fillRect(Rectangle<int>(left-1, top + chHeight - scL, chWidth+2, 2.f));
+            g.fillRect(Rectangle<int>(left + chWidth + 14-1, top + chHeight - scR, chWidth+2, 2.f));
+        }
         // Draw db value
         String str_L;
         if (int(dB_L) > 0) str_L << "+";
@@ -72,13 +90,12 @@ public:
         g.drawFittedText(str_L, left - 12, chHeight + top + 4, 24, 16, juce::Justification::centred, 1);
         g.drawFittedText(str_R, left + chWidth + 8, chHeight + top + 4, 24, 16, juce::Justification::centred, 1);
         
-        /*
         for (auto gDb : meterGain)
         {
             String str;
             if (gDb > 0)
                 str << "+";
-            if (gDb <= -90)
+            if (gDb <= -96)
                 str << "-inf";
             else
                 str << gDb;
@@ -88,50 +105,74 @@ public:
             r.setX(bounds.getX());
             
             auto y = jmap(gDb, (float)(_mindBFS),6.0f,0.0f,1.0f);
-            y = jmax(0.0f, jmin(1.0f, y));
-            y = mapToLog10(y, 0.01f, 1.0f) * chHeight;
+            y = jmax(0.0f, jmin(1.0f, y)) * chHeight;
             
             r.setCentre(r.getCentreX(), top + chHeight - y);
             
-            g.setColour(Colours::black);
+            g.setColour(Colours::black.withAlpha(0.3f));
             g.drawFittedText(String(str), r, juce::Justification::centredRight , 1);
             
             str.clear();
-        } */
+        }
     
     }
     
+    void skip(AudioBuffer<float>& buffer) {
+        max_lev_L.skip(buffer.getNumSamples());
+        max_lev_R.skip(buffer.getNumSamples());
+    }
+    
 
-    void setLevel(float left, float right, auto& max_lev_L, auto& max_lev_R) {
-        
+    void setLevel(float left, float right) {
          if(left > max_lev_L.getCurrentValue())
+         {
              max_lev_L.setTargetValue(left);
+             dB_L = Decibels::gainToDecibels(max_lev_L.getCurrentValue());
+         }
          else
              max_lev_L.setTargetValue(0.f);
-         
+
          if(right> max_lev_R.getCurrentValue())
+         {
              max_lev_R.setTargetValue(right);
+             dB_R = Decibels::gainToDecibels(max_lev_R.getCurrentValue());
+         }
          else
              max_lev_R.setTargetValue(0.f);
          
         
-        dB_L = Decibels::gainToDecibels(max_lev_L.getCurrentValue());
-        dB_R = Decibels::gainToDecibels(max_lev_R.getCurrentValue());
 
         currentLevel[0] = juce::jmap(Decibels::gainToDecibels(left), (float)_mindBFS, 6.0f, 0.0f, 1.0f);
         currentLevel[1] = juce::jmap(Decibels::gainToDecibels(right), (float)_mindBFS, 6.0f, 0.0f, 1.0f);
         currentLevel[0] = jmax(0.0f, jmin(1.0f, currentLevel[0]));
         currentLevel[1] = jmax(0.0f, jmin(1.0f, currentLevel[1]));
         
-        max_L = juce::jmap(dB_L, (float)_mindBFS, 6.0f, 0.0f, 1.0f);
-        max_R = juce::jmap(dB_R, (float)_mindBFS, 6.0f, 0.0f, 1.0f);
+        max_L = juce::jmap(Decibels::gainToDecibels(max_lev_L.getCurrentValue()), (float)_mindBFS, 6.0f, 0.0f, 1.0f);
+        max_R = juce::jmap(Decibels::gainToDecibels(max_lev_R.getCurrentValue()), (float)_mindBFS, 6.0f, 0.0f, 1.0f);
         max_L = jmax(0.0f, jmin(1.0f, max_L));
         max_R = jmax(0.0f, jmin(1.0f, max_R));
+    }
+    
+    
+    void setSCLevel(float left, float right)
+    {
+        scLevel[0] = juce::jmap(Decibels::gainToDecibels(left), (float)_mindBFS, 6.0f, 0.0f, 1.0f);
+        scLevel[1] = juce::jmap(Decibels::gainToDecibels(right), (float)_mindBFS, 6.0f, 0.0f, 1.0f);
+        scLevel[0] = jmax(0.0f, jmin(1.0f, scLevel[0]));
+        scLevel[1] = jmax(0.0f, jmin(1.0f, scLevel[1]));
+    }
+    
+    void resetMaxVolume() {
+        max_lev_L.setCurrentAndTargetValue(0.f);
+        max_lev_R.setCurrentAndTargetValue(0.f);
     }
     
 
 private:
     float currentLevel[2] = { 0.0f, 0.0f };
+    float scLevel[2] = { 0.0f, 0.0f };
+    bool hasSC = true;
+    
     Converter conv;
     float dB_L, dB_R;
     float max_L, max_R;
@@ -139,9 +180,11 @@ private:
     
     Array<float> meterGain
     {
-       -90, -48, -24, -18, -12, -6, 0, 6
+        -96, -48, -24, -18, -12, -6, 0
     };
     
+    CustomSmoothedValue<float, ValueSmoothingTypes::Linear> max_lev_L, max_lev_R;
+
     
 };
 

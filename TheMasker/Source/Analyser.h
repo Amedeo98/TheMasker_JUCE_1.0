@@ -36,14 +36,14 @@ public:
     }
 
 
-    void getResult(array<float, _fftSize>& result)
+    void getResult(auto& result)
     {
         if (nextFFTBlockReady) {
             FloatVectorOperations::multiply(fftData.data(), window.data(), fftSize);
 
             forwardFFT.performFrequencyOnlyForwardTransform(fftData.data(), false);  // [2]
 
-            FloatVectorOperations::copy(result.data(), fftData.data(), fftSize);
+            FloatVectorOperations::copy(result.data(), fftData.data(), fftSize / 2);
 
             nextFFTBlockReady = false;
         }
@@ -55,7 +55,7 @@ public:
         {
             if (!nextFFTBlockReady)            
             {
-                FloatVectorOperations::fill(fftData.data(), 0.0f, fftSize * 2);
+                FloatVectorOperations::fill(fftData.data(), 0.0f, fftSize);
                 memcpy(fftData.data(), fifo.data(), fftSize);
                 nextFFTBlockReady = true;
             }
@@ -67,7 +67,7 @@ public:
 
    
 
-    array<float, _fftSize> result;
+    array<float, _fftSize/2> result;
     float* frequencies;
     const int fftSize;
     bool nextFFTBlockReady = false;
@@ -79,7 +79,7 @@ private:
 
     array<float,_fftSize> window;                          
     array<float,_fftSize> fifo;                          
-    array<float,_fftSize*2> fftData;                   
+    array<float,_fftSize> fftData;                   
     int fifoIndex = 0;                             
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Analyser)

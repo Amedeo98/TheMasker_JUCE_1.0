@@ -28,11 +28,11 @@ public:
                 float temp = curves[ch].delta[i];
                 //float cleaFValue = (temp - avg) * UIclearFreqs;
                 //float maskedFValue = (avg - temp) * UImaskedFreqs;
-                float clearFValue = UIclearFreqs > 0 ? jmax((temp - avg) * UIclearFreqs, 0.0f) : jmin((temp - avg) * UIclearFreqs, 0.0f);
-                float maskedFValue = UImaskedFreqs > 0 ? jmax((avg - temp) * UImaskedFreqs, 0.0f) : jmin((avg - temp) * UImaskedFreqs, 0.0f);
+                float clearFValue = UIclearFreqs > 0 ? jmax((temp - avg) * UIclearFreqs, 0.0f) * posDeltasAlpha : jmin((temp - avg) * UIclearFreqs, 0.0f);
+                float maskedFValue = UImaskedFreqs > 0 ? jmax((avg - temp) * UImaskedFreqs, 0.0f) * posDeltasAlpha : jmin((avg - temp) * UImaskedFreqs, 0.0f);
                 temp = temp > 0.0f ? clearFValue : maskedFValue;
-                temp = temp * UImix;
-                temp = tanh(temp / maxGain) * maxGain;
+                temp = tanh(temp / (float) maxGain) * (float) maxGain;
+                temp = temp * UImix * 0.8f;
                 curves[ch].delta[i] = temp;
             }
         }
@@ -62,6 +62,7 @@ private:
     int gateThresh = _gateThresh;
     float gateKnee_inv = pow(_gateKnee,-1);
     float nfilts_inv = pow(nfilts, -1);
+    float posDeltasAlpha = 0.5f;
     int nCh = 0;
     array<float, nfilts> THclip;
     array<float, nfilts> SCclip;

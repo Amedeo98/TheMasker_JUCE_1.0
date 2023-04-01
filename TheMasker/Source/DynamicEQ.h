@@ -56,7 +56,7 @@ public:
         out_volumeMeter.prepareToPlay(fs, 5.f, false);
         
         deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
-        bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
+        bufferDelayer.prepareToPlay(numSamples, _fftSize, fs, numChannels);
         filters.prepareToPlay(fs, numSamples, fCenters.data());
 
         stereoLinked.setSL(stereoLinkAmt);

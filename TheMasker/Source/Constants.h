@@ -59,7 +59,7 @@
 #define _spectrumPaddingHighFreq 0.5f
 #define _spectrumPaddingLowFreq 0.5f
 #define _spectrumSkew 1.0f
-#define _spectrumThresh -80
+#define _spectrumThresh -85
 #define _spectrumKnee 10
 
 #define _purple Colour(154u, 61u, 157u)

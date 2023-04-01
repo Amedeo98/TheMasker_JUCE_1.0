@@ -213,7 +213,7 @@ void TheMaskerComponent::paint (juce::Graphics& g)
 
     for (auto gDb : gain)
     {
-        auto y = jmap(gDb, -24.f, 24.f, float(responseArea.getHeight()), float(responseArea.getY()));
+        auto y = jmap(gDb, float(-_maxDeltaSpectrum), float(_maxDeltaSpectrum), float(responseArea.getHeight()), float(responseArea.getY()));
         
         String str;
         if (gDb > 0)

@@ -54,13 +54,9 @@ public:
         
         max_in_L.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
         max_in_R.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
-        max_in_L.setCurrentAndTargetValue(0.f);
-        max_in_R.setCurrentAndTargetValue(0.f);
         
-        max_out_L.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
-        max_out_R.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
-        max_out_L.setCurrentAndTargetValue(0.f);
-        max_out_R.setCurrentAndTargetValue(0.f);
+        max_out_L.reset(fs, 0.f, 5.f);
+        max_out_R.reset(fs, 0.f, 5.f);
 
         deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
         bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
@@ -142,12 +138,12 @@ public:
         if(val_L > max_out_L.getCurrentValue())
             max_out_L.setTargetValue(val_L);
         else
-            max_out_L.setCurrentAndTargetValue(max_out_L.getCurrentValue()-(max_out_L.getCurrentValue() * 0.01f));
+            max_out_L.setTargetValue(0.f);
         
         if(val_R > max_out_R.getCurrentValue())
             max_out_R.setTargetValue(val_R);
         else
-            max_out_R.setCurrentAndTargetValue(max_out_R.getCurrentValue()-(max_out_R.getCurrentValue() * 0.01f));
+            max_out_R.setTargetValue(0.f);
         
         out_volumeMeter.setLevel(val_L, val_R, max_out_L.getCurrentValue(), max_out_R.getCurrentValue());
        

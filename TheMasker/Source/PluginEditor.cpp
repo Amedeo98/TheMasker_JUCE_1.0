@@ -298,7 +298,6 @@ void TheMaskerAudioProcessorEditor::buttonClicked (Button*button)// [2]
 
 void TheMaskerAudioProcessorEditor::resized()
 {
-
 }
 
 

@@ -40,7 +40,8 @@
 #define maxFreq 20000
 #define minFreq 20
 
-#define _maxGain 20
+#define _maxDeltaSpectrum 24
+#define _maxGain 10
 #define _gateThresh -40
 #define _gateKnee 10
 
@@ -50,7 +51,7 @@
 #define _relSpectrumSeconds 2.000f
 #define _overlapRatio 0.5f
 #define _mindBFS -100
-#define _relThreshLift -5.0f
+#define _relThreshLift -12.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
 #define _outExtraGain 7.6f
@@ -58,7 +59,7 @@
 #define _spectrumPaddingHighFreq 0.5f
 #define _spectrumPaddingLowFreq 0.5f
 #define _spectrumSkew 1.0f
-#define _spectrumThresh -80
+#define _spectrumThresh -85
 #define _spectrumKnee 10
 
 #define _purple Colour(154u, 61u, 157u)

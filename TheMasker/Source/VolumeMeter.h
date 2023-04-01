@@ -22,7 +22,9 @@ public:
     void prepareToPlay(double fs, float relSmoothingSeconds, bool sc) {
         hasSC = sc;
         max_lev_L.reset(fs, 0.f, relSmoothingSeconds);
+        max_lev_L.setCurrentAndTargetValue(0.f);
         max_lev_R.reset(fs, 0.f, relSmoothingSeconds);
+        max_lev_R.setCurrentAndTargetValue(0.f);
     }
 
     void draw(Graphics& g, juce::Rectangle<int>& bounds) {

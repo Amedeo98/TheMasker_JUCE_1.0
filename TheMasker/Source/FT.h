@@ -30,17 +30,19 @@ public:
 
     void getFT(AudioBuffer<float>& input, int ch, auto& output, array<float,npoints>& spectrumOutput, bool& processFFTresult) {
         process(input, ch, processFFTresult);
-        getResult(result);
-        conv.interpolateYvector(F, result, frequencies, false, result_fixed);
-        FloatVectorOperations::fill(output.data(), 0.0f, decimated ? nfilts : npoints);
-        if (decimated)
-        {
-            conv.mXv_mult(fbank_values, result_fixed, npoints, output);
+        if (processFFTresult) {
+            getResult(result);
+            conv.interpolateYvector(F, result, frequencies, false, result_fixed);
+            FloatVectorOperations::fill(output.data(), 0.0f, decimated ? nfilts : npoints);
+            if (decimated)
+            {
+                conv.mXv_mult(fbank_values, result_fixed, npoints, output);
+            }
+            else {
+                FloatVectorOperations::copy(output.data(), result_fixed.data(), npoints);
+            }
+            FloatVectorOperations::copy(spectrumOutput.data(), result_fixed.data(), npoints);
         }
-        else {
-            FloatVectorOperations::copy(output.data(), result_fixed.data(), npoints);
-        }
-        FloatVectorOperations::copy(spectrumOutput.data(), result_fixed.data(), npoints);
     }
 
     void setFBank(FilterBank& fb) {

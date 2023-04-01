@@ -75,6 +75,13 @@ public:
         if(!hide_out){
             outSpectrum.drawFrame(g, bounds);
         }
+    
+        float bottomMapped = juce::jmap(float(_spectrumThresh - _spectrumKnee*2), float(_mindBFS), 0.f, 1.f, 0.f) * bounds.getHeight();
+        float topMapped = juce::jmap(float(_spectrumThresh + _spectrumKnee*2), float(_mindBFS), 0.f, 1.f, 0.f) * bounds.getHeight();
+        
+        gradient = ColourGradient(Colour(_darkgrey).withAlpha(0.0f), bounds.getX(), topMapped, _darkgrey, bounds.getX(), bottomMapped, false);
+        g.setGradientFill(gradient);
+        g.fillRect(bounds);
     }
 
     void setNumChannels(int nCh) {
@@ -121,8 +128,10 @@ private:
 
     juce::Colour in_colour = Colour(Colours::white.withAlpha(0.7f));
     juce::Colour sc_colour = _yellow;
-    juce::Colour out_colour = _green;
+    juce::Colour out_colour = Colour(_green).withAlpha(0.7f);
     juce::Colour delta_colour = _purple;
+    
+    ColourGradient gradient{};
     
     bool hide_in = false;
     bool hide_sc = false;

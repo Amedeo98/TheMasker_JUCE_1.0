@@ -58,13 +58,15 @@
 
 #define _spectrumPaddingHighFreq 0.5f
 #define _spectrumPaddingLowFreq 0.5f
-#define _spectrumSkew 1.0f  // moltiplicatore dell'esponenziale che mappa le freq sulle ascisse. 
-// se = 1.0f -> basse "strette", se 0.1f basse "larghe", (default 0.2f)
+#define _spectrumSkew 1.0f
+#define _spectrumThresh -80
+#define _spectrumKnee 10
 
-#define _purple Colour(200u, 64u, 164u)
+#define _purple Colour(154u, 61u, 157u)
 #define _green Colour(40u, 220u, 0u)
 #define _yellow Colour(255u, 200u, 100u)
-#define _lightGrey Colours::lightgrey
+#define _lightgrey Colours::lightgrey
 #define _grey Colours::grey
+#define _darkgrey Colour(10u, 10u, 10u)
 
 

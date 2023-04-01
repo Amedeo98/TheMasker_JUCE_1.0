@@ -155,6 +155,10 @@ void TheMaskerComponent::paint (juce::Graphics& g)
     bounds.removeFromRight(16);
     auto responseArea = bounds;
     
+    resetInButton.setBounds(in_area);
+    resetOutButton.setBounds(out_area);
+    audioProcessor.dynEQ.drawFrame(g, responseArea, in_area, out_area);
+    
     //grid
     Array<float> xs;
     for (auto f : freqs)
@@ -163,7 +167,7 @@ void TheMaskerComponent::paint (juce::Graphics& g)
         xs.add(responseArea.getX() + responseArea.getWidth() * normX);
     }
 
-    g.setColour(Colours::darkgrey.withAlpha(0.5f));
+    g.setColour(Colour(_grey).withAlpha(0.2f));
     for (auto x : xs)
     {
         g.drawVerticalLine(x, responseArea.getY(), responseArea.getHeight());
@@ -172,7 +176,7 @@ void TheMaskerComponent::paint (juce::Graphics& g)
     for (auto gDb : gain)
     {
         auto y = jmap(gDb, -24.f, 24.f, float(responseArea.getHeight()), float(responseArea.getY()));
-        g.setColour(gDb == 0.f ? Colours::grey : Colours::darkgrey.withAlpha(0.3f));
+        g.setColour(gDb == 0.f ? Colour(_lightgrey).withAlpha(0.2f) : Colour(_grey).withAlpha(0.2f));
         g.drawHorizontalLine(y, responseArea.getX(), responseArea.getX() + responseArea.getWidth());
     }
 
@@ -224,7 +228,7 @@ void TheMaskerComponent::paint (juce::Graphics& g)
         r.setX(responseArea.getX());
         r.setCentre(r.getCentreX(), y);
         
-        g.setColour(gDb == 0.f ? Colours::grey : Colours::lightgrey);
+        g.setColour(gDb == 0.f ? _grey : _lightgrey);
         
         g.drawFittedText(str, r, juce::Justification::centred, 1);
         
@@ -232,9 +236,7 @@ void TheMaskerComponent::paint (juce::Graphics& g)
         str << (gDb - 24.f);
     }
     
-    resetInButton.setBounds(in_area);
-    resetOutButton.setBounds(out_area);
-    audioProcessor.dynEQ.drawFrame(g, responseArea, in_area, out_area);
+
 }
 
 

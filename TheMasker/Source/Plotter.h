@@ -113,9 +113,9 @@ private:
 
     int numCh = 0;
 
-    juce::Colour in_colour = Colour(Colours::white.withAlpha(0.7f));
-    juce::Colour sc_colour = _yellow;
-    juce::Colour out_colour = _green;
+    juce::Colour in_colour = Colour(Colours::white.withAlpha(0.6f));
+    juce::Colour sc_colour = Colour(_yellow).withAlpha(0.9f);
+    juce::Colour out_colour = Colour(_green).withAlpha(0.6f);
     juce::Colour delta_colour = _purple;
     
     bool hide_in = false;

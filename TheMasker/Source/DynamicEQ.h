@@ -52,8 +52,8 @@ public:
             }
         }
         
-        max_in_L.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
-        max_in_R.reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
+        max_in_L.reset(fs, 0.f, 5.f);
+        max_in_R.reset(fs, 0.f, 5.f);
         
         max_out_L.reset(fs, 0.f, 5.f);
         max_out_R.reset(fs, 0.f, 5.f);
@@ -121,12 +121,12 @@ public:
         if(val_L > max_in_L.getCurrentValue())
             max_in_L.setTargetValue(val_L);
         else
-            max_in_L.setCurrentAndTargetValue(max_in_L.getCurrentValue()-(max_in_L.getCurrentValue() * 0.01f));
+            max_in_L.setTargetValue(0.f);
         
         if(val_L > max_in_R.getCurrentValue())
             max_in_R.setTargetValue(val_R);
         else
-            max_in_R.setCurrentAndTargetValue(max_in_R.getCurrentValue()-(max_in_R.getCurrentValue() * 0.01f));
+            max_in_R.setTargetValue(0.f);
         
         in_volumeMeter.setLevel(val_L, val_R, max_in_L.getCurrentValue(), max_in_R.getCurrentValue());
         filters.filterBlock(mainBuffer, curves, gains_sm);

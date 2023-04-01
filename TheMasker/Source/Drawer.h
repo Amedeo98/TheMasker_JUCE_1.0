@@ -28,6 +28,8 @@ public:
             freqAxis[i] = juce::mapFromLog10(frequencies[i], (float)minFreq, (float)maxFreq);
             //freqAxis[i] = jmap(frequencies[i], (float)minFreq, (float)maxFreq, 0.0f, 1.0f); //lineare (brutto)
         }
+
+        
     }
 
     virtual void drawNextFrameOfSpectrum(array<float, npoints> result)  {}
@@ -42,16 +44,11 @@ public:
     int scopeSize;
     int resultSize;
 
-    array<float, npoints> scopeData;
     array<float, npoints> freqAxis;
     float* frequencies;
 
     array<float, 2> xVal, yVal;
 
     float scope_step;
-
-
-private:
-
 
 };

@@ -19,7 +19,7 @@ public:
     VolumeMeter() {
     }
     
-    void prepareToPlay(int fs, float relSmoothingSeconds, bool sc) {
+    void prepareToPlay(double fs, float relSmoothingSeconds, bool sc) {
         hasSC = sc;
         max_lev_L.reset(fs, 0.f, relSmoothingSeconds);
         max_lev_R.reset(fs, 0.f, relSmoothingSeconds);

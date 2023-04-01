@@ -18,10 +18,16 @@
 class Plotter {
 public:
     
-    void prepareToPlay(float* frequencies, float* fCenters) {
+    void prepareToPlay(float* frequencies, float* fCenters, double fs, int nSamples) {
         inSpectrum.prepareToPlay(frequencies, in_colour);
+        inSpectrum.resetSmoothingValues(fs, nSamples);
+
         scSpectrum.prepareToPlay(frequencies, sc_colour);
+        scSpectrum.resetSmoothingValues(fs, nSamples);
+
         outSpectrum.prepareToPlay(frequencies, out_colour);
+        outSpectrum.resetSmoothingValues(fs, nSamples);
+
         deltaSpectrum.prepareToPlay(fCenters, delta_colour);
     }
 

@@ -100,4 +100,7 @@ public:
         }
     }
 
+private:
+    array<float, npoints> scopeData;
+
 };

@@ -68,7 +68,7 @@ public:
 
 private:
     
-    int sampleRate = 0;
+    double sampleRate = 0;
     int samplesPerBlock = 0;
     int inCh = 0;
     int scCh = 0;

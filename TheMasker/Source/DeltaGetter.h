@@ -71,7 +71,7 @@ public:
 
  
 
-    void prepareToPlay(int sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies) {
+    void prepareToPlay(float sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies) {
         getATQ(fCenters, atq);
         setATQ(DEFAULT_ATQ);
         psy.getSpreadingMtx();

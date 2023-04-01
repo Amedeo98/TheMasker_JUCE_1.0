@@ -52,8 +52,8 @@ public:
             }
         }
         
-        in_volumeMeter.prepareToPlay(sampleRate, 5.f);
-        out_volumeMeter.prepareToPlay(sampleRate, 5.f);
+        in_volumeMeter.prepareToPlay(sampleRate, 5.f, true);
+        out_volumeMeter.prepareToPlay(sampleRate, 5.f, false);
         
         deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
         bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
@@ -115,6 +115,8 @@ public:
         bufferDelayer.delayBuffer(mainBuffer, curves);
         
         in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
+        in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, numSamples), scBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
+        
         filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
         mainBuffer.applyGain(outGain * _outExtraGain);
 

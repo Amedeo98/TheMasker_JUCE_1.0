@@ -176,7 +176,7 @@ void TheMaskerComponent::paint (juce::Graphics& g)
         g.drawHorizontalLine(y, responseArea.getX(), responseArea.getX() + responseArea.getWidth());
     }
 
-    g.setColour(Colour(255u, 200u, 100u));
+    g.setColour(_yellow);
 
     for (int i = 0; i < freqs.size(); ++i)
     {

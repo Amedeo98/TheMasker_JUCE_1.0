@@ -10,6 +10,7 @@
 
 #include "SpectrumDrawer.h"
 #include "DeltaDrawer.h"
+#include "Constants.h"
 
 
 
@@ -113,9 +114,9 @@ private:
     int numCh = 0;
 
     juce::Colour in_colour = Colour(Colours::white.withAlpha(0.7f));
-    juce::Colour sc_colour = Colour(255u, 200u, 100u);
-    juce::Colour out_colour = Colour(40u, 220u, 0u);
-    juce::Colour delta_colour = Colour(200u, 40u, 160u);
+    juce::Colour sc_colour = _yellow;
+    juce::Colour out_colour = _green;
+    juce::Colour delta_colour = _purple;
     
     bool hide_in = false;
     bool hide_sc = false;

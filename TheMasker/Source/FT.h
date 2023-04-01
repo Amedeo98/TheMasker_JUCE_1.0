@@ -24,8 +24,8 @@ public:
     void prepare(float* freqs, float* fCents, int sampleRate) {
         frequencies = freqs;
         fCenters = fCents;
-        F.resize(fftSize*0.5f);
-        F = conv.linspace(0.0f, static_cast<float>(sampleRate * 0.5f), static_cast<float>(fftSize*0.5f));
+        F.resize(fftSize);
+        F = conv.linspace(0.0f, static_cast<float>(sampleRate * 0.5f), static_cast<float>(fftSize * 0.5f));
     }
 
     void getFT(AudioBuffer<float>& input, int ch, auto& output, array<float,npoints>& spectrumOutput, bool& processFFTresult) {

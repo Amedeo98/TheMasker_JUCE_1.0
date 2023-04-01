@@ -66,6 +66,6 @@ private:
     array<float, nfilts> ATQclip;
     array<float, nfilts> atq_gated;
     float gateKnee_inv = pow(_gateKnee, 1);
-    float gateThresh = _gateATQ;
+    float gateThresh = _gateThresh;
 
 };

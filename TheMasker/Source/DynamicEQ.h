@@ -103,28 +103,36 @@ public:
         mainBuffer.applyGain(inGain);
         scBuffer.applyGain(scGain);
 
-        deltaGetter.getDelta(mainBuffer, scBuffer, curves);
+        deltaGetter.getDelta(mainBuffer, scBuffer, curves, processFFTresult);
 
-        if (numChannels == 2 && stereoLinkAmt > 0.0f)
-        {
-            stereoLinked.process(curves[0].delta, curves[1].delta);
+        if (processFFTresult) {
+
+            if (numChannels == 2 && stereoLinkAmt > 0.0f)
+            {
+                stereoLinked.process(curves[0].delta, curves[1].delta);
+            }
+
+            deltaScaler.scale(curves, maskedFreqsAmount, clearFreqsAmount, mixAmount);
+            deltaScaler.clip(curves);
         }
-
-        deltaScaler.scale(curves, maskedFreqsAmount, clearFreqsAmount, mixAmount);
-        deltaScaler.clip(curves);
 
         bufferDelayer.delayBuffer(mainBuffer, curves);
         
         in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples), max_in_L, max_in_R);
-        filters.filterBlock(mainBuffer, curves, gains_sm);
+        filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
         mainBuffer.applyGain(outGain * _outExtraGain);
 
         out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples), max_out_L, max_out_R);
        
-        for (int i = 0; i < numChannels; i++)
-        ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum);
+        if (processFFTresult) {
+            for (int i = 0; i < numChannels; i++)
+                ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum, processFFTresult);
+
+            processFFTresult = false;
+        }
 
         spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
+
 
     }
 
@@ -210,7 +218,7 @@ private:
     int fs;
     int numSamples;
 
-    bool nextFFTBlockReady = false;
+    bool processFFTresult = false;
 
     struct curve
     {

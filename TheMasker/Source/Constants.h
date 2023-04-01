@@ -42,10 +42,9 @@
 
 #define _maxGain 20
 #define _gateThresh -40
-#define _gateATQ -60
 #define _gateKnee 10
 
-#define _atkSmoothingSeconds 0.100f
+#define _atkSmoothingSeconds 0.030f
 #define _relSmoothingSeconds 0.100f
 #define _overlapRatio 0.5f
 #define _mindBFS -100

@@ -55,7 +55,7 @@ public:
 
     }
     
-    void filterBlock(AudioBuffer<float>& buffer, auto& curves, auto& gains_sm) {
+    void filterBlock(AudioBuffer<float>& buffer, auto& curves, auto& gains_sm, bool& processFFTresult) {
         int numSamples = buffer.getNumSamples();
         inputBuffer_copy.clear();
         for (int ch = 0; ch < numCh; ch++) 
@@ -70,6 +70,7 @@ public:
             
             for (int ch = 0; ch < numCh; ch++) {
 
+                if (processFFTresult)
                 gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
 
                 for (int sample = 0; sample < numSamples; sample++) {

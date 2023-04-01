@@ -82,7 +82,8 @@ public:
                 
 
 
-                g.drawLine (line, 2.0f);
+                if(xVal[1] < width )
+                    g.drawLine (line, 2.0f);
                 //dots :)
                 //g.fillRoundedRectangle(xVal[0], jmap(scopeData[i - 1], 0.0f, 1.0f, (float)height, 0.0f), 3.0f, 3.0f, 6.0f);
                 

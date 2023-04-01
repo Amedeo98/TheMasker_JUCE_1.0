@@ -51,12 +51,6 @@ public:
                 gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
-        
-        max_in_L.reset(fs, 0.f, 5.f);
-        max_in_R.reset(fs, 0.f, 5.f);
-        
-        max_out_L.reset(fs, 0.f, 2.f);
-        max_out_R.reset(fs, 0.f, 2.f);
 
         deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
         bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
@@ -95,11 +89,7 @@ public:
 
     void processBlock(AudioBuffer<float>& mainBuffer, AudioBuffer<float>& scBuffer)
     {
-        max_in_L.skip(mainBuffer.getNumSamples());
-        max_in_R.skip(mainBuffer.getNumSamples());
-        max_out_L.skip(mainBuffer.getNumSamples());
-        max_out_R.skip(mainBuffer.getNumSamples());
-        
+
         mainBuffer.applyGain(inGain);
         scBuffer.applyGain(scGain);
 
@@ -117,13 +107,12 @@ public:
         }
 
         bufferDelayer.delayBuffer(mainBuffer, curves);
-        
-        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples), max_in_L, max_in_R);
+
+        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
         filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
         mainBuffer.applyGain(outGain * _outExtraGain);
+        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
 
-        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples), max_out_L, max_out_R);
-       
         if (processFFTresult) {
             for (int i = 0; i < numChannels; i++)
                 ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum, processFFTresult);
@@ -183,20 +172,6 @@ public:
     {
         spectrumPlotter.toggleSpectrumView(btn);
     }
-    
-    void resetMaxVolume(juce::String meter)
-    {
-        if(meter == "in")
-        {
-            max_in_L.setCurrentAndTargetValue(0.f);
-            max_in_R.setCurrentAndTargetValue(0.f);
-        }
-        if(meter == "out")
-        {
-            max_out_L.setCurrentAndTargetValue(0.f);
-            max_out_R.setCurrentAndTargetValue(0.f);
-        }
-    }
 
 
 private:
@@ -254,7 +229,7 @@ private:
     FT ft_out;
 
     Converter conv;
-    CustomSmoothedValue<float, ValueSmoothingTypes::Linear> max_in_L, max_in_R, max_out_L, max_out_R;
+
     
 
 };

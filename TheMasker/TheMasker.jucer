@@ -32,12 +32,9 @@
         <FILE id="J5e9Rp" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>
       </GROUP>
       <GROUP id="{A103283F-E046-C838-ECB6-DB2C3B6D1442}" name="GUI">
-        <FILE id="Tnu0Yj" name="CustomButton.h" compile="0" resource="0" file="Source/CustomButton.h"/>
         <FILE id="LPm597" name="DeltaDrawer.h" compile="0" resource="0" file="Source/DeltaDrawer.h"/>
         <FILE id="UORaYz" name="Drawer.h" compile="0" resource="0" file="Source/Drawer.h"/>
         <FILE id="BewJcf" name="Plotter.h" compile="0" resource="0" file="Source/Plotter.h"/>
-        <FILE id="vQuClw" name="Sliders.cpp" compile="1" resource="0" file="Source/Sliders.cpp"/>
-        <FILE id="gBQQWF" name="Sliders.h" compile="0" resource="0" file="Source/Sliders.h"/>
         <FILE id="nzmQnM" name="SpectrumDrawer.h" compile="0" resource="0"
               file="Source/SpectrumDrawer.h"/>
         <FILE id="RaoLMo" name="VolumeMeter.h" compile="0" resource="0" file="Source/VolumeMeter.h"/>

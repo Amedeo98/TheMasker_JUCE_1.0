@@ -9,12 +9,18 @@
 */
 #include <JuceHeader.h>
 #include "Converters.h"
+#include "CustomSmoothedValue.h"
 
 #pragma once
 
 class VolumeMeter {
 public:
     VolumeMeter() {
+    }
+    
+    void prepareToPlay(int fs, float relSmoothingSeconds) {
+        max_lev_L.reset(fs, 0.f, relSmoothingSeconds);
+        max_lev_R.reset(fs, 0.f, relSmoothingSeconds);
     }
 
     void draw(Graphics& g, juce::Rectangle<int>& bounds) {
@@ -101,9 +107,13 @@ public:
     
     }
     
+    void skip(AudioBuffer<float>& buffer) {
+        max_lev_L.skip(buffer.getNumSamples());
+        max_lev_R.skip(buffer.getNumSamples());
+    }
+    
 
-    void setLevel(float left, float right, auto& max_lev_L, auto& max_lev_R) {
-        
+    void setLevel(float left, float right) {
          if(left > max_lev_L.getCurrentValue())
              max_lev_L.setTargetValue(left);
          else
@@ -129,6 +139,11 @@ public:
         max_R = jmax(0.0f, jmin(1.0f, max_R));
     }
     
+    void resetMaxVolume() {
+        max_lev_L.setCurrentAndTargetValue(0.f);
+        max_lev_R.setCurrentAndTargetValue(0.f);
+    }
+    
 
 private:
     float currentLevel[2] = { 0.0f, 0.0f };
@@ -142,6 +157,8 @@ private:
        -90, -48, -24, -18, -12, -6, 0, 6
     };
     
+    CustomSmoothedValue<float, ValueSmoothingTypes::Linear> max_lev_L, max_lev_R;
+
     
 };
 

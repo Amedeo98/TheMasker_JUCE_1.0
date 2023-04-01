@@ -13,15 +13,16 @@
 #include "CustomButton.h"
 #include "Sliders.h"
 
+
 //==============================================================================
 /**
 */
-class TheMaskerAudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Timer,
+class TheMaskerComponent  : public juce::Component, private juce::Timer,
                                        public juce::Button::Listener
 {
 public:
-    TheMaskerAudioProcessorEditor (TheMaskerAudioProcessor&);
-    ~TheMaskerAudioProcessorEditor() override;
+    TheMaskerComponent (TheMaskerAudioProcessor&);
+    ~TheMaskerComponent() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -29,8 +30,6 @@ public:
     void buttonClicked (Button*) override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
     TheMaskerAudioProcessor& audioProcessor;
     
     VolumeMeter inputVolume, outputVolume;
@@ -86,5 +85,22 @@ private:
     
     std::unique_ptr<juce::Drawable> svgDrawable;
     
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMaskerAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMaskerComponent)
 };
+
+
+//==============================================================================
+
+class Wrapper : public AudioProcessorEditor {
+    
+public:
+    Wrapper(TheMaskerAudioProcessor&); 
+    
+    void resized() override;
+    
+private:
+    static constexpr int originalWidth{ 824 };
+    static constexpr int originalHeight{ 476 };
+    
+    TheMaskerComponent theMaskerComponent;
+}; 

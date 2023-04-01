@@ -7,9 +7,10 @@
 
   ==============================================================================
 */
+
+#pragma once
+
 namespace juce {
-
-
 
     template <typename FloatType, typename SmoothingType = ValueSmoothingTypes::Linear>
     class CustomSmoothedValue : public SmoothedValueBase <SmoothedValue <FloatType, SmoothingType>>

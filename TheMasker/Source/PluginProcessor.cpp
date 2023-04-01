@@ -138,7 +138,7 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 
 juce::AudioProcessorEditor* TheMaskerAudioProcessor::createEditor()
 {
-    return new TheMaskerAudioProcessorEditor (*this);
+    return new Wrapper  (*this);
     //use this for simple sliders
     //return new juce::GenericAudioProcessorEditor(*this);
 }

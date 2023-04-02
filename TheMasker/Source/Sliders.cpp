@@ -110,15 +110,13 @@ void LnF::drawLinearSlider(Graphics& g,
     auto bkgStroke = PathStrokeType(8.0);
     g.fillPath(bkg);
 
-    //float skewedSlider = sliderPos;
-    float skewedSlider = (3 * pow(sliderPos, 3) + sliderPos) * 0.25;
-    //float skewedSlider = (pow(sliderPos, 3) + sliderPos) * 0.5;
-    //float skewedSlider = pow(sliderPos, 3);
+    //float skewedSlider = tanh(sliderPos*3);
+    float skewedSlider = sin(sliderPos* 3.14*0.5);
     
     //slider amount
     Path amt;
     g.setColour(_green);
-    auto currentPos = jmap(skewedSlider, -1.f, 1.f, minSliderPos, maxSliderPos);
+    auto currentPos = jmap(skewedSlider, 0.f, 1.f, minSliderPos, maxSliderPos);
 
     amt.addRoundedRectangle(minSliderPos, center.getY(), currentPos, 6, 4.0f);
     auto amtStroke = PathStrokeType(8.0);
@@ -154,7 +152,7 @@ void CustomRotarySlider::paint(juce::Graphics& g)
     
     if(zeroToOne)
         limits = { 0.f, 1.f};
-
+    
     getLookAndFeel().drawRotarySlider(g,
                                       sliderBounds.getX(),
                                       sliderBounds.getY(),
@@ -206,7 +204,7 @@ void CustomLinearSlider::paint(Graphics& g)
                                       bounds.getY(),
                                       bounds.getWidth(),
                                       bounds.getHeight(),
-                                      jmap(getValue(), range.getStart(), range.getEnd(), -1.0, 1.0),
+                                      jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0),
                                       -1.0,
                                       1.0,
                                       SliderStyle::LinearHorizontal,

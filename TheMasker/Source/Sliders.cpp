@@ -42,14 +42,22 @@ void LnF::drawRotarySlider(juce::Graphics& g,
         Path amt;
         Array<float> limits = { -1.f, 1.f };
 
-        //float skewedSlider = sliderPosProportional;
-        //float skewedSlider = (3 * pow(sliderPosProportional, 3) + sliderPosProportional) * 0.25;
-        float skewedSlider = (pow(sliderPosProportional, 3) + sliderPosProportional) * 0.5;
-        //float skewedSlider = pow(sliderPosProportional, 3);
-
-        if(s->zeroToOne)
-            limits = { 0.f, 1.f};
+        /*if(s->zeroToOne)
+            limits = { 0.f, 1.f };
+         */
         
+        float skewedSlider;
+        
+        if(s->zeroToOne)
+            skewedSlider = sliderPosProportional;
+        else
+        {
+            //float skewedSlider = sliderPosProportional;
+            //float skewedSlider = (3 * pow(sliderPosProportional, 3) + sliderPosProportional) * 0.25;
+            skewedSlider = (pow(sliderPosProportional, 3) + sliderPosProportional) * 0.5;
+            //float skewedSlider = pow(sliderPosProportional, 3);
+        }
+            
         auto sliderAngRad = jmap(skewedSlider, limits[0], limits[1], rotaryStartAngle, rotaryEndAngle);
      
         if(s->sliderName == NAME_CLEARF || s->sliderName == NAME_MASKEDF)
@@ -181,7 +189,7 @@ juce::String CustomRotarySlider::getDisplayString() const
         return choiceParam->getCurrentChoiceName();
 
     juce::String str;
-    str = juce::String(juce::roundToInt(getValue()));
+    str = juce::String(round(getValue() * 100.0) / 100.0);
 
     return str;
 }

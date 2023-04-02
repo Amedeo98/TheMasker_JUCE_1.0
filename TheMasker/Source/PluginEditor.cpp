@@ -15,14 +15,14 @@
 //==============================================================================
 TheMaskerComponent::TheMaskerComponent (TheMaskerAudioProcessor& p)
     : audioProcessor (p), 
-    inSlider(*audioProcessor.parameters.getParameter(NAME_IN), NAME_IN, true),
-    outSlider(*audioProcessor.parameters.getParameter(NAME_OUT), NAME_OUT, true),
-    scSlider(*audioProcessor.parameters.getParameter(NAME_SC), NAME_SC, true),
-    compSlider(*audioProcessor.parameters.getParameter(NAME_MASKEDF), NAME_MASKEDF, false),
-    expSlider(*audioProcessor.parameters.getParameter(NAME_CLEARF), NAME_CLEARF, false),
-    mixSlider(*audioProcessor.parameters.getParameter(NAME_MIX), NAME_MIX, false),
-    cleanUpSlider(*audioProcessor.parameters.getParameter(NAME_ATQ), NAME_ATQ, false),
-    stereoLinkedSlider(*audioProcessor.parameters.getParameter(NAME_SL), NAME_SL, false),
+    inSlider(*audioProcessor.parameters.getParameter(NAME_IN), NAME_IN, true, false),
+    outSlider(*audioProcessor.parameters.getParameter(NAME_OUT), NAME_OUT, true, false),
+    scSlider(*audioProcessor.parameters.getParameter(NAME_SC), NAME_SC, true, false),
+    compSlider(*audioProcessor.parameters.getParameter(NAME_MASKEDF), NAME_MASKEDF, false, false),
+    expSlider(*audioProcessor.parameters.getParameter(NAME_CLEARF), NAME_CLEARF, false, false),
+    mixSlider(*audioProcessor.parameters.getParameter(NAME_MIX), NAME_MIX, false, true),
+    cleanUpSlider(*audioProcessor.parameters.getParameter(NAME_ATQ), NAME_ATQ, false, false),
+    stereoLinkedSlider(*audioProcessor.parameters.getParameter(NAME_SL), NAME_SL, false, false),
 
 
     inSliderAttachment(audioProcessor.parameters, NAME_IN, inSlider),

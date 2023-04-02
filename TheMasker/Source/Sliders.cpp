@@ -37,12 +37,21 @@ void LnF::drawRotarySlider(juce::Graphics& g,
     bkgStroke.createStrokedPath(bkg, bkg);
     g.fillPath(bkg);
     
-    //amount indicator
-    Path amt;
-
-    auto sliderAngRad = jmap(sliderPosProportional, 0.f, 1.f, rotaryStartAngle, rotaryEndAngle);
-     
     if(auto* s = dynamic_cast<CustomRotarySlider*>(&slider)) {
+        //amount indicator
+        Path amt;
+        Array<float> limits = { -1.f, 1.f };
+
+        //float skewedSlider = sliderPosProportional;
+        //float skewedSlider = (3 * pow(sliderPosProportional, 3) + sliderPosProportional) * 0.25;
+        float skewedSlider = (pow(sliderPosProportional, 3) + sliderPosProportional) * 0.5;
+        //float skewedSlider = pow(sliderPosProportional, 3);
+
+        if(s->zeroToOne)
+            limits = { 0.f, 1.f};
+        
+        auto sliderAngRad = jmap(skewedSlider, limits[0], limits[1], rotaryStartAngle, rotaryEndAngle);
+     
         if(s->sliderName == NAME_CLEARF || s->sliderName == NAME_MASKEDF)
         {
             auto avg = (rotaryEndAngle+rotaryStartAngle)*0.5f;
@@ -62,11 +71,11 @@ void LnF::drawRotarySlider(juce::Graphics& g,
             g.setColour(Colour(64u, 200u, 64u));
             amt.addCentredArc(center.getX(), center.getY(), radius, radius, 0, rotaryStartAngle, sliderAngRad, true);
         }
-    }
     
-    auto amtStroke = PathStrokeType(4.0, juce::PathStrokeType::JointStyle::curved);
-    amtStroke.createStrokedPath(amt, amt);
-    g.fillPath(amt);
+        auto amtStroke = PathStrokeType(4.0, juce::PathStrokeType::JointStyle::curved);
+        amtStroke.createStrokedPath(amt, amt);
+        g.fillPath(amt);
+    }
 }
 
 void LnF::drawLinearSlider(Graphics& g,
@@ -92,11 +101,16 @@ void LnF::drawLinearSlider(Graphics& g,
     bkg.addRoundedRectangle(minSliderPos, center.getY(), maxSliderPos, 6, 4.0f);
     auto bkgStroke = PathStrokeType(8.0);
     g.fillPath(bkg);
+
+    //float skewedSlider = sliderPos;
+    float skewedSlider = (3 * pow(sliderPos, 3) + sliderPos) * 0.25;
+    //float skewedSlider = (pow(sliderPos, 3) + sliderPos) * 0.5;
+    //float skewedSlider = pow(sliderPos, 3);
     
     //slider amount
     Path amt;
     g.setColour(_green);
-    auto currentPos = jmap(sliderPos, minSliderPos, maxSliderPos);
+    auto currentPos = jmap(skewedSlider, -1.f, 1.f, minSliderPos, maxSliderPos);
 
     amt.addRoundedRectangle(minSliderPos, center.getY(), currentPos, 6, 4.0f);
     auto amtStroke = PathStrokeType(8.0);
@@ -110,7 +124,6 @@ void CustomRotarySlider::paint(juce::Graphics& g)
 {
     auto startAng = degreesToRadians(180.f + 45.f);
     auto endAng = degreesToRadians(180.f - 45.f) + MathConstants<float>::twoPi;
-
     auto range = getRange();
     auto bounds = getLocalBounds();
     
@@ -129,13 +142,17 @@ void CustomRotarySlider::paint(juce::Graphics& g)
     
     //draw a square with margin for the slider
     auto sliderBounds = getSliderBounds(bounds);
+    Array<float> limits = { -1.f, 1.f };
+    
+    if(zeroToOne)
+        limits = { 0.f, 1.f};
 
     getLookAndFeel().drawRotarySlider(g,
                                       sliderBounds.getX(),
                                       sliderBounds.getY(),
                                       sliderBounds.getWidth(),
                                       sliderBounds.getHeight(),
-                                      jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0),
+                                      jmap(float(getValue()), float(range.getStart()), float(range.getEnd()), limits[0], limits[1]),
                                       startAng,
                                       endAng,
                                       *this);
@@ -181,8 +198,8 @@ void CustomLinearSlider::paint(Graphics& g)
                                       bounds.getY(),
                                       bounds.getWidth(),
                                       bounds.getHeight(),
-                                      jmap(getValue(), range.getStart(), range.getEnd(), 0.0, 1.0),
-                                      0.0,
+                                      jmap(getValue(), range.getStart(), range.getEnd(), -1.0, 1.0),
+                                      -1.0,
                                       1.0,
                                       SliderStyle::LinearHorizontal,
                                       *this);

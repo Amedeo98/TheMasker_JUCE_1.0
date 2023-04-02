@@ -99,7 +99,7 @@ private:
         for (int i = 0; i < nfilts; i++)
         {
             //   matlab function: absThresh=3.64*(f./1000).^-0.8-6.5*exp(-0.6*(f./1000-3.3).^2)+.00015*(f./1000).^4; % edited function (reduces the threshold in high freqs)
-            dest[i] = 10.0f * pow((f[i] / 1000), -0.5f) - 6.5 * exp(-0.6f * pow(f[i] / 1000 - 3.3f, 2)) + 0.57f * pow(f[i] / 1000, 1.61f);
+            dest[i] = 8.5f * pow((f[i] / 1000), -0.5f) - 6.5 * exp(-0.6f * pow(f[i] / 1000 - 3.3f, 2)) + 0.57f * pow(f[i] / 1000, 1.61f);
         }
 
         atqBottom = FloatVectorOperations::findMinimum(atq.data(), nfilts);

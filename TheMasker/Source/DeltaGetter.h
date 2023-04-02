@@ -47,7 +47,7 @@ public:
             if (processFFTresult) {
                 psy.spread(scFT[i]);
                 conv.magnitudeToDb(scFT[i]);
-                psy.compareWithAtq(scFT[i], current_atq);
+                //compareWithAtq(scFT[i], current_atq);
                 FloatVectorOperations::copy(deltas[i].scDecimated.data(), scFT[i].data(), nfilts);
             }
         }
@@ -72,8 +72,6 @@ public:
  
 
     void prepareToPlay(float sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies) {
-        getATQ(fCenters, atq);
-        setATQ(DEFAULT_ATQ);
         psy.getSpreadingMtx();
         ft_in.prepare(frequencies, fCenters, sampleRate);
         ft_sc.prepare(frequencies, fCenters, sampleRate);
@@ -87,13 +85,7 @@ public:
         maxCh = _maxCh;
     }
 
-    void setATQ(float UIatqWeight) {
-        current_atq = atq;
-        juce::FloatVectorOperations::multiply(current_atq.data(), UIatqWeight, nfilts);
-        juce::FloatVectorOperations::multiply(current_atq.data(), atqLift, nfilts);
-        juce::FloatVectorOperations::add(current_atq.data(), minDBFS+5.0f, nfilts);
-        FloatVectorOperations::clip(current_atq.data(), current_atq.data(), minDBFS, 0.0f, nfilts);
-    }
+    
 
 
 private:
@@ -104,7 +96,6 @@ private:
     PSY psy; 
     Converter conv;
     array<array<float, nfilts>, 2> inFT, scFT;
-    array<float,nfilts> current_atq, atq;
 
     int inCh = 0;
     int scCh = 0;
@@ -118,20 +109,13 @@ private:
     int minDBFS = _mindBFS;
     float atqLift = _atqLift;
 
+
+
     void difference(array<float, nfilts>& input, array<float, nfilts>& rel_thresh, array<float, nfilts>& output) {
         for (int i = 0; i < nfilts; i++)
             output[i] = input[i] - (rel_thresh[i]+rel_thresh_lift);
     }
 
-    void getATQ(float* f, array<float,nfilts>& dest)
-    {
-        for (int i = 0; i < nfilts; i++)
-        {
-            //   matlab function: absThresh=3.64*(f./1000).^-0.8-6.5*exp(-0.6*(f./1000-3.3).^2)+.00015*(f./1000).^4; % edited function (reduces the threshold in high freqs)
-            dest[i] = 3.64 * pow((f[i] / 1000), -0.8) - 6.5 * exp(-0.6 * pow(f[i] / 1000 - 3.3, 2)) + 0.00015 * pow(f[i] / 1000, 4);
-        }
-        float minimum = FloatVectorOperations::findMinimum(dest.data(), dest.size());
-        FloatVectorOperations::add(dest.data(), -minimum, dest.size());
-    }
+   
 
 };

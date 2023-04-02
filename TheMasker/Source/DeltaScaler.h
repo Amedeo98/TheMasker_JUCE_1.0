@@ -13,6 +13,10 @@
 class DeltaScaler {
 public:
 
+    void prepareToPlay(float* fCenters) {
+        getATQ(fCenters, atq);
+        setATQ(DEFAULT_ATQ);
+    }
 
     void setNumChannels(int numChannels) {
         nCh = numChannels;
@@ -31,8 +35,9 @@ public:
                 float clearFValue = UIclearFreqs > 0 ? jmax((temp - avg) * UIclearFreqs, 0.0f) * posDeltasAlpha : jmin((temp - avg) * UIclearFreqs, 0.0f);
                 float maskedFValue = UImaskedFreqs > 0 ? jmax((avg - temp) * UImaskedFreqs, 0.0f) * posDeltasAlpha : jmin((avg - temp) * UImaskedFreqs, 0.0f);
                 temp = temp > 0.0f ? clearFValue : maskedFValue;
+                temp *= current_atq[i];
                 temp = tanh(temp / (float) maxGain) * (float) maxGain;
-                temp = temp * UImix * 0.8f;
+                temp = temp * UImix;
                 curves[ch].delta[i] = temp;
             }
         }
@@ -57,6 +62,20 @@ public:
         }
     }
 
+    void setATQ(float UIatqWeight) {
+        current_atq = atq;
+        float max = FloatVectorOperations::findMaximum(current_atq.data(), nfilts);
+        for (int i = 0; i < nfilts; i++) {
+            current_atq[i] = jmap(current_atq[i], 0.0f, max, 1.0f, bottomAtqMin + UIatqWeight * bottomAtqRange);
+            current_atq[i] = jlimit(0.0f, 1.0f, current_atq[i]);
+        }
+
+        //juce::FloatVectorOperations::multiply(current_atq.data(), UIatqWeight, nfilts);
+        //juce::FloatVectorOperations::multiply(current_atq.data(), atqLift, nfilts);
+        //juce::FloatVectorOperations::add(current_atq.data(), minDBFS+5.0f, nfilts);
+        //FloatVectorOperations::clip(current_atq.data(), current_atq.data(), minDBFS, 0.0f, nfilts);
+    }
+
 private:
     float maxGain = _maxGain;
     int gateThresh = _gateThresh;
@@ -67,6 +86,29 @@ private:
     array<float, nfilts> THclip;
     array<float, nfilts> SCclip;
     array<array<float, nfilts>, 2> newValues;
+
+    array<float, nfilts> current_atq, atq;
+    float bottomAtqMin = -1.0f;
+    float bottomAtqRange = 1.5f;
+
+    void getATQ(float* f, array<float, nfilts>& dest)
+    {
+        for (int i = 0; i < nfilts; i++)
+        {
+            //   matlab function: absThresh=3.64*(f./1000).^-0.8-6.5*exp(-0.6*(f./1000-3.3).^2)+.00015*(f./1000).^4; % edited function (reduces the threshold in high freqs)
+            dest[i] = 3.64 * pow((f[i] / 1000), -0.8) - 6.5 * exp(-0.6 * pow(f[i] / 1000 - 3.3, 2)) + 0.001 * pow(f[i] / 1000, 4);
+        }
+        float minimum = FloatVectorOperations::findMinimum(dest.data(), dest.size());
+        FloatVectorOperations::add(dest.data(), -minimum, dest.size());
+    }
+
+    //void scaleWithAtq(array<float, nfilts>& rel_t, array<float, nfilts>& atq) {
+    //    //FloatVectorOperations::max(rel_t.data(), rel_t.data(), atq.data(), nfilts);
+    //    for (int i = 0; i < nfilts; i++) {
+    //        rel_t[i] *= atq[i];
+    //    }
+    //}
+
 };
 
 

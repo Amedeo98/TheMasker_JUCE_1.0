@@ -56,6 +56,7 @@ public:
         out_volumeMeter.prepareToPlay(fs, 5.f, false);
         
         deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
+        deltaScaler.prepareToPlay(fCenters.data());
         bufferDelayer.prepareToPlay(numSamples, _fftSize, fs, numChannels);
         filters.prepareToPlay(fs, numSamples, fCenters.data());
 
@@ -146,7 +147,7 @@ public:
 
     void setAtq(float newValue) {
         atqWeight = newValue;
-        deltaGetter.setATQ(atqWeight);
+        deltaScaler.setATQ(atqWeight);
     }
 
     void setStereoLinked(float newValue) {

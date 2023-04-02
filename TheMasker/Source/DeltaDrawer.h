@@ -62,10 +62,10 @@ public:
         
         //g.drawLine (line, 3.0f);
         Path p;
-        p.startNewSubPath (xVal[0], yVal[1]);
+        p.startNewSubPath (xVal[0], yVal[0]);
         float ctrP_1_Xvalue = xVal[0] * (1 - smoothSplineAmt) + xVal[1] * smoothSplineAmt;
         float ctrP_2_Xvalue = xVal[0] * smoothSplineAmt + xVal[1] * (1 - smoothSplineAmt);
-        p.cubicTo (ctrP_1_Xvalue, yVal[1], ctrP_2_Xvalue, yVal[1], xVal[1], yVal[1]);
+        p.cubicTo (ctrP_1_Xvalue, yVal[0], ctrP_2_Xvalue, yVal[1], xVal[1], yVal[1]);
         g.strokePath (p, PathStrokeType (2.0));
         
         

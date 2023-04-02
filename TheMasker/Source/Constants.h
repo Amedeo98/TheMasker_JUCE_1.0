@@ -46,14 +46,14 @@
 #define _gateKnee 10
 
 #define _atkSmoothingSeconds 0.030f
-#define _relSmoothingSeconds 0.300f
+#define _relSmoothingSeconds 0.250f
 #define _atkSpectrumSeconds 0.030f
 #define _relSpectrumSeconds 2.000f
 #define _overlapRatio 0.5f
 #define _mindBFS -100
 #define _relThreshLift -10.0f
 #define _atqLift 1.6f
-#define _spreadExp 0.8f
+#define _spreadExp 0.6f
 #define _outExtraGain 7.6f
 
 #define _spectrumPaddingHighFreq 0.5f

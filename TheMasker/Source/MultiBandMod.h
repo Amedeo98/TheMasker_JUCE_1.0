@@ -33,9 +33,10 @@ public:
             gainAdjustments[i] = 1.0f;
         }
 
-        gainAdjustments[0] = 0.2f;
-        gainAdjustments[1] = 0.5f;
-        gainAdjustments[2] = 0.8f;
+        gainAdjustments[0] = 0.1f; 
+        gainAdjustments[1] = 0.15f;
+        gainAdjustments[2] = 0.5f;
+        //gainAdjustments[3] = 0.8f;
         //gainAdjustments[nfilts-7] = 0.95f;
         //gainAdjustments[nfilts-6] = 0.6f;
         //gainAdjustments[nfilts-5] = 0.7f;

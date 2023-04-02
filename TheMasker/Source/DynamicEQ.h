@@ -56,7 +56,8 @@ public:
         out_volumeMeter.prepareToPlay(fs, 5.f, false);
         
         deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
-        bufferDelayer.prepareToPlay(numSamples, _fftSize, fs);
+        deltaScaler.prepareToPlay(fCenters.data());
+        bufferDelayer.prepareToPlay(numSamples, _fftSize, fs, numChannels);
         filters.prepareToPlay(fs, numSamples, fCenters.data());
 
         stereoLinked.setSL(stereoLinkAmt);
@@ -146,7 +147,7 @@ public:
 
     void setAtq(float newValue) {
         atqWeight = newValue;
-        deltaGetter.setATQ(atqWeight);
+        deltaScaler.setATQ(atqWeight);
     }
 
     void setStereoLinked(float newValue) {
@@ -207,9 +208,9 @@ private:
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
 
-    int numInChannels = 0;
-    int numScChannels = 0;
-    int numChannels = 0;
+    int numInChannels = 2;
+    int numScChannels = 2;
+    int numChannels = 2;
 
     double fs;
     int numSamples;

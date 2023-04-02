@@ -70,8 +70,8 @@ private:
     
     double sampleRate = 0;
     int samplesPerBlock = 0;
-    int inCh = 0;
-    int scCh = 0;
+    int inCh = 2;
+    int scCh = 2;
     Converter conv;
 
     //float frequencies[npoints];

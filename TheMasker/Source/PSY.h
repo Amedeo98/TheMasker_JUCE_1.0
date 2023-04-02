@@ -47,16 +47,7 @@ public:
         conv.mXv_mult(spreadingMtx, input, input.size(), input);
     }
 
-    void compareWithAtq(array<float, nfilts>& rel_t, array<float,nfilts>& atq) {
-        for (int i = 0; i < nfilts; i++) {
-            ATQclip[i] = (1.0f + tanh((rel_t[i] - gateThresh) * gateKnee_inv)) * 0.5f;
-        }
-
-        std::transform(atq.begin(), atq.end(),
-            ATQclip.begin(), atq_gated.data(),
-            std::multiplies<float>());
-        FloatVectorOperations::max(rel_t.data(), rel_t.data(), atq.data(), nfilts);
-    }
+    
 private:
     array<array<float,nfilts>,nfilts> spreadingMtx;
     float ascendent[nfilts];

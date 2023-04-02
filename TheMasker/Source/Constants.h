@@ -24,7 +24,7 @@
 
 #define DEFAULT_MASKEDF 0.0f
 #define DEFAULT_CLEARF 0.0f
-#define DEFAULT_ATQ 0.0f
+#define DEFAULT_ATQ 1.0f
 #define DEFAULT_SL 0.0f
 #define DEFAULT_MIX 1.0f
 #define DEFAULT_IN 0.0f
@@ -33,7 +33,7 @@
 
 
 #define nfilts 32
-#define _fftOrder 11
+#define _fftOrder 10
 #define _fftSize (1 << _fftOrder)
 #define npoints 256
 
@@ -45,13 +45,13 @@
 #define _gateThresh -40
 #define _gateKnee 10
 
-#define _atkSmoothingSeconds 0.030f
-#define _relSmoothingSeconds 0.100f
+#define _atkSmoothingSeconds 0.080f
+#define _relSmoothingSeconds 0.250f
 #define _atkSpectrumSeconds 0.030f
 #define _relSpectrumSeconds 2.000f
 #define _overlapRatio 0.5f
 #define _mindBFS -100
-#define _relThreshLift -12.0f
+#define _relThreshLift -10.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
 #define _outExtraGain 7.6f

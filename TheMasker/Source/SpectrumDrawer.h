@@ -27,16 +27,13 @@ public:
     void resetSmoothingValues(double fs, int nSamples) {
         for (int i = 0; i < npoints; i++) {
             scopeData[i].reset(fs, _atkSpectrumSeconds, _relSpectrumSeconds);
+            scopeData[i].setCurrentAndTargetValue(-1.0f);
         }
         numSamples = nSamples;
 
     }
 
-    void updateValues() {
-        for (int i = 0; i < npoints; i++) {
-            scopeData[i].getNextValue();
-        }
-    }
+
 
     void drawNextFrameOfSpectrum(array<float, npoints>& values)
     {

@@ -21,6 +21,10 @@ public:
         delaySamples = numSamplesToDelay;
         bufferSpec.maximumBlockSize = samplesPerBlock;
         bufferSpec.sampleRate = sampleRate;
+        setNumChannels(nCh);
+        bufferDelayLine.setMaximumDelayInSamples(delaySamples);
+        bufferDelayLine.setDelay(delaySamples);
+
     }
 
     void delayBuffer(AudioBuffer<float>& newBuffer, auto& curves) {
@@ -44,11 +48,9 @@ public:
   
     void setNumChannels(int nCh) {
         numCh = nCh;
-
         bufferSpec.numChannels = numCh;
         bufferDelayLine.prepare(bufferSpec);
-        bufferDelayLine.setMaximumDelayInSamples(delaySamples);
-        bufferDelayLine.setDelay(delaySamples);
+
 
         //inDelayLine.prepare(bufferSpec);
         //inDelayLine.setMaximumDelayInSamples(delaySamples);
@@ -60,7 +62,7 @@ public:
 private:
     int numSamples;
     int delaySamples;
-    int numCh = 0;
+    int numCh = 2;
     dsp::DelayLine<float> bufferDelayLine;
     dsp::DelayLine<float> inDelayLine;
     dsp::DelayLine<float> scDelayLine;

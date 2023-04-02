@@ -208,9 +208,9 @@ private:
     float scGain = Decibels::decibelsToGain(DEFAULT_SC);
 
 
-    int numInChannels = 0;
-    int numScChannels = 0;
-    int numChannels = 0;
+    int numInChannels = 2;
+    int numScChannels = 2;
+    int numChannels = 2;
 
     double fs;
     int numSamples;

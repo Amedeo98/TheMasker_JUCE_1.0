@@ -138,15 +138,15 @@ public:
 
 
     void setMaskedFreqs(float newValue) {
-        maskedFreqsAmount = newValue;
+        maskedFreqsAmount = jlimit(-1.0f, 1.0f, (pow(newValue, 3.0f) + newValue) * 0.5f);
     }
 
     void setClearFreqs(float newValue) {
-        clearFreqsAmount = newValue;
+        clearFreqsAmount = jlimit(-1.0f, 1.0f, (pow(newValue, 3.0f) + newValue) * 0.5f);
     }
 
     void setAtq(float newValue) {
-        atqWeight = newValue;
+        atqWeight = jlimit(0.0f, 1.0f,(pow(newValue, 0.5f) + newValue / 10.0f) * 1.66f);
         deltaScaler.setATQ(atqWeight);
     }
 

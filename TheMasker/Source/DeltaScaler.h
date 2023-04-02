@@ -64,9 +64,10 @@ public:
 
     void setATQ(float UIatqWeight) {
         current_atq = atq;
-        float max = FloatVectorOperations::findMaximum(current_atq.data(), nfilts);
         for (int i = 0; i < nfilts; i++) {
-            current_atq[i] = jmap(current_atq[i], 0.0f, max, 1.0f, bottomAtqMin + UIatqWeight * bottomAtqRange);
+            //current_atq[i] = jmap(current_atq[i], 0.0f, max, 1.0f, bottomAtqMin + (1.0f - UIatqWeight) * bottomAtqRange);
+            //current_atq[i] = mapFromLog10(current_atq[i], 1.0f, max);
+            current_atq[i] = jmap(current_atq[i], atqBottom, atqTop, 1.0f, bottomAtqMin + (1.0f - UIatqWeight) * (bottomAtqMax - bottomAtqMin));
             current_atq[i] = jlimit(0.0f, 1.0f, current_atq[i]);
         }
 
@@ -88,18 +89,23 @@ private:
     array<array<float, nfilts>, 2> newValues;
 
     array<float, nfilts> current_atq, atq;
-    float bottomAtqMin = -1.0f;
-    float bottomAtqRange = 1.5f;
+    float atqBottom = 0.0f;
+    float atqTop = 1.0f;
+    float bottomAtqMin = -2.8f;
+    float bottomAtqMax = 0.5f;
 
     void getATQ(float* f, array<float, nfilts>& dest)
     {
         for (int i = 0; i < nfilts; i++)
         {
             //   matlab function: absThresh=3.64*(f./1000).^-0.8-6.5*exp(-0.6*(f./1000-3.3).^2)+.00015*(f./1000).^4; % edited function (reduces the threshold in high freqs)
-            dest[i] = 3.64 * pow((f[i] / 1000), -0.8) - 6.5 * exp(-0.6 * pow(f[i] / 1000 - 3.3, 2)) + 0.001 * pow(f[i] / 1000, 4);
+            dest[i] = 10.0f * pow((f[i] / 1000), -0.5f) - 6.5 * exp(-0.6f * pow(f[i] / 1000 - 3.3f, 2)) + 0.57f * pow(f[i] / 1000, 1.61f);
         }
-        float minimum = FloatVectorOperations::findMinimum(dest.data(), dest.size());
-        FloatVectorOperations::add(dest.data(), -minimum, dest.size());
+
+        atqBottom = FloatVectorOperations::findMinimum(atq.data(), nfilts);
+        atqTop = FloatVectorOperations::findMaximum(atq.data(), nfilts);
+
+
     }
 
     //void scaleWithAtq(array<float, nfilts>& rel_t, array<float, nfilts>& atq) {

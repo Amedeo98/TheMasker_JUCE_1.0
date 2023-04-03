@@ -29,7 +29,7 @@ public:
             scopeData[i].reset(fs, _atkSpectrumSeconds, _relSpectrumSeconds);
             scopeData[i].setCurrentAndTargetValue(-1.0f);
         }
-        numSamples = nSamples;
+        numSamplesToSkip = nSamples;
 
     }
 
@@ -37,22 +37,9 @@ public:
 
     void drawNextFrameOfSpectrum(array<float, npoints>& values)
     {
-        for (int i = 0; i < scopeSize; ++i)
-        {
-            auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i * scope_step) * _spectrumSkew);
-            auto fftDataIndex = juce::jlimit(0, resultSize, (int)(_spectrumPaddingLowFreq + skewedProportionX * (float)resultSize * (0.5f + _spectrumPaddingHighFreq) ));
-            auto level = juce::jmap(juce::Decibels::gainToDecibels(values[fftDataIndex] * ((float)(i+1) * scope_step)) - juce::Decibels::gainToDecibels((float) resultSize)
-                    , mindB, maxdB, 0.0f, 1.0f);
-
-            //level = level * ((float)i * scope_step * 0.8f + 0.5f);
-            scopeData[i].skip(numSamples);
-            //scopeData[i].getNextValue();
-
-            if(level > scopeData[i].getCurrentValue())
-                scopeData[i].setTargetValue(level);
-            else 
-                scopeData[i].setTargetValue(-1.0f);
-
+        FloatVectorOperations::copy(unmappedValues.data(), values.data(), npoints);
+        for (int i = 0; i < npoints; i++) {
+            scopeData[i].skip(numSamplesToSkip);
         }
     }
 
@@ -67,6 +54,18 @@ public:
 
         for (int i = 1; i < scopeSize; ++i)
         {
+
+            auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i * scope_step) * _spectrumSkew);
+            auto fftDataIndex = juce::jlimit(0, resultSize, (int)(_spectrumPaddingLowFreq + skewedProportionX * (float)resultSize * (0.5f + _spectrumPaddingHighFreq)));
+            auto level = juce::jmap(juce::Decibels::gainToDecibels(unmappedValues[fftDataIndex] * ((float)i * scope_step)) - juce::Decibels::gainToDecibels((float)resultSize)
+                , mindB, maxdB, 0.0f, 1.0f);
+
+
+            if (level > scopeData[i].getCurrentValue())
+                scopeData[i].setTargetValue(level);
+            else
+                scopeData[i].setTargetValue(-1.0f);
+
             float yValMapped_left = jmap(scopeData[i - 1].getCurrentValue(), 0.0f, 1.0f, (float)height, 0.0f);
             float yValMapped_right = jmap(scopeData[i].getCurrentValue(), 0.0f, 1.0f, (float)height, 0.0f);
 
@@ -89,8 +88,9 @@ public:
         }
     }
 private:
+    array<float, npoints> unmappedValues;
     array<CustomSmoothedValue<float, juce::ValueSmoothingTypes::Linear>, npoints> scopeData;
-    int numSamples;
+    int numSamplesToSkip;
     array<float, npoints> yRemapping;
 
 };

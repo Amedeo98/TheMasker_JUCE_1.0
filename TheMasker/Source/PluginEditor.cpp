@@ -37,7 +37,7 @@ TheMaskerComponent::TheMaskerComponent (TheMaskerAudioProcessor& p)
 
 {
     
-    startTimerHz(25);
+    startTimerHz(_editorRefreshRate);
     
     undoButton.setButtonText("undo");
     redoButton.setButtonText("redo");

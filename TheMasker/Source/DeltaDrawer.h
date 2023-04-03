@@ -23,9 +23,17 @@ public:
     ~DeltaDrawer() {}
 
 
-    void drawNextFrameOfSpectrum(array<float, nfilts>& values)
+    void drawNextFrameOfSpectrum(auto result)
     {
-        FloatVectorOperations::copy(unmappedValues.data(), values.data(), nfilts);
+
+        for (int i = 0; i < scopeSize; ++i)
+        {
+            auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i * scope_step) * _spectrumSkew);
+            auto fftDataIndex = juce::jlimit(0, resultSize, (int)(_spectrumPaddingLowFreq + skewedProportionX * (float)resultSize * (0.5f + _spectrumPaddingHighFreq)));
+            auto level = juce::jmap(result[fftDataIndex], mindB, maxdB, 0.0f, 1.0f);
+
+            scopeData[i] = level;
+        }
     }
 
     void drawFrame(juce::Graphics& g, juce::Rectangle<int>& bounds) override {
@@ -34,17 +42,7 @@ public:
         auto height = bounds.getHeight() + bounds.getY();
         auto left = bounds.getX();
         
-
-
-
         //linea sotto la prima frequenza di fCenters (60Hz circa)
-        auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)0 * scope_step) * _spectrumSkew);
-        auto fftDataIndex = juce::jlimit(0, resultSize, (int)(_spectrumPaddingLowFreq + skewedProportionX * (float)resultSize * (0.5f + _spectrumPaddingHighFreq)));
-        auto level = juce::jmap(unmappedValues[fftDataIndex], mindB, maxdB, 0.0f, 1.0f);
-
-        scopeData[0] = level;
-
-
         xVal = {(float)left, 
                 jmap(freqAxis[0] , 0.f, 1.f, (float)left, (float)width)
         };
@@ -77,13 +75,6 @@ public:
         for (int i = 1; i < scopeSize; ++i)
         {
             
-            auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i * scope_step) * _spectrumSkew);
-            auto fftDataIndex = juce::jlimit(0, resultSize, (int)(_spectrumPaddingLowFreq + skewedProportionX * (float)resultSize * (0.5f + _spectrumPaddingHighFreq)));
-            auto level = juce::jmap(unmappedValues[fftDataIndex], mindB, maxdB, 0.0f, 1.0f);
-
-            scopeData[i] = level;
-
-
             xVal = { jmap(freqAxis[i - 1] , 0.f, 1.f, (float)left, (float)width),
                      jmap(freqAxis[i] , 0.f, 1.f, (float)left, (float)width) 
             };
@@ -114,8 +105,7 @@ public:
     }
 
 private:
-    array<float, nfilts> unmappedValues;
-    array<float, nfilts> scopeData;
+    array<float, npoints> scopeData;
     float smoothSplineAmt = 0.4f;
 
 };

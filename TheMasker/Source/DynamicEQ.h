@@ -61,8 +61,8 @@ public:
         filters.prepareToPlay(fs, numSamples, fCenters.data());
 
         stereoLinked.setSL(stereoLinkAmt);
-        setInGain(DEFAULT_IN);
-        //deltaGetter.setATQ(DEFAULT_ATQ);
+        //setInGain(inGain);
+        deltaScaler.setATQ(atqWeight);
         //int nSamplesToSkip = pow(_editorRefreshRate, -1) * fs;
         spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data(), fs, numSamples);
         ft_out.prepare(frequencies.data(), fCenters.data(), fs);
@@ -146,7 +146,7 @@ public:
     }
 
     void setAtq(float newValue) {
-        atqWeight = jlimit(0.0f, 1.0f,(pow(newValue, 0.5f) + newValue / 10.0f) * 1.66f);
+        atqWeight = jlimit(0.0f, 1.0f,(pow(newValue, 0.5f) + newValue / 10.0f) * 0.91f);
         deltaScaler.setATQ(atqWeight);
     }
 

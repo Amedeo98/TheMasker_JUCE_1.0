@@ -150,8 +150,8 @@ void CustomRotarySlider::paint(juce::Graphics& g)
     auto sliderBounds = getSliderBounds(bounds);
     Array<float> limits = { -1.f, 1.f };
     
-    if(zeroToOne)
-        limits = { 0.f, 1.f};
+    /*if(zeroToOne)
+        limits = { 0.f, 1.f};*/
     
     getLookAndFeel().drawRotarySlider(g,
                                       sliderBounds.getX(),

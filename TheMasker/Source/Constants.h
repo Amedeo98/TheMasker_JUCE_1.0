@@ -41,7 +41,8 @@
 #define minFreq 20
 
 #define _maxDeltaSpectrum 24
-#define _maxGain 10
+#define _maxGain 12
+#define _mixMultiplier 1.1f
 #define _gateThresh -40
 #define _gateKnee 10
 

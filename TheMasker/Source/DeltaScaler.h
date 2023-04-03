@@ -15,7 +15,7 @@ public:
 
     void prepareToPlay(float* fCenters) {
         getATQ(fCenters, atq);
-        setATQ(DEFAULT_ATQ);
+        //setATQ(DEFAULT_ATQ);
     }
 
     void setNumChannels(int numChannels) {
@@ -37,7 +37,7 @@ public:
                 temp = temp > 0.0f ? clearFValue : maskedFValue;
                 temp *= current_atq[i];
                 temp = tanh(temp / (float) maxGain) * (float) maxGain;
-                temp = temp * UImix;
+                temp = temp * UImix * _mixMultiplier;
                 curves[ch].delta[i] = temp;
             }
         }

@@ -50,15 +50,8 @@ public:
                 SCclip[i] = (1.0f + tanh((curves[ch].scDecimated[i] - gateThresh) * gateKnee_inv)) * 0.5f;
             }
 
-            std::transform(curves[ch].delta.begin(), curves[ch].delta.end(),
-                THclip.begin(), newValues[ch].data(),
-                std::multiplies<float>());
-
-            std::transform(newValues[ch].begin(), newValues[ch].end(),
-                SCclip.begin(), newValues[ch].data(),
-                std::multiplies<float>());
-
-            FloatVectorOperations::copy(curves[ch].delta.data(), newValues[ch].data(), nfilts);
+            FloatVectorOperations::multiply(curves[ch].delta.data(), THclip.data(), nfilts);
+            FloatVectorOperations::multiply(curves[ch].delta.data(), SCclip.data(), nfilts);
         }
     }
 
@@ -86,7 +79,6 @@ private:
     int nCh = 0;
     array<float, nfilts> THclip;
     array<float, nfilts> SCclip;
-    array<array<float, nfilts>, 2> newValues;
 
     array<float, nfilts> current_atq, atq;
     float atqBottom = 0.0f;

@@ -40,7 +40,7 @@ public:
         fs = sampleRate;
         numSamples = samplesPerBlock;
 
-        frequencies = _frequencies;
+        FloatVectorOperations::copy(frequencies.data(), _frequencies.data(), npoints);
         fbank.getFilterBank(frequencies.data());
         fbank.getFrequencies(fCenters);
 
@@ -63,7 +63,7 @@ public:
         stereoLinked.setSL(stereoLinkAmt);
         setInGain(DEFAULT_IN);
         //deltaGetter.setATQ(DEFAULT_ATQ);
-
+        //int nSamplesToSkip = pow(_editorRefreshRate, -1) * fs;
         spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data(), fs, numSamples);
         ft_out.prepare(frequencies.data(), fCenters.data(), fs);
     }

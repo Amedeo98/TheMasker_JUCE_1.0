@@ -38,7 +38,7 @@ public:
 
 
 
-    FilterBank getFilterBank(float* freqs) {
+    void getFilterBank(float* freqs) {
         const int fftSize = npoints;
         const int memorySize = fftSize / nfilts;
         FloatVectorOperations::copy(frequencies.data(), freqs, npoints);
@@ -90,8 +90,6 @@ public:
             
         }
 
-
-        return *this;
     }
 
 

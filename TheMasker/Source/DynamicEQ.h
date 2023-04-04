@@ -26,6 +26,7 @@ using namespace std;
 #include "VolumeMeter.h"
 #include "CustomSmoothedValue.h"
 #include "Constants.h"
+#include "SNRCalculator.h"
 
 class DynamicEQ {
 public:
@@ -66,6 +67,7 @@ public:
         //int nSamplesToSkip = pow(_editorRefreshRate, -1) * fs;
         spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data(), fs, numSamples);
         ft_out.prepare(frequencies.data(), fCenters.data(), fs);
+        snrCalc.prepare(numChannels, numSamples);
     }
 
     void numChannelsChanged(int inCh, int scCh) {
@@ -84,6 +86,8 @@ public:
                 gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
+
+        snrCalc.prepare(numChannels, numSamples);
     }
 
     void releaseResources()
@@ -115,6 +119,8 @@ public:
 
         bufferDelayer.delayBuffer(mainBuffer, curves);
         
+        snrCalc.pushInput(mainBuffer);
+
         in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
         in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, numSamples), scBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
         
@@ -132,6 +138,8 @@ public:
 
         spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
 
+        snrCalc.pushOutput(mainBuffer);
+        snrCalc.calculateSNR();
 
     }
 
@@ -252,5 +260,7 @@ private:
 
     Converter conv;
     
+
+    SNRCalculator snrCalc;
 
 };

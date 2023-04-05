@@ -71,7 +71,7 @@ public:
 
  
 
-    void prepareToPlay(float sampleRate, int samplesPerBlock, FilterBank& fb, float* fCenters, float* frequencies) {
+    void prepareToPlay(float sampleRate, FilterBank& fb, float* fCenters, float* frequencies) {
         psy.getSpreadingMtx();
         ft_in.prepare(frequencies, fCenters, sampleRate);
         ft_sc.prepare(frequencies, fCenters, sampleRate);

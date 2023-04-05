@@ -44,7 +44,7 @@ public:
     }
 
     void spread(array<float, nfilts>& input) {
-        conv.mXv_mult(spreadingMtx, input, input.size(), input);
+        conv.mXv_mult(spreadingMtx, input, nfilts, input);
     }
 
     

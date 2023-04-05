@@ -55,7 +55,7 @@ public:
         in_volumeMeter.prepareToPlay(fs, 5.f, true);
         out_volumeMeter.prepareToPlay(fs, 5.f, false);
         
-        deltaGetter.prepareToPlay(fs, numSamples, fbank, fCenters.data(), frequencies.data());
+        deltaGetter.prepareToPlay(fs, fbank, fCenters.data(), frequencies.data());
         deltaScaler.prepareToPlay(fCenters.data());
         bufferDelayer.prepareToPlay(numSamples, _fftSize, fs, numChannels);
         filters.prepareToPlay(fs, numSamples, fCenters.data());
@@ -66,6 +66,7 @@ public:
         //int nSamplesToSkip = pow(_editorRefreshRate, -1) * fs;
         spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data(), fs, numSamples);
         ft_out.prepare(frequencies.data(), fCenters.data(), fs);
+        //snrCalc.prepare(numChannels, _snrWindow);
     }
 
     void numChannelsChanged(int inCh, int scCh) {
@@ -84,6 +85,9 @@ public:
                 gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
+
+
+        //snrCalc.prepare(numChannels, _snrWindow);
     }
 
     void releaseResources()
@@ -93,7 +97,9 @@ public:
 
     void processBlock(AudioBuffer<float>& mainBuffer, AudioBuffer<float>& scBuffer)
     {
-        
+        //snrCalc.generateNoise(mainBuffer);
+        int currentNumSamples = mainBuffer.getNumSamples();
+
         in_volumeMeter.skip(mainBuffer);
         out_volumeMeter.skip(mainBuffer);
         
@@ -115,13 +121,16 @@ public:
 
         bufferDelayer.delayBuffer(mainBuffer, curves);
         
-        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
-        in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, numSamples), scBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
+
+        //snrCalc.pushInput(mainBuffer);
+
+        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, currentNumSamples));
+        in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, currentNumSamples), scBuffer.getRMSLevel(numChannels - 1, 0, currentNumSamples));
         
         filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
         mainBuffer.applyGain(outGain * _outExtraGain);
 
-        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, numSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, numSamples));
+        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, currentNumSamples));
        
         if (processFFTresult) {
             for (int i = 0; i < numChannels; i++)
@@ -132,6 +141,8 @@ public:
 
         spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
 
+        //snrCalc.pushOutput(mainBuffer);
+        //snrCalc.calculateSNR();
 
     }
 
@@ -195,6 +206,8 @@ public:
         }
     }
 
+    
+
 
 private:
 
@@ -252,5 +265,7 @@ private:
 
     Converter conv;
     
+
+    //SNRCalculator snrCalc;
 
 };

@@ -59,6 +59,7 @@ public:
     void filterBlock(AudioBuffer<float>& buffer, auto& curves, auto& gains_sm, bool& processFFTresult) {
         int numSamples = buffer.getNumSamples();
         inputBuffer_copy.clear();
+        inputBuffer_copy.setSize(numCh, numSamples);
         for (int ch = 0; ch < numCh; ch++) 
         {
             inputBuffer_copy.copyFrom(ch, 0, buffer, ch, 0, numSamples);
@@ -67,6 +68,7 @@ public:
         for (int f = 0; f < nfilts; f++) 
         {
             tempOutput.clear();
+            tempOutput.setSize(numCh, numSamples);
             filters[f].process(inputBuffer_copy, tempOutput);
             
             for (int ch = 0; ch < numCh; ch++) {

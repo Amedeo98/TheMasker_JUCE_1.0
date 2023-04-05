@@ -13,7 +13,7 @@
               file="Source/TheMasker_bg.svg"/>
       </GROUP>
       <GROUP id="{224B1F6F-B4C2-67BA-F881-EA7DFDFCB85F}" name="DSP">
-        <FILE id="XOjcBI" name="SNRCalculator.h" compile="0" resource="0" file="Source/SNRCalculator.h"/>
+        <FILE id="WEJ98h" name="SNRCalculator.h" compile="0" resource="0" file="Source/SNRCalculator.h"/>
         <FILE id="RTaeX0" name="CustomSmoothedValue.h" compile="0" resource="0"
               file="Source/CustomSmoothedValue.h"/>
         <FILE id="MbqDjv" name="BufferDelayer.h" compile="0" resource="0" file="Source/BufferDelayer.h"/>

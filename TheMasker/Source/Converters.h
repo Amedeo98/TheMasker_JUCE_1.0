@@ -80,7 +80,7 @@ public:
                 i = size - 2;
             }
             else {
-                while (x > xData[i + 1]) i++;
+                while (x > xData[i + 1]) i++; // Davvero non c'è un modo più veloce per farlo che usare un while?
             }
             float xL = xData[i], yL = yData[i], xR = xData[i + 1], yR = yData[i + 1];      // points on either side (unless beyond ends)
             if (!extrapolate) {                                                         // if beyond ends of array and not extrapolating

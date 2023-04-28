@@ -58,6 +58,9 @@ void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSample
     sampleRate = newSampleRate;
     samplesPerBlock = newSamplesPerBlock;
 
+    inCh = jmax(getMainBusNumInputChannels(), getMainBusNumOutputChannels());
+    scCh = getChannelCountOfBus(true, 1);
+
     auxBuffer.setSize(2, samplesPerBlock);
     
     getFrequencies();
@@ -70,7 +73,6 @@ void TheMaskerAudioProcessor::releaseResources()
 {
     dynEQ.releaseResources();
     auxBuffer.setSize(0, 0);
-
 }
 
 bool TheMaskerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -90,27 +92,28 @@ bool TheMaskerAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
             return false;
 
         // This checks if the input layout matches the output layout
-        /*if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+        if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
             return false;
-   */
+
+        //if (layouts.getMainOutputChannelSet() == juce::AudioChannelSet::mono()
+        // && layouts.inputBuses[1] == juce::AudioChannelSet::stereo())
+        //    return false;
 
     return true;
-  
 }
 
 
 void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    //auto totalNumInputChannels  = getTotalNumInputChannels();
+    //auto totalNumOutputChannels = getTotalNumOutputChannels();
     
     auto numSamples = buffer.getNumSamples();
-    auxBuffer.clear();
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
-        buffer.clear(i, 0, buffer.getNumSamples());
-    }
+    //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {  
+    //    buffer.clear(i, 0, buffer.getNumSamples());
+    //}
 
     auto mainBuffer = getBusBuffer(buffer, true, 0);
     auto scBuffer = getBusBuffer(buffer, true, 1);
@@ -127,8 +130,18 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
         dynEQ.numChannelsChanged(inCh, scCh);
     }
 
-    for (int ch = 0; ch < scCh; ch++) {
-        auxBuffer.addFrom(ch, 0, scSource, ch, 0, numSamples, 1.0f);
+
+    auxBuffer.clear();
+
+    // Fill auxBuffer with the sc data to be compared with the input (according to the num of ch of each buffer)
+    for (int ch = 0; ch < jmax(inCh, scCh); ch++) {
+        auxBuffer.addFrom(jmin(ch,inCh-1), 0, scSource, jmin(ch,scCh-1), 0, numSamples);
+    }
+
+    if (inCh == 1)
+    {
+        auxBuffer.copyFrom(1, 0, auxBuffer, 0, 0, numSamples);
+        auxBuffer.applyGain(1.0f / sqrt(2.0f));
     }
 
     dynEQ.processBlock(mainBuffer, auxBuffer);

@@ -77,8 +77,8 @@ public:
 
         deltaGetter.setNumChannels(numInChannels, numScChannels, numChannels);
         deltaScaler.setNumChannels(numChannels);
-        bufferDelayer.setNumChannels(numChannels);
-        filters.setNumChannels(numChannels);
+        bufferDelayer.setNumChannels(numInChannels); // was numChannels
+        filters.setNumChannels(numInChannels);       // was numChannels
         spectrumPlotter.setNumChannels(numChannels);
 
         for (int i = 0; i < nfilts; i++) {
@@ -125,16 +125,16 @@ public:
 
         //snrCalc.pushInput(mainBuffer);
 
-        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, currentNumSamples));
-        in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, currentNumSamples), scBuffer.getRMSLevel(numChannels - 1, 0, currentNumSamples));
+        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numInChannels - 1, 0, currentNumSamples));
+        in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, currentNumSamples), scBuffer.getRMSLevel(numScChannels - 1, 0, currentNumSamples));
         
         filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
         mainBuffer.applyGain(outGain * _outExtraGain);
 
-        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numChannels - 1, 0, currentNumSamples));
+        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numInChannels - 1, 0, currentNumSamples));
        
         if (processFFTresult) {
-            for (int i = 0; i < numChannels; i++)
+            for (int i = 0; i < numInChannels; i++)
                 ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum, processFFTresult);
 
             processFFTresult = false;

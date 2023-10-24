@@ -25,9 +25,9 @@ public:
     void scale(auto& curves, float UImaskedFreqs, float UIclearFreqs, float UImix) {
         for (int ch = 0; ch < nCh; ch++) {
             float avg = 0.0f;
-            for (int i = 0; i < nfilts; i++) {
-                avg += curves[ch].delta[i] * nfilts_inv;
-            }
+            //for (int i = 0; i < nfilts; i++) {
+            //    avg += curves[ch].delta[i] * nfilts_inv;
+            //}
             for (int i = 0; i < nfilts; i++) {
                 float temp = curves[ch].delta[i];
                 //float cleaFValue = (temp - avg) * UIclearFreqs;

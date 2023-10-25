@@ -46,7 +46,7 @@ public:
             ft_sc.getFT(sc, i, scFT[i], deltas[i].scSpectrum, processFFTresult);
             if (processFFTresult) {
                 psy.spread(scFT[i]);
-                conv.magnitudeToDb(scFT[i]);
+                conv.magnitudeToDb(scFT[i]); // Is it right to do dB after psy?
                 //compareWithAtq(scFT[i], current_atq);
                 FloatVectorOperations::copy(deltas[i].scDecimated.data(), scFT[i].data(), nfilts);
             }

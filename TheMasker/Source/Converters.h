@@ -39,12 +39,24 @@ public:
         }
     }
 
-    void mXv_mult(auto& in1, auto& in2, int in2Size, auto& dest) {
-        
+    void mXv_mult(auto& in1, auto& in2, int in2Size, auto& dest) 
+    {
         size_t length = nfilts;
-        for (int i = 0; i < length; i++) {
-            for (int k = 0; k < in2Size;k++) {
-                dest[i] = dest[i] + in1[i][k] * in2[k];
+
+        for (int i = 0; i < length; ++i)
+        {
+            //float nrg = 0;
+
+            //for (int n = 0; n < in2Size; ++n)
+            //{
+            //    nrg += in1[i][n];
+            //}
+
+            //nrg = 1.0f / nrg;
+
+            for (int k = 0; k < in2Size; ++k)
+            {
+                dest[i] = dest[i] + (in1[i][k] * in2[k]); // *nrg);
             }
         }
     }

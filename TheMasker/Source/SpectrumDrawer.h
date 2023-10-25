@@ -41,8 +41,24 @@ public:
         {
             auto skewedProportionX = 1.0f - std::exp(std::log(1.0f - (float)i * scope_step) * _spectrumSkew);
             auto fftDataIndex = juce::jlimit(0, resultSize, (int)(_spectrumPaddingLowFreq + skewedProportionX * (float)resultSize * (0.5f + _spectrumPaddingHighFreq) ));
-            auto level = juce::jmap(juce::Decibels::gainToDecibels(values[fftDataIndex] * ((float)(i+1) * scope_step)) - juce::Decibels::gainToDecibels((float) resultSize)
-                    , mindB, maxdB, 0.0f, 1.0f);
+
+            //auto level = juce::jmap(
+            //    juce::Decibels::gainToDecibels(values[fftDataIndex] * ((float)(i + 1) * scope_step)) - juce::Decibels::gainToDecibels((float)resultSize),
+            //    mindB, 
+            //    maxdB,
+            //    0.0f,
+            //    1.0f
+            //);
+
+            auto level = juce::jmap(
+                juce::Decibels::gainToDecibels(values[fftDataIndex] / (float)resultSize), // The division by resultSize should go in the FFT routine
+                mindB,
+                maxdB,
+                0.0f,
+                1.0f
+            );
+
+            //level = jlimit(0.0f, 1.0f, level);
 
             //level = level * ((float)i * scope_step * 0.8f + 0.5f);
             scopeData[i].skip(numSamples);

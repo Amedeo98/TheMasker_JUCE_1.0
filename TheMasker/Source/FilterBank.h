@@ -86,6 +86,10 @@ public:
                 partOfFreqs[i] = frequencies[il + i];
             }
             conv.interpolateYvector(xw, yw, partOfFreqs, false, buffer);
+            
+            //for (int f = 0; f < n; ++f)
+            //    buffer[f] /= ((float)n/2.0f);
+
             copy(buffer.begin(), buffer.end(), values[b].begin() + il);
             
         }

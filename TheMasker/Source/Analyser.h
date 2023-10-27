@@ -19,7 +19,8 @@ public:
     Analyser(const int fftOrder, const int fftSize_)
         : forwardFFT (fftOrder), fftSize (fftSize_)
     {
-        dsp::WindowingFunction<float>::fillWindowingTables(window.data(), fftSize, dsp::WindowingFunction<float>::WindowingMethod::hann, false);
+        //dsp::WindowingFunction<float>::fillWindowingTables(window.data(), fftSize, dsp::WindowingFunction<float>::WindowingMethod::hann, false);
+        dsp::WindowingFunction<float>::fillWindowingTables(window.data(), fftSize, dsp::WindowingFunction<float>::WindowingMethod::flatTop, false);
     }
 
 
@@ -42,6 +43,8 @@ public:
             FloatVectorOperations::multiply(fftData.data(), window.data(), fftSize);
 
             forwardFFT.performFrequencyOnlyForwardTransform(fftData.data(), false);  // [2]
+
+            FloatVectorOperations::multiply(fftData.data(), 1.0f / (float)fftSize, fftSize); // 1.0 was missing this scaling
 
             FloatVectorOperations::copy(result.data(), fftData.data(), fftSize);
 

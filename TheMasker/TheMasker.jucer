@@ -4,7 +4,8 @@
               jucerFormatVersion="1" cppLanguageStandard="20" pluginFormats="buildAU,buildStandalone,buildVST3"
               pluginManufacturer="Cinemystics" pluginManufacturerCode="Cmyx"
               pluginVST3Category="Analyzer,Dynamics,EQ" pluginAAXCategory="1"
-              defines="JUCE_MODAL_LOOPS_PERMITTED = 1" companyName="Cinemystics">
+              defines="JUCE_MODAL_LOOPS_PERMITTED = 1" companyName="Cinemystics"
+              version="1.1.0">
   <MAINGROUP id="EtDrka" name="TheMasker">
     <GROUP id="{D0F8B5F3-955C-44AC-04A3-B12E30F491D6}" name="Source">
       <FILE id="U0vB8X" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>

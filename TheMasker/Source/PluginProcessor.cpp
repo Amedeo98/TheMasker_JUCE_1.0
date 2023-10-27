@@ -66,6 +66,7 @@ void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSample
     getFrequencies();
     dynEQ.prepareToPlay(frequencies, sampleRate, samplesPerBlock);
     dynEQ.numChannelsChanged(inCh, scCh);
+
     setLatencySamples(_fftSize);
 }
 

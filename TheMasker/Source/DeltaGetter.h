@@ -31,6 +31,7 @@ public:
             if (processFFTresult) {
                 conv.magnitudeToDb(inFT[i]);
                 FloatVectorOperations::copy(deltas[i].inputDecimated.data(), inFT[i].data(), nfilts);
+                FloatVectorOperations::add(deltas[i].inputDecimated.data(), -6.0f, nfilts);
             }
         }
 
@@ -48,6 +49,7 @@ public:
                 psy.spread(scFT[i]);
                 conv.magnitudeToDb(scFT[i]); // Is it right to do dB after psy?
                 //compareWithAtq(scFT[i], current_atq);
+                FloatVectorOperations::add(scFT[i].data(), rel_thresh_lift, nfilts); // add here instead of in difference() so to be plotted correctly
                 FloatVectorOperations::copy(deltas[i].scDecimated.data(), scFT[i].data(), nfilts);
             }
         }
@@ -58,11 +60,11 @@ public:
             {
                 FloatVectorOperations::copy(deltas[1].scSpectrum.data(), deltas[0].scSpectrum.data(), npoints);
                 FloatVectorOperations::copy(deltas[1].scDecimated.data(), deltas[0].scDecimated.data(), npoints);
-                FloatVectorOperations::copy(scFT[1].data(), scFT[0].data(), nfilts);
+                //FloatVectorOperations::copy(scFT[1].data(), scFT[0].data(), nfilts);
             }
 
             for (int i = 0; i < maxCh; i++) {
-                difference(deltas[i].inputDecimated, scFT[i], deltas[i].delta);
+                difference(deltas[i].inputDecimated, deltas[i].scDecimated, deltas[i].delta);
             }
 
         }
@@ -113,7 +115,8 @@ private:
 
     void difference(array<float, nfilts>& input, array<float, nfilts>& rel_thresh, array<float, nfilts>& output) {
         for (int i = 0; i < nfilts; i++)
-            output[i] = input[i] - (rel_thresh[i]+rel_thresh_lift);
+            output[i] = input[i] - (rel_thresh[i]+_relThreshBoost);
+            //output[i] = input[i] - rel_thresh[i];
     }
 
    

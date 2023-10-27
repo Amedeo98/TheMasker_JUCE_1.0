@@ -24,7 +24,6 @@ public:
         setNumChannels(nCh);
         bufferDelayLine.setMaximumDelayInSamples(delaySamples);
         bufferDelayLine.setDelay(delaySamples);
-
     }
 
     void delayBuffer(AudioBuffer<float>& newBuffer, auto& curves) {
@@ -64,8 +63,8 @@ private:
     int delaySamples;
     int numCh = 2;
     dsp::DelayLine<float> bufferDelayLine;
-    dsp::DelayLine<float> inDelayLine;
-    dsp::DelayLine<float> scDelayLine;
+    //dsp::DelayLine<float> inDelayLine;
+    //dsp::DelayLine<float> scDelayLine;
     juce::dsp::ProcessSpec bufferSpec;
 
 

@@ -81,8 +81,10 @@ public:
         filters.setNumChannels(numInChannels);       // was numChannels
         spectrumPlotter.setNumChannels(numChannels);
 
-        for (int i = 0; i < nfilts; i++) {
-            for (int ch = 0; ch < numChannels; ch++) {
+        for (int i = 0; i < nfilts; i++) 
+        {
+            for (int ch = 0; ch < numChannels; ch++) 
+            {
                 gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
@@ -98,53 +100,57 @@ public:
 
     void processBlock(AudioBuffer<float>& mainBuffer, AudioBuffer<float>& scBuffer)
     {
-        //snrCalc.generateNoise(mainBuffer);
-        int currentNumSamples = mainBuffer.getNumSamples();
+        //if (0)
+        {
 
-        in_volumeMeter.skip(mainBuffer);
-        out_volumeMeter.skip(mainBuffer);
-        
-        mainBuffer.applyGain(inGain);
-        scBuffer.applyGain(scGain);
+            //snrCalc.generateNoise(mainBuffer);
+            int currentNumSamples = mainBuffer.getNumSamples();
 
-        deltaGetter.getDelta(mainBuffer, scBuffer, curves, processFFTresult);
+            in_volumeMeter.skip(mainBuffer);
+            out_volumeMeter.skip(mainBuffer);
 
-        if (processFFTresult) {
+            mainBuffer.applyGain(inGain);
+            scBuffer.applyGain(scGain);
 
-            if (numChannels == 2 && stereoLinkAmt > 0.0f)
-            {
-                stereoLinked.process(curves[0].delta, curves[1].delta);
+            deltaGetter.getDelta(mainBuffer, scBuffer, curves, processFFTresult);
+
+            if (processFFTresult) {
+
+                if (numChannels == 2 && stereoLinkAmt > 0.0f)
+                {
+                    stereoLinked.process(curves[0].delta, curves[1].delta);
+                }
+
+                deltaScaler.scale(curves, maskedFreqsAmount, clearFreqsAmount, mixAmount);
+                deltaScaler.clip(curves);
             }
 
-            deltaScaler.scale(curves, maskedFreqsAmount, clearFreqsAmount, mixAmount);
-            deltaScaler.clip(curves);
+            bufferDelayer.delayBuffer(mainBuffer, curves);
+
+
+            //snrCalc.pushInput(mainBuffer);
+
+            in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numInChannels - 1, 0, currentNumSamples));
+            in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, currentNumSamples), scBuffer.getRMSLevel(numScChannels - 1, 0, currentNumSamples));
+
+            filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
+            mainBuffer.applyGain(outGain * _outExtraGain);
+
+            out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numInChannels - 1, 0, currentNumSamples));
+            
+
+            if (processFFTresult) {
+                for (int i = 0; i < numInChannels; i++)
+                    ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum, processFFTresult);
+
+                processFFTresult = false;
+            }
+
+            spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
+
+            //snrCalc.pushOutput(mainBuffer);
+            //snrCalc.calculateSNR();
         }
-
-        bufferDelayer.delayBuffer(mainBuffer, curves);
-        
-
-        //snrCalc.pushInput(mainBuffer);
-
-        in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numInChannels - 1, 0, currentNumSamples));
-        in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, currentNumSamples), scBuffer.getRMSLevel(numScChannels - 1, 0, currentNumSamples));
-        
-        filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
-        mainBuffer.applyGain(outGain * _outExtraGain);
-
-        out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numInChannels - 1, 0, currentNumSamples));
-       
-        if (processFFTresult) {
-            for (int i = 0; i < numInChannels; i++)
-                ft_out.getFT(mainBuffer, i, curves[i].outSpectrum, curves[i].outSpectrum, processFFTresult);
-
-            processFFTresult = false;
-        }
-
-        spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
-
-        //snrCalc.pushOutput(mainBuffer);
-        //snrCalc.calculateSNR();
-
     }
 
 

@@ -18,41 +18,61 @@
 class Plotter {
 public:
     
-    void prepareToPlay(float* frequencies, float* fCenters, double fs, int nSamples) {
+    void prepareToPlay(float* frequencies, float* fCenters, double fs, int nSamples) 
+    {
+        // draw raw spectra
         inSpectrum.prepareToPlay(frequencies, in_colour);
-        inSpectrum.resetSmoothingValues(fs, nSamples);
-
-        scSpectrum.prepareToPlay(frequencies, sc_colour);
-        scSpectrum.resetSmoothingValues(fs, nSamples);
-
+        //scSpectrum.prepareToPlay(frequencies, sc_colour);
         outSpectrum.prepareToPlay(frequencies, out_colour);
+
+        // draw masking curves
+        //inSpectrum.prepareToPlay(fCenters, in_colour);
+        scSpectrum.prepareToPlay(fCenters, sc_colour);  
+
+
+        inSpectrum.resetSmoothingValues(fs, nSamples);
+        scSpectrum.resetSmoothingValues(fs, nSamples);
         outSpectrum.resetSmoothingValues(fs, nSamples);
 
         deltaSpectrum.prepareToPlay(fCenters, delta_colour);
     }
 
-    void drawNextFrameOfSpectrum(auto& curves, auto& gains_sm) {
-        
-        if (numCh == 2) {
-            
-            for (int i = 0; i < nfilts; i++) {
+    void drawNextFrameOfSpectrum(auto& curves, auto& gains_sm) 
+    {
+        if (numCh == 2) 
+        {
+            for (int i = 0; i < nfilts; i++) 
+            {
                 deltaScope[i] = Decibels::gainToDecibels(gains_sm[0][i].getCurrentValue());
-
             }
-            //averageValues(deltaScope, gains_sm[0], gains_sm[1], nfilts);
+
+            // draw raw spectra
             averageValues(inScope, curves[0].inSpectrum, curves[1].inSpectrum, npoints);
-            averageValues(scScope, curves[0].scSpectrum, curves[1].scSpectrum, npoints);
+            //averageValues(scScope, curves[0].scSpectrum, curves[1].scSpectrum, npoints);
             averageValues(outScope, curves[0].outSpectrum, curves[1].outSpectrum, npoints);
+
+            // draw masking curves
+            //averageValues(inScope, curves[0].inputDecimated, curves[1].inputDecimated, nfilts);
+            averageValues(scScope, curves[0].scDecimated, curves[1].scDecimated, nfilts);
         } 
         else
         {
-            for (int i = 0; i < nfilts; i++) {
+            for (int i = 0; i < nfilts; i++) 
+            {
                 deltaScope[i] = Decibels::gainToDecibels((gains_sm[0][i].getCurrentValue() + gains_sm[1][i].getCurrentValue()) * 0.5f);
             }
-            //FloatVectorOperations::copy(deltaScope.data(), gains_sm[0].data(), nfilts);
+
+            // draw raw spectra
             FloatVectorOperations::copy(inScope.data(), curves[0].inSpectrum.data(), npoints);
-            FloatVectorOperations::copy(scScope.data(), curves[0].scSpectrum.data(), npoints);
+            FloatVectorOperations::multiply(inScope.data(), 2.0f, npoints);
+            //FloatVectorOperations::copy(scScope.data(), curves[0].scSpectrum.data(), npoints);
+            //FloatVectorOperations::multiply(scScope.data(), 2.0f, npoints);
             FloatVectorOperations::copy(outScope.data(), curves[0].outSpectrum.data(), npoints);
+            FloatVectorOperations::multiply(outScope.data(), 2.0f, npoints);
+
+            // draw masking curves
+            //FloatVectorOperations::copy(inScope.data(), curves[0].inputDecimated.data(), nfilts);
+            FloatVectorOperations::copy(scScope.data(), curves[0].scDecimated.data(), nfilts);
         }
                 
         inSpectrum.drawNextFrameOfSpectrum(inScope);
@@ -112,18 +132,29 @@ public:
 
 
 private:
+    // draw raw spectra
     SpectrumDrawer inSpectrum;
-    SpectrumDrawer scSpectrum;
+    //SpectrumDrawer scSpectrum;
     SpectrumDrawer outSpectrum;
+
+    // draw masking curves
+    //DeciSpectrumDrawer inSpectrum;
+    DeciSpectrumDrawer scSpectrum;
+    
     DeltaDrawer deltaSpectrum;
 
-    Converter conv;
-
+    // draw raw spectra
     array<float, npoints> inScope;
-    array<float, npoints> scScope;
+    //array<float, npoints> scScope;
     array<float, npoints> outScope;
+    
+    // draw masking curves
+    //array<float, nfilts> inScope;
+    array<float, nfilts> scScope;
+    
     array<float, nfilts> deltaScope;
 
+    Converter conv;
     int numCh = 0;
 
     juce::Colour in_colour = Colour(Colours::white.withAlpha(0.7f));

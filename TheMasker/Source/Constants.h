@@ -33,7 +33,7 @@
 
 
 #define nfilts 32
-#define _fftOrder 10
+#define _fftOrder 11
 #define _fftSize (1 << _fftOrder)
 #define npoints 256
 
@@ -41,10 +41,10 @@
 #define minFreq 20
 
 #define _maxDeltaSpectrum 24
-#define _maxGain 11
+#define _maxGain 18
 #define _mixMultiplier 1.05f
-#define _gateThresh -40
-#define _gateKnee 10
+#define _gateThresh -60
+#define _gateKnee 5
 
 #define _atkSmoothingSeconds 0.080f
 #define _relSmoothingSeconds 0.250f
@@ -52,7 +52,8 @@
 #define _relSpectrumSeconds 2.000f
 #define _overlapRatio 0.5f
 #define _mindBFS -100
-#define _relThreshLift -10.0f
+#define _relThreshLift -9.0f
+#define _relThreshBoost +4.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
 #define _outExtraGain 7.6f

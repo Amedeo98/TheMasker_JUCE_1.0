@@ -32,6 +32,12 @@ public:
 private:
     TheMaskerAudioProcessor& audioProcessor;
     
+    Rectangle<int> in_area,
+        out_area,
+        responseArea;
+
+    Array<float> xs;
+
     VolumeMeter inputVolume, outputVolume;
     
     CustomButton undoButton, redoButton, loadButton, saveButton,
@@ -64,6 +70,9 @@ private:
     std::vector<CustomButton*> getButtons();
 
     void timerCallback() final {
+        //repaint(responseArea);
+        //repaint(in_area);
+        //repaint(out_area);
         repaint();
     }
     

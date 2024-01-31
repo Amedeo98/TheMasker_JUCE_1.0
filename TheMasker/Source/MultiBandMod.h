@@ -77,7 +77,7 @@ public:
             for (int ch = 0; ch < numCh; ++ch) {
 
                 if (processFFTresult)
-                gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
+                    gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
 
                 for (int sample = 0; sample < numSamples; ++sample) {
                     tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());

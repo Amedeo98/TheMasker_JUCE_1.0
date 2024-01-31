@@ -79,93 +79,15 @@ TheMaskerComponent::~TheMaskerComponent()
 //==============================================================================
 void TheMaskerComponent::paint (juce::Graphics& g)
 {
-    auto bounds = getLocalBounds();
-    
     // Disegna il contenuto del file SVG
     if (svgDrawable != nullptr)
     {
-        auto boundsFloat = getLocalBounds().toFloat();
-        auto drawableBounds = svgDrawable->getDrawableBounds();
-        auto scale = std::min(boundsFloat.getWidth() / drawableBounds.getWidth(),
-                              boundsFloat.getHeight() / drawableBounds.getHeight());
-        auto translation = boundsFloat.getCentre() - drawableBounds.getCentre() * scale;
-        auto transform = juce::AffineTransform::scale(scale).translated(translation);
-        svgDrawable->setTransform(transform);
         svgDrawable->draw(g, 1.0f);
     }
 
-    //draw input area
-    auto in_area = bounds.removeFromLeft(74);
-    auto settings_area = in_area.removeFromTop(80);
-    
-    //load, save, ecc
-    settings_area.removeFromTop(20);
-    settings_area.removeFromBottom(12);
-    settings_area.removeFromLeft(8);
-    settings_area.removeFromRight(8);
-
-    undoButton.setBounds(settings_area.getX(), settings_area.getY(), 28, 24);
-    redoButton.setBounds(settings_area.getX(), settings_area.getY() + 26, 28, 24);
-    saveButton.setBounds(settings_area.getX() + 30, settings_area.getY(), 28, 24);
-    loadButton.setBounds(settings_area.getX() + 30, settings_area.getY() + 26, 28, 24);
-    
-    auto in_slider_area = in_area.removeFromBottom(100);
     g.setFont(fontHeight);
-    in_slider_area.removeFromTop(20);
-    inSlider.setBounds(in_slider_area);
-    
-    //draw controls area
-    auto controls_area = bounds.removeFromLeft(174);
-    controls_area.removeFromTop(100);
-    auto sc_area = controls_area.removeFromTop(110);
-    scSlider.setBounds(sc_area);
-    
-    controls_area.removeFromTop(12);
-    auto comp_area = controls_area.removeFromTop(66);
-    compSlider.setBounds(comp_area);
-    
-    controls_area.removeFromTop(14);
-    auto exp_area = controls_area.removeFromTop(66);
-    expSlider.setBounds(exp_area);
-    
-    controls_area.removeFromBottom(16);
-    cleanUpSlider.setBounds(controls_area.removeFromBottom(44));
-    stereoLinkedSlider.setBounds(controls_area.removeFromBottom(44));
-    
-    //draw output area
-    auto out_area = bounds.removeFromRight(74);
-    out_area.removeFromTop(24);
-    mixSlider.setBounds(out_area.removeFromTop(62));
-    
-    
-    auto out_slider_area = out_area.removeFromBottom(100);
-    out_slider_area.removeFromTop(20);
-    outSlider.setBounds(out_slider_area);
-    
-    //draw spectrum area
-    bounds.removeFromBottom(18);
-    auto legend_area = bounds.removeFromBottom(18);
-    toggleIn.setBounds(legend_area.getX()+24, legend_area.getY(), 48, 24);
-    toggleSc.setBounds(legend_area.getX()+76, legend_area.getY(), 48, 24);
-    toggleD.setBounds(legend_area.getX()+legend_area.getWidth()-128, legend_area.getY(), 58, 24);
-    toggleOut.setBounds(legend_area.getX()+legend_area.getWidth()-72, legend_area.getY(), 58, 24);
-    
-    bounds.removeFromTop(28);
-    bounds.removeFromLeft(16);
-    bounds.removeFromRight(16);
-    auto responseArea = bounds;
-    
-    resetInButton.setBounds(in_area);
-    resetOutButton.setBounds(out_area);
+
     audioProcessor.dynEQ.drawFrame(g, responseArea, in_area, out_area);
-    
-    //grid
-    Array<float> xs;
-    for (auto f : freqs)
-    {
-        auto normX = mapFromLog10(f, 20.f, 20000.f);
-        xs.add(responseArea.getX() + responseArea.getWidth() * normX);
-    }
 
     g.setColour(Colour(_grey).withAlpha(0.2f));
     for (auto x : xs)
@@ -297,6 +219,101 @@ void TheMaskerComponent::buttonClicked (Button*button)// [2]
 
 void TheMaskerComponent::resized()
 {
+    Rectangle<int> bounds,
+        settings_area,
+        in_slider_area,
+        controls_area,
+        sc_area,
+        comp_area,
+        exp_area,
+        out_slider_area,
+        legend_area;
+
+    bounds = getLocalBounds();
+
+    if (svgDrawable != nullptr)
+    {
+        auto boundsFloat = bounds.toFloat();
+        auto drawableBounds = svgDrawable->getDrawableBounds();
+        auto scale = std::min(boundsFloat.getWidth() / drawableBounds.getWidth(),
+            boundsFloat.getHeight() / drawableBounds.getHeight());
+        auto translation = boundsFloat.getCentre() - drawableBounds.getCentre() * scale;
+        auto transform = juce::AffineTransform::scale(scale).translated(translation);
+        svgDrawable->setTransform(transform);
+        //svgDrawable->draw(g, 1.0f);
+    }
+
+    //draw input area
+    in_area = bounds.removeFromLeft(74);
+    settings_area = in_area.removeFromTop(80);
+
+    //load, save, ecc
+    settings_area.removeFromTop(20);
+    settings_area.removeFromBottom(12);
+    settings_area.removeFromLeft(8);
+    settings_area.removeFromRight(8);
+
+    undoButton.setBounds(settings_area.getX(), settings_area.getY(), 28, 24);
+    redoButton.setBounds(settings_area.getX(), settings_area.getY() + 26, 28, 24);
+    saveButton.setBounds(settings_area.getX() + 30, settings_area.getY(), 28, 24);
+    loadButton.setBounds(settings_area.getX() + 30, settings_area.getY() + 26, 28, 24);
+
+    in_slider_area = in_area.removeFromBottom(100);
+    //g.setFont(fontHeight);
+    in_slider_area.removeFromTop(20);
+    inSlider.setBounds(in_slider_area);
+
+    //draw controls area
+    controls_area = bounds.removeFromLeft(174);
+    controls_area.removeFromTop(100);
+    sc_area = controls_area.removeFromTop(110);
+    scSlider.setBounds(sc_area);
+
+    controls_area.removeFromTop(12);
+    comp_area = controls_area.removeFromTop(66);
+    compSlider.setBounds(comp_area);
+
+    controls_area.removeFromTop(14);
+    exp_area = controls_area.removeFromTop(66);
+    expSlider.setBounds(exp_area);
+
+    controls_area.removeFromBottom(16);
+    cleanUpSlider.setBounds(controls_area.removeFromBottom(44));
+    stereoLinkedSlider.setBounds(controls_area.removeFromBottom(44));
+
+    //draw output area
+    out_area = bounds.removeFromRight(74);
+    out_area.removeFromTop(24);
+    mixSlider.setBounds(out_area.removeFromTop(62));
+
+    out_slider_area = out_area.removeFromBottom(100);
+    out_slider_area.removeFromTop(20);
+    outSlider.setBounds(out_slider_area);
+
+    //draw spectrum area
+    bounds.removeFromBottom(18);
+    legend_area = bounds.removeFromBottom(18);
+    toggleIn.setBounds(legend_area.getX() + 24, legend_area.getY(), 48, 24);
+    toggleSc.setBounds(legend_area.getX() + 76, legend_area.getY(), 48, 24);
+    toggleD.setBounds(legend_area.getX() + legend_area.getWidth() - 128, legend_area.getY(), 58, 24);
+    toggleOut.setBounds(legend_area.getX() + legend_area.getWidth() - 72, legend_area.getY(), 58, 24);
+
+    bounds.removeFromTop(28);
+    bounds.removeFromLeft(16);
+    bounds.removeFromRight(16);
+    responseArea = bounds;
+
+    resetInButton.setBounds(in_area);
+    resetOutButton.setBounds(out_area);
+    //audioProcessor.dynEQ.drawFrame(g, responseArea, in_area, out_area);
+
+    //Array<float> xs;
+    xs.clear();
+    for (auto f : freqs)
+    {
+        auto normX = mapFromLog10(f, 20.f, 20000.f);
+        xs.add(responseArea.getX() + responseArea.getWidth() * normX);
+    }
 }
 
 

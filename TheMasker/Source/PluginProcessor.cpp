@@ -23,7 +23,7 @@ parameters(*this, &undoManager, "TheMaskerCompressor", {
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_CLEARF, PLUGIN_V}, "Clear Freqs", -1.0f, 1.0f, DEFAULT_CLEARF),
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_ATQ, PLUGIN_V}, "CleanUp", 0.0f, 1.0f, DEFAULT_ATQ),
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_SL, PLUGIN_V}, "StereoLinked", 0.0f, 1.0f, DEFAULT_SL),
-    std::make_unique<AudioParameterFloat>(ParameterID {NAME_MIX, PLUGIN_V}, "Mix", 0.0f, 1.0f, DEFAULT_MIX),
+    std::make_unique<AudioParameterFloat>(ParameterID {NAME_MIX, PLUGIN_V}, "Mix", NormalisableRange<float>(0.0f, 2.0f, 0.001f),  DEFAULT_MIX),
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_IN, PLUGIN_V}, "Input (dB)", -40.0f, 40.0f, DEFAULT_IN),
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_OUT, PLUGIN_V}, "Output (dB)", -40.0f, 40.0f, DEFAULT_OUT),
     std::make_unique<AudioParameterFloat>(ParameterID {NAME_SC, PLUGIN_V},"Sidechain (dB)", -40.0f, 40.0f, DEFAULT_SC)

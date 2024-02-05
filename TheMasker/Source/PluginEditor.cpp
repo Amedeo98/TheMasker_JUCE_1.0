@@ -62,10 +62,98 @@ TheMaskerComponent::TheMaskerComponent (TheMaskerAudioProcessor& p)
         btn->addListener(this);
     }
 
-    
-    svgDrawable = Drawable::createFromImageData (BinaryData::TheMasker_bg_svg, BinaryData::TheMasker_bg_svgSize);
-}
+#ifdef fineTuneCoeff
+        {
+            auto w = 60;
+            auto h = 350;
+            auto tbw = 60;
+            auto wr = 1.1;
 
+            auto r = 24;
+
+            // Bottom end
+            tsIndx[0] = 1;
+            tsIndx[1] = 2;
+            tsIndx[2] = 3;
+            tsIndx[3] = 4;
+            tsIndx[4] = 5;
+
+            // Top end
+            //tsIndx[0] = -5;
+            //tsIndx[1] = -4;
+            //tsIndx[2] = -3;
+            //tsIndx[3] = -2;
+            //tsIndx[4] = -1;
+
+            corrInv[0] = false;
+            corrInv[1] = false;
+            corrInv[2] = false;
+            corrInv[3] = false;
+            corrInv[4] = false;
+
+            auto i = 0;
+
+            TS1.setBounds(300 + 0 * wr * w, 60, w, h);
+            TS1.setRange(-r, r, 0.001);
+            TS1.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[0]), dontSendNotification);
+            TS1.setSliderStyle(juce::Slider::LinearVertical);
+            TS1.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
+            TS1.addListener(this);
+            addAndMakeVisible(TS1);
+            i++;
+    
+            TS2.setBounds(300 + i * wr * w, 60, w, h);
+            TS2.setRange(-r, r, 0.001);
+            TS2.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[i]), dontSendNotification);
+            TS2.setSliderStyle(juce::Slider::LinearVertical);
+            TS2.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
+            TS2.addListener(this);
+            addAndMakeVisible(TS2);
+            i++;
+
+            TS3.setBounds(300 + i * wr * w, 60, w, h);
+            TS3.setRange(-r, r, 0.001);
+            TS3.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[i]), dontSendNotification);
+            TS3.setSliderStyle(juce::Slider::LinearVertical);
+            TS3.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
+            TS3.addListener(this);
+            addAndMakeVisible(TS3);
+            i++;
+
+            TS4.setBounds(300 + i * wr * w, 60, w, h);
+            TS4.setRange(-r, r, 0.001);
+            TS4.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[i]), dontSendNotification);
+            TS4.setSliderStyle(juce::Slider::LinearVertical);
+            TS4.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
+            TS4.addListener(this);
+            addAndMakeVisible(TS4);
+            i++;
+
+            TS5.setBounds(300 + i * wr * w, 60, w, h);
+            TS5.setRange(-r, r, 0.001);
+            TS5.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[i]), dontSendNotification);
+            TS5.setSliderStyle(juce::Slider::LinearVertical);
+            TS5.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
+            TS5.addListener(this);
+            addAndMakeVisible(TS5);
+            i++;
+        }
+#endif // fineTuneCoeff
+
+    
+        svgDrawable = Drawable::createFromImageData (BinaryData::TheMasker_bg_svg, BinaryData::TheMasker_bg_svgSize);
+    }
+
+#ifdef fineTuneCoeff
+    void TheMaskerComponent::sliderValueChanged(Slider* slider)
+    {
+        audioProcessor.dynEQ.setCorrectionGain(tsIndx[0], TS1.getValue(), corrInv[0]);
+        audioProcessor.dynEQ.setCorrectionGain(tsIndx[1], TS2.getValue(), corrInv[1]);
+        audioProcessor.dynEQ.setCorrectionGain(tsIndx[2], TS3.getValue(), corrInv[2]);
+        audioProcessor.dynEQ.setCorrectionGain(tsIndx[3], TS4.getValue(), corrInv[3]);
+        audioProcessor.dynEQ.setCorrectionGain(tsIndx[4], TS5.getValue(), corrInv[4]);
+    }
+#endif // fineTuneCoeff
 
 TheMaskerComponent::~TheMaskerComponent()
 {
@@ -74,7 +162,6 @@ TheMaskerComponent::~TheMaskerComponent()
         btn->removeListener(this);
     }
 }
-
 
 //==============================================================================
 void TheMaskerComponent::paint (juce::Graphics& g)
@@ -160,7 +247,6 @@ void TheMaskerComponent::paint (juce::Graphics& g)
     
 
 }
-
 
 void TheMaskerComponent::buttonClicked (Button*button)// [2]
 {

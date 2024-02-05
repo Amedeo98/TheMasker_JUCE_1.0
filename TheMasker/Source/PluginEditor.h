@@ -13,12 +13,16 @@
 #include "CustomButton.h"
 #include "Sliders.h"
 
+//#define fineTuneCoeff true
 
 //==============================================================================
 /**
 */
 class TheMaskerComponent  : public juce::Component, private juce::Timer,
-                                       public juce::Button::Listener
+    public juce::Button::Listener
+#ifdef fineTuneCoeff
+    , public juce::Slider::Listener
+#endif // fineTuneCoeff
 {
 public:
     TheMaskerComponent (TheMaskerAudioProcessor&);
@@ -53,6 +57,14 @@ private:
     
     CustomLinearSlider cleanUpSlider, stereoLinkedSlider;
     
+#ifdef fineTuneCoeff
+        Slider TS1, TS2, TS3, TS4, TS5;
+        int tsIndx[5];
+        bool corrInv[5];
+
+        void sliderValueChanged(Slider* slider) override;
+#endif // fineTuneCoeff
+
     using APVTS = juce::AudioProcessorValueTreeState;
     using Attachment = APVTS::SliderAttachment;
     

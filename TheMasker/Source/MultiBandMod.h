@@ -14,7 +14,9 @@
 #include "LinkwitzRileyFilters.h"
 #include "DynamicEQ.h"
 
-
+#define MIDDLEBAND_OFF -0.32f
+#define LPHP_OFF -17.64f
+#define BPEXT_OFF -11.52f
 
 class MultiBandMod {
 public:
@@ -24,26 +26,67 @@ public:
     void prepareToPlay(double sampleRate, int newSamplesPerBlock, float* fCenters) {
         fs = sampleRate;
         samplesPerBlock = newSamplesPerBlock;
+        
         for (int i = 0; i < nfilts; i++) {
             freqs[i].fCenter = fCenters[i];
         }
+
         getBandFreqs();
+        
         for (int i = 0; i < nfilts; i++) {
             filters[i].prepareToPlay(sampleRate, samplesPerBlock, freqs[i].f_lc, freqs[i].f_hc);
-            gainAdjustments[i] = 1.0f;
+            gainAdjustments[i] = Decibels::decibelsToGain(MIDDLEBAND_OFF); //0.0; // (i % 2) ? -1.0f : 1.0f;
         }
 
-        gainAdjustments[0] = 0.1f; 
-        gainAdjustments[1] = 0.15f;
-        gainAdjustments[2] = 0.5f;
-        //gainAdjustments[3] = 0.8f;
-        //gainAdjustments[nfilts-7] = 0.95f;
-        //gainAdjustments[nfilts-6] = 0.6f;
-        //gainAdjustments[nfilts-5] = 0.7f;
-        gainAdjustments[nfilts-4] = 0.85f;
-        gainAdjustments[nfilts-3] = 0.8f;
-        gainAdjustments[nfilts-2] = 0.55f;
-        gainAdjustments[nfilts-1] = 0.2f;
+        ///////////////// BOTTOM END
+
+        setCorrectionGain(0, LPHP_OFF);
+        
+        // without allpass
+        setCorrectionGain(1, -13.805f);
+        setCorrectionGain(2, -3.464f);
+        setCorrectionGain(3, -1.450f);
+        setCorrectionGain(4, -0.650f);
+        setCorrectionGain(5, -0.445f);
+
+        ///////////////// TOP END
+
+        setCorrectionGain(-6, -0.311f);
+        setCorrectionGain(-5, -0.388f);
+
+        // with allpass (see LinkwitzRileyFilters.h lines 43-44
+        //setCorrectionGain(-4, -0.621f);
+        //setCorrectionGain(-3, -1.320f);
+        //setCorrectionGain(-2, -4.272f);
+
+        // without allpass
+        setCorrectionGain(-4, -0.627f);
+        setCorrectionGain(-3, -1.412f);
+        setCorrectionGain(-2, -3.922f);
+
+        setCorrectionGain(-1, LPHP_OFF);
+    }
+
+    void setCorrectionGain(int fIndex, float gainDb, bool invert = false)
+    {
+        if (fIndex < 0)
+            fIndex += nfilts;
+
+        jassert(fIndex < nfilts);
+        jassert(fIndex >= 0);
+
+        gainAdjustments[fIndex] = invert ? -Decibels::decibelsToGain(gainDb) : Decibels::decibelsToGain(gainDb);
+    }
+
+    float getCorrectionGain(int fIndex)
+    {
+        if (fIndex < 0)
+            fIndex += nfilts;
+
+        jassert(fIndex < nfilts);
+        jassert(fIndex >= 0);
+
+        return Decibels::gainToDecibels(gainAdjustments[fIndex]);
     }
 
     void setNumChannels(int nCh) {

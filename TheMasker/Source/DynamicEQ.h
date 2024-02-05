@@ -153,7 +153,15 @@ public:
         }
     }
 
+    void setCorrectionGain(int fIndex, float gainDb, bool invert = false)
+    {
+        filters.setCorrectionGain(fIndex, gainDb, invert);
+    }
 
+    float getCorrectionGain(int fIndex)
+    {
+        return filters.getCorrectionGain(fIndex);
+    }
 
     void setMaskedFreqs(float newValue) {
         maskedFreqsAmount = jlimit(-1.0f, 1.0f, (pow(newValue, 3.0f) + newValue) * 0.5f);

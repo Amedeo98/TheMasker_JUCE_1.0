@@ -13,8 +13,6 @@
 #include "CustomButton.h"
 #include "Sliders.h"
 
-//#define fineTuneCoeff true
-
 //==============================================================================
 /**
 */
@@ -58,11 +56,13 @@ private:
     CustomLinearSlider cleanUpSlider, stereoLinkedSlider;
     
 #ifdef fineTuneCoeff
-        Slider TS1, TS2, TS3, TS4, TS5;
-        int tsIndx[5];
-        bool corrInv[5];
+        Slider TS1, TS2, TS3, TS4, TS5, TS6, TS7, TS8, TS9, TS10, TS11;
+        int tsIndx[11];
+        bool corrInv[11];
 
         void sliderValueChanged(Slider* slider) override;
+        void setupTunerSlider(Slider& slider, int i);
+
 #endif // fineTuneCoeff
 
     using APVTS = juce::AudioProcessorValueTreeState;

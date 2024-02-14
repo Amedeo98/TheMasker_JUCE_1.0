@@ -27,7 +27,7 @@ public:
 private:
     float monoValues[nfilts];
     float UIsl;  
-    float silence = Decibels::gainToDecibels(0.0f);
+    //float silence = Decibels::gainToDecibels(0.0f);
 
     void scaleChannel(array<float, nfilts>& in) {
         int size = in.size();

@@ -64,7 +64,10 @@ public:
             }
 
             for (int i = 0; i < maxCh; i++) {
+#ifndef fineTuneCoeff
                 difference(deltas[i].inputDecimated, deltas[i].scDecimated, deltas[i].delta);
+#endif // !fineTuneCoeff
+
             }
 
         }

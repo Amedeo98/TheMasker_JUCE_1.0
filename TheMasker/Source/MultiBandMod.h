@@ -15,8 +15,10 @@
 #include "DynamicEQ.h"
 
 #define MIDDLEBAND_OFF -0.32f
-#define LPHP_OFF -17.64f
-#define BPEXT_OFF -11.52f
+#define LPHP_OFF -17.526f
+//#define BPEXT_OFF -11.52f
+
+#define CORR_K_LEN 11
 
 class MultiBandMod {
 public:
@@ -26,44 +28,50 @@ public:
     void prepareToPlay(double sampleRate, int newSamplesPerBlock, float* fCenters) {
         fs = sampleRate;
         samplesPerBlock = newSamplesPerBlock;
-        
+       
+        for (int ch = 0; ch < 2; ++ch) {
+            medGain[ch].reset(fs, _atkSmoothingSeconds, _relSmoothingSeconds);
+        }
+
         for (int i = 0; i < nfilts; i++) {
             freqs[i].fCenter = fCenters[i];
         }
 
         getBandFreqs();
+
+        populateCorrKernel();
         
         for (int i = 0; i < nfilts; i++) {
             filters[i].prepareToPlay(sampleRate, samplesPerBlock, freqs[i].f_lc, freqs[i].f_hc);
-            gainAdjustments[i] = Decibels::decibelsToGain(MIDDLEBAND_OFF); //0.0; // (i % 2) ? -1.0f : 1.0f;
+            staticGainAdjustments[i] = Decibels::decibelsToGain(MIDDLEBAND_OFF); //0.0; // (i % 2) ? -1.0f : 1.0f;
+            adjustedGain[0][i] = 0;
+            adjustedGain[1][i] = 0;
         }
 
         ///////////////// BOTTOM END
-
         setCorrectionGain(0, LPHP_OFF);
-        
-        // without allpass
-        setCorrectionGain(1, -13.805f);
-        setCorrectionGain(2, -3.464f);
-        setCorrectionGain(3, -1.450f);
-        setCorrectionGain(4, -0.650f);
-        setCorrectionGain(5, -0.445f);
+        setCorrectionGain(1, -15.276f);
+        setCorrectionGain(2, -3.418f);
+        setCorrectionGain(3, -1.460f);
+        setCorrectionGain(4, -0.643f);
+        setCorrectionGain(5, -0.441f);
+        setCorrectionGain(6, -0.316f);
+        setCorrectionGain(7, -0.341f);
+        setCorrectionGain(8, -0.297f);
+        setCorrectionGain(9, -0.340f);
+        setCorrectionGain(10, -0.328f);
 
         ///////////////// TOP END
-
-        setCorrectionGain(-6, -0.311f);
-        setCorrectionGain(-5, -0.388f);
-
-        // with allpass (see LinkwitzRileyFilters.h lines 43-44
-        //setCorrectionGain(-4, -0.621f);
-        //setCorrectionGain(-3, -1.320f);
-        //setCorrectionGain(-2, -4.272f);
-
-        // without allpass
-        setCorrectionGain(-4, -0.627f);
-        setCorrectionGain(-3, -1.412f);
-        setCorrectionGain(-2, -3.922f);
-
+        setCorrectionGain(-11, -0.377f);
+        setCorrectionGain(-10, -0.338f);
+        setCorrectionGain(-9, -0.232f);
+        setCorrectionGain(-8, -0.472f);
+        setCorrectionGain(-7, -0.176f);
+        setCorrectionGain(-6, -0.291f);
+        setCorrectionGain(-5, -0.341f);
+        setCorrectionGain(-4, -0.396f);
+        setCorrectionGain(-3, -1.177f);
+        setCorrectionGain(-2, -3.307f);
         setCorrectionGain(-1, LPHP_OFF);
     }
 
@@ -75,7 +83,7 @@ public:
         jassert(fIndex < nfilts);
         jassert(fIndex >= 0);
 
-        gainAdjustments[fIndex] = invert ? -Decibels::decibelsToGain(gainDb) : Decibels::decibelsToGain(gainDb);
+        staticGainAdjustments[fIndex] = invert ? -Decibels::decibelsToGain(gainDb) : Decibels::decibelsToGain(gainDb);
     }
 
     float getCorrectionGain(int fIndex)
@@ -86,7 +94,7 @@ public:
         jassert(fIndex < nfilts);
         jassert(fIndex >= 0);
 
-        return Decibels::gainToDecibels(gainAdjustments[fIndex]);
+        return Decibels::gainToDecibels(staticGainAdjustments[fIndex]);
     }
 
     void setNumChannels(int nCh) {
@@ -99,10 +107,10 @@ public:
 
     }
     
-    void filterBlock(AudioBuffer<float>& buffer, auto& curves, auto& gains_sm, bool& processFFTresult) {
+    void filterBlock(AudioBuffer<float>& buffer, auto& curves, auto& gains_sm, auto& gains_vs, bool& processFFTresult) {
         int numSamples = buffer.getNumSamples();
         //inputBuffer_copy.clear();
-        inputBuffer_copy.setSize(numCh, numSamples, false, true, true); // This is soooo bad
+        inputBuffer_copy.setSize(numCh, numSamples, true, false, true); // This is soooo bad
 
         for (int ch = 0; ch < numCh; ch++) 
         {
@@ -111,26 +119,52 @@ public:
 
         buffer.clear();
 
+        if (processFFTresult)
+        {
+            for (int ch = 0; ch < numCh; ++ch)
+                dynamicGainCorrection(ch, curves[ch].delta);
+        }
+
         for (int f = 0; f < nfilts; f++) 
         {
+            tempOutput.setSize(numCh, numSamples, true, false, true); // This is soooo bad
             tempOutput.clear();
-            tempOutput.setSize(numCh, numSamples);
             filters[f].process(inputBuffer_copy, tempOutput);
-            
+
             for (int ch = 0; ch < numCh; ++ch) {
 
                 if (processFFTresult)
-                    gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
+                {
+#ifdef fineTuneCoeff
+                    if (fineTuneCoeff)
+                        gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(adjustedGain[ch][f]));
+                    else
+                        gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
+
+                    gains_vs[ch][f].setTargetValue(gains_sm[ch][f].getTargetValue());
+#else
+                    gains_sm[ch][f].setTargetValue(Decibels::decibelsToGain(adjustedGain[ch][f]));
+                    gains_vs[ch][f].setTargetValue(Decibels::decibelsToGain(curves[ch].delta[f]));
+#endif // fineTuneCoeff
+
+                }
 
                 for (int sample = 0; sample < numSamples; ++sample) {
                     tempOutput.setSample(ch, sample, tempOutput.getSample(ch, sample) * gains_sm[ch][f].getNextValue());
                 }
 
-                buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples, gainAdjustments[f]);
+                gains_vs[ch][f].skip(numSamples);
+
+                buffer.addFrom(ch, 0, tempOutput, ch, 0, numSamples, staticGainAdjustments[f]);
 
             }
             
         }
+
+        if (OFFSET_CORRECTION)
+            for (int ch = 0; ch < numCh; ++ch)
+                medGain[ch].applyGain(buffer.getWritePointer(ch), numSamples);
+
     }
     
 
@@ -148,6 +182,89 @@ public:
 
 private:
 
+    void populateCorrKernel()
+    {
+        if (ENABLE_CORRECTION)
+        {
+            // +5.0
+            //dynamicAdjustmentKernel[1][0] = dynamicAdjustmentKernel[1][10] = 0.0;
+            //dynamicAdjustmentKernel[1][1] = dynamicAdjustmentKernel[1][9] = 0.07500;
+            //dynamicAdjustmentKernel[1][2] = dynamicAdjustmentKernel[1][8] = 0.16340;
+            //dynamicAdjustmentKernel[1][3] = dynamicAdjustmentKernel[1][7] = -0.11260;
+            //dynamicAdjustmentKernel[1][4] = dynamicAdjustmentKernel[1][6] = -0.21200;
+            ///*                        */    dynamicAdjustmentKernel[1][5] = 0.79280;
+
+            // +10
+            dynamicAdjustmentKernel[1][0] = dynamicAdjustmentKernel[1][10] =  0.00770;
+            dynamicAdjustmentKernel[1][1] = dynamicAdjustmentKernel[1][9] =   0.12950;
+            dynamicAdjustmentKernel[1][2] = dynamicAdjustmentKernel[1][8] =  -0.02030; 
+            dynamicAdjustmentKernel[1][3] = dynamicAdjustmentKernel[1][7] =   0.09970;
+            dynamicAdjustmentKernel[1][4] = dynamicAdjustmentKernel[1][6] =  -0.12750;
+            /*                           */ dynamicAdjustmentKernel[1][5] =   0.67900;
+
+            // -10
+            //dynamicAdjustmentKernel[0][0] = dynamicAdjustmentKernel[0][10] = 0.04060;
+            //dynamicAdjustmentKernel[0][1] = dynamicAdjustmentKernel[0][9]  = 0.07280;
+            //dynamicAdjustmentKernel[0][2] = dynamicAdjustmentKernel[0][8]  = -0.00610;
+            //dynamicAdjustmentKernel[0][3] = dynamicAdjustmentKernel[0][7]  = 0.00930;
+            //dynamicAdjustmentKernel[0][4] = dynamicAdjustmentKernel[0][6]  = 0.08340;
+            ///*                        */    dynamicAdjustmentKernel[0][5]  = 0.23290;
+
+            dynamicAdjustmentKernel[0][0] = dynamicAdjustmentKernel[0][10] =  0.02180;
+            dynamicAdjustmentKernel[0][1] = dynamicAdjustmentKernel[0][9] =   0.01490;
+            dynamicAdjustmentKernel[0][2] = dynamicAdjustmentKernel[0][8] =   0.05240; 
+            dynamicAdjustmentKernel[0][3] = dynamicAdjustmentKernel[0][7] =   0.03850;
+            dynamicAdjustmentKernel[0][4] = dynamicAdjustmentKernel[0][6] =  -0.07520;
+            /*                        */    dynamicAdjustmentKernel[0][5] =   0.54150;
+        }
+        else
+        {
+            dynamicAdjustmentKernel[0][0] = dynamicAdjustmentKernel[0][10] = 0.0;
+            dynamicAdjustmentKernel[0][1] = dynamicAdjustmentKernel[0][9] = 0.0;
+            dynamicAdjustmentKernel[0][2] = dynamicAdjustmentKernel[0][8] = 0.0;
+            dynamicAdjustmentKernel[0][3] = dynamicAdjustmentKernel[0][7] = 0.0;
+            dynamicAdjustmentKernel[0][4] = dynamicAdjustmentKernel[0][6] = 0.0;
+            dynamicAdjustmentKernel[0][5] = 1.0;
+
+            dynamicAdjustmentKernel[1][0] = dynamicAdjustmentKernel[1][10] = 0.0;
+            dynamicAdjustmentKernel[1][1] = dynamicAdjustmentKernel[1][9] = 0.0;
+            dynamicAdjustmentKernel[1][2] = dynamicAdjustmentKernel[1][8] = 0.0;
+            dynamicAdjustmentKernel[1][3] = dynamicAdjustmentKernel[1][7] = 0.0;
+            dynamicAdjustmentKernel[1][4] = dynamicAdjustmentKernel[1][6] = 0.0;
+            dynamicAdjustmentKernel[1][5] = 1.0;
+        }
+
+    }
+
+    void dynamicGainCorrection(int ch, const std::array<float,nfilts>& target)
+    {
+        auto med = 0.0f;
+
+        if (OFFSET_CORRECTION)
+        {
+            for (int t = 0; t < nfilts; ++t)
+                med += target[t] / nfilts;
+
+            medGain[ch].setTargetValue(Decibels::decibelsToGain(med));
+        }
+
+        for (int t = 0; t < nfilts; ++t)
+            adjustedGain[ch][t] = 0.0f;
+
+        const auto kh = (CORR_K_LEN - 1) / 2;
+
+        for (int t = 0; t < nfilts; ++t)
+        {
+            for (int k = -kh; k <= kh; ++k)
+            {
+                const auto tk = t + k;
+                const auto tmp = (tk < 0 || tk >= nfilts) ? 0 : (target[tk] - med);
+                const int tBoost = target[tk] >= 0;
+                adjustedGain[ch][t] += tmp * dynamicAdjustmentKernel[tBoost][k + kh];
+            }
+        }
+    }
+
     int numCh = 0;
     double fs;
     int samplesPerBlock;
@@ -156,7 +273,11 @@ private:
     AudioBuffer<float> inputBuffer_copy;
     AudioBuffer<float> tempOutput;
 
-    float gainAdjustments[nfilts];
+    float staticGainAdjustments[nfilts];
+    float adjustedGain[2][nfilts];
+    float dynamicAdjustmentKernel[2][CORR_K_LEN];
+
+    array<CustomSmoothedValue<float, ValueSmoothingTypes::Linear>, 2> medGain;
 
     struct freq
     {

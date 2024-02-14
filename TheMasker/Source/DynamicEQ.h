@@ -50,12 +50,13 @@ public:
         for (int i = 0; i < nfilts; i++) {
             for (int ch = 0; ch < numScChannels; ch++) {
                 gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
+                gains_vs[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
         
         in_volumeMeter.prepareToPlay(fs, 5.f, true);
         out_volumeMeter.prepareToPlay(fs, 5.f, false);
-        
+
         deltaGetter.prepareToPlay(fs, fbank, fCenters.data(), frequencies.data());
         deltaScaler.prepareToPlay(fCenters.data());
         bufferDelayer.prepareToPlay(numSamples, _fftSize, fs, numChannels);
@@ -68,6 +69,8 @@ public:
         spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data(), fs, numSamples);
         ft_out.prepare(frequencies.data(), fCenters.data(), fs);
         //snrCalc.prepare(numChannels, _snrWindow);
+
+        clearDeltas();
     }
 
     void numChannelsChanged(int inCh, int scCh) {
@@ -86,6 +89,7 @@ public:
             for (int ch = 0; ch < numChannels; ch++) 
             {
                 gains_sm[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
+                gains_vs[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
 
@@ -121,8 +125,10 @@ public:
                     stereoLinked.process(curves[0].delta, curves[1].delta);
                 }
 
+#ifndef fineTuneCoeff
                 deltaScaler.scale(curves, maskedFreqsAmount, clearFreqsAmount, mixAmount);
                 deltaScaler.clip(curves);
+#endif // !fineTuneCoeff
             }
 
             bufferDelayer.delayBuffer(mainBuffer, curves);
@@ -133,7 +139,7 @@ public:
             in_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numInChannels - 1, 0, currentNumSamples));
             in_volumeMeter.setSCLevel(scBuffer.getRMSLevel(0, 0, currentNumSamples), scBuffer.getRMSLevel(numScChannels - 1, 0, currentNumSamples));
 
-            filters.filterBlock(mainBuffer, curves, gains_sm, processFFTresult);
+            filters.filterBlock(mainBuffer, curves, gains_sm, gains_vs, processFFTresult);
             mainBuffer.applyGain(outGain * _outExtraGain);
 
             out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numInChannels - 1, 0, currentNumSamples));
@@ -146,7 +152,7 @@ public:
                 processFFTresult = false;
             }
 
-            spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_sm);
+            spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_vs);
 
             //snrCalc.pushOutput(mainBuffer);
             //snrCalc.calculateSNR();
@@ -221,10 +227,29 @@ public:
         }
     }
 
-    
+    void overrideDeltaValues(int bandID, float newValue)
+    {
+        if (bandID < 0)
+            bandID += nfilts;
+
+        jassert(bandID < nfilts);
+        jassert(bandID >= 0);
+
+        curves[0].delta[bandID] = newValue;
+        curves[1].delta[bandID] = newValue;
+    }
 
 
 private:
+
+    void clearDeltas()
+    {
+        for (int i = 0; i < nfilts; ++i)
+        {
+            curves[0].delta[i] = 0;
+            curves[1].delta[i] = 0;
+        }
+    }
 
     float maskedFreqsAmount = DEFAULT_MASKEDF;
     float clearFreqsAmount = DEFAULT_CLEARF;
@@ -259,7 +284,7 @@ private:
     array<float, nfilts> fCenters;
 
     array<curve,2> curves;
-    array<array<CustomSmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>, 2> gains_sm;
+    array<array<CustomSmoothedValue<float, ValueSmoothingTypes::Linear>, nfilts>, 2> gains_sm, gains_vs;
 
     float atkSmoothingSeconds = _atkSmoothingSeconds;
     float relSmoothingSeconds = _relSmoothingSeconds;

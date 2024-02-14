@@ -43,7 +43,8 @@ public:
         {
             for (int i = 0; i < nfilts; i++) 
             {
-                deltaScope[i] = Decibels::gainToDecibels(gains_sm[0][i].getCurrentValue());
+                deltaScope[i] = 0.5 * Decibels::gainToDecibels(gains_sm[0][i].getCurrentValue()) +
+                                0.5 * Decibels::gainToDecibels(gains_sm[1][i].getCurrentValue()); // it was just [0] ... but this is the "numCh == 2" case...
             }
 
             // draw raw spectra
@@ -59,7 +60,8 @@ public:
         {
             for (int i = 0; i < nfilts; i++) 
             {
-                deltaScope[i] = Decibels::gainToDecibels((gains_sm[0][i].getCurrentValue() + gains_sm[1][i].getCurrentValue()) * 0.5f);
+                //deltaScope[i] = Decibels::gainToDecibels((gains_sm[0][i].getCurrentValue() + gains_sm[1][i].getCurrentValue()) * 0.5f); // isn't this the numCh == 1 case?
+                deltaScope[i] = Decibels::gainToDecibels(gains_sm[0][i].getCurrentValue());
             }
 
             // draw raw spectra

@@ -64,79 +64,71 @@ TheMaskerComponent::TheMaskerComponent (TheMaskerAudioProcessor& p)
 
 #ifdef fineTuneCoeff
         {
-            auto w = 60;
-            auto h = 350;
-            auto tbw = 60;
-            auto wr = 1.1;
-
-            auto r = 24;
-
             // Bottom end
-            tsIndx[0] = 1;
-            tsIndx[1] = 2;
-            tsIndx[2] = 3;
-            tsIndx[3] = 4;
-            tsIndx[4] = 5;
+            //tsIndx[0] = 0;
+            //tsIndx[1] = 1;
+            //tsIndx[2] = 2;
+            //tsIndx[3] = 3;
+            //tsIndx[4] = 4;
+            //tsIndx[5] = 5;
+            //tsIndx[6] = 6;
+            //tsIndx[7] = 7;
+            //tsIndx[8] = 8;
+            //tsIndx[9] = 9;
+            //tsIndx[10] = 10;
+
+            // Middle
+            int hnf = nfilts / 2;
+            tsIndx[0] = hnf-5;
+            tsIndx[1] = hnf-4;
+            tsIndx[2] = hnf-3;
+            tsIndx[3] = hnf-2;
+            tsIndx[4] = hnf-1;
+            tsIndx[5] = hnf;
+            tsIndx[6] = hnf+1;
+            tsIndx[7] = hnf+2;
+            tsIndx[8] = hnf+3;
+            tsIndx[9] = hnf+4;
+            tsIndx[10] = hnf+5;
 
             // Top end
-            //tsIndx[0] = -5;
-            //tsIndx[1] = -4;
-            //tsIndx[2] = -3;
-            //tsIndx[3] = -2;
-            //tsIndx[4] = -1;
+            //tsIndx[0] = -11;
+            //tsIndx[1] = -10;
+            //tsIndx[2] = -9;
+            //tsIndx[3] = -8;
+            //tsIndx[4] = -7;
+            //tsIndx[5] = -6;
+            //tsIndx[6] = -5;
+            //tsIndx[7] = -4;
+            //tsIndx[8] = -3;
+            //tsIndx[9] = -2;
+            //tsIndx[10] = -1;
 
             corrInv[0] = false;
             corrInv[1] = false;
             corrInv[2] = false;
             corrInv[3] = false;
             corrInv[4] = false;
+            corrInv[5] = false;
+            corrInv[6] = false;
+            corrInv[7] = false;
+            corrInv[8] = false;
+            corrInv[9] = false;
+            corrInv[10] = false;
 
             auto i = 0;
 
-            TS1.setBounds(300 + 0 * wr * w, 60, w, h);
-            TS1.setRange(-r, r, 0.001);
-            TS1.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[0]), dontSendNotification);
-            TS1.setSliderStyle(juce::Slider::LinearVertical);
-            TS1.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
-            TS1.addListener(this);
-            addAndMakeVisible(TS1);
-            i++;
-    
-            TS2.setBounds(300 + i * wr * w, 60, w, h);
-            TS2.setRange(-r, r, 0.001);
-            TS2.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[i]), dontSendNotification);
-            TS2.setSliderStyle(juce::Slider::LinearVertical);
-            TS2.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
-            TS2.addListener(this);
-            addAndMakeVisible(TS2);
-            i++;
-
-            TS3.setBounds(300 + i * wr * w, 60, w, h);
-            TS3.setRange(-r, r, 0.001);
-            TS3.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[i]), dontSendNotification);
-            TS3.setSliderStyle(juce::Slider::LinearVertical);
-            TS3.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
-            TS3.addListener(this);
-            addAndMakeVisible(TS3);
-            i++;
-
-            TS4.setBounds(300 + i * wr * w, 60, w, h);
-            TS4.setRange(-r, r, 0.001);
-            TS4.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[i]), dontSendNotification);
-            TS4.setSliderStyle(juce::Slider::LinearVertical);
-            TS4.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
-            TS4.addListener(this);
-            addAndMakeVisible(TS4);
-            i++;
-
-            TS5.setBounds(300 + i * wr * w, 60, w, h);
-            TS5.setRange(-r, r, 0.001);
-            TS5.setValue(audioProcessor.dynEQ.getCorrectionGain(tsIndx[i]), dontSendNotification);
-            TS5.setSliderStyle(juce::Slider::LinearVertical);
-            TS5.setTextBoxStyle(juce::Slider::TextBoxBelow, false, tbw, 20);
-            TS5.addListener(this);
-            addAndMakeVisible(TS5);
-            i++;
+            setupTunerSlider(TS1, i++);
+            setupTunerSlider(TS2, i++);
+            setupTunerSlider(TS3, i++);
+            setupTunerSlider(TS4, i++);
+            setupTunerSlider(TS5, i++);
+            setupTunerSlider(TS6, i++);
+            setupTunerSlider(TS7, i++);
+            setupTunerSlider(TS8, i++);
+            setupTunerSlider(TS9, i++);
+            setupTunerSlider(TS10, i++);
+            setupTunerSlider(TS11, i++);
         }
 #endif // fineTuneCoeff
 
@@ -147,12 +139,68 @@ TheMaskerComponent::TheMaskerComponent (TheMaskerAudioProcessor& p)
 #ifdef fineTuneCoeff
     void TheMaskerComponent::sliderValueChanged(Slider* slider)
     {
-        audioProcessor.dynEQ.setCorrectionGain(tsIndx[0], TS1.getValue(), corrInv[0]);
-        audioProcessor.dynEQ.setCorrectionGain(tsIndx[1], TS2.getValue(), corrInv[1]);
-        audioProcessor.dynEQ.setCorrectionGain(tsIndx[2], TS3.getValue(), corrInv[2]);
-        audioProcessor.dynEQ.setCorrectionGain(tsIndx[3], TS4.getValue(), corrInv[3]);
-        audioProcessor.dynEQ.setCorrectionGain(tsIndx[4], TS5.getValue(), corrInv[4]);
+        if (fineTuneCoeff)
+        {
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[0], TS1.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[1], TS2.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[2], TS3.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[3], TS4.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[4], TS5.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[5], TS6.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[6], symmetricEdit ? TS5.getValue() : TS7.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[7], symmetricEdit ? TS4.getValue() : TS8.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[8], symmetricEdit ? TS3.getValue() : TS9.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[9], symmetricEdit ? TS2.getValue() : TS10.getValue());
+            audioProcessor.dynEQ.overrideDeltaValues(tsIndx[10], symmetricEdit ? TS1.getValue() : TS11.getValue());
+        }
+        else
+        {
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[0], TS1.getValue(), corrInv[0]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[1], TS2.getValue(), corrInv[1]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[2], TS3.getValue(), corrInv[2]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[3], TS4.getValue(), corrInv[3]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[4], TS5.getValue(), corrInv[4]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[5], TS6.getValue(), corrInv[5]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[6], symmetricEdit ? TS5.getValue() : TS7.getValue(), corrInv[6]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[7], symmetricEdit ? TS4.getValue() : TS8.getValue(), corrInv[7]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[8], symmetricEdit ? TS3.getValue() : TS9.getValue(), corrInv[8]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[9], symmetricEdit ? TS2.getValue() : TS10.getValue(), corrInv[9]);
+            audioProcessor.dynEQ.setCorrectionGain(tsIndx[10], symmetricEdit ? TS1.getValue() : TS11.getValue(), corrInv[10]);
+        }
+
+        if (symmetricEdit)
+        {
+            TS7.setValue(TS5.getValue(), dontSendNotification);
+            TS8.setValue(TS4.getValue(), dontSendNotification);
+            TS9.setValue(TS3.getValue(), dontSendNotification);
+            TS10.setValue(TS2.getValue(), dontSendNotification);
+            TS11.setValue(TS1.getValue(), dontSendNotification);
+        }
     }
+
+    void TheMaskerComponent::setupTunerSlider(Slider& slider, int i)
+    {
+        auto x = 252;
+        auto y = 45;
+        auto w = 45;
+        auto h = 370;
+        auto wr = 1.0;
+        auto r = 20;
+
+        slider.setBounds(x + i * wr * w, y, w, h);
+        slider.setRange(-r, r, 0.001);
+        slider.setValue(fineTuneCoeff ? 0.0 : audioProcessor.dynEQ.getCorrectionGain(tsIndx[i]), dontSendNotification);
+        slider.setSliderStyle(juce::Slider::LinearVertical);
+        slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, w, 20);
+
+        if (!(symmetricEdit && i > 5))
+            slider.addListener(this);
+        else
+            slider.setEnabled(false);
+
+        addAndMakeVisible(slider);
+    }
+
 #endif // fineTuneCoeff
 
 TheMaskerComponent::~TheMaskerComponent()

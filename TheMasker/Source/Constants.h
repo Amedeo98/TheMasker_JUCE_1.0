@@ -10,6 +10,15 @@
 
 #pragma once
 
+// if defined shows controllers for fine tuning and actual filter gain (instead of delta), 
+// if false tests static correction
+// if true tests dynamic correction
+//#define fineTuneCoeff true
+#define symmetricEdit false
+
+#define ENABLE_CORRECTION true
+#define OFFSET_CORRECTION true
+
 #define PLUGIN_NAME "TheMasker"
 #define PLUGIN_V 1
 
@@ -56,7 +65,7 @@
 #define _relThreshBoost +4.0f
 #define _atqLift 1.6f
 #define _spreadExp 0.6f
-#define _outExtraGain 7.6f
+#define _outExtraGain 7.52f
 
 #define _spectrumPaddingHighFreq 0.5f
 #define _spectrumPaddingLowFreq 0.5f

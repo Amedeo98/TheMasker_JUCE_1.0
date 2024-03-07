@@ -258,8 +258,9 @@ private:
             for (int k = -kh; k <= kh; ++k)
             {
                 const auto tk = t + k;
-                const auto tmp = (tk < 0 || tk >= nfilts) ? 0 : (target[tk] - med);
-                const int tBoost = target[tk] >= 0;
+                const auto boundary = (tk < 0 || tk >= nfilts);
+                const auto tmp = boundary ? 0 : (target[tk] - med);
+                const auto tBoost = boundary ? 0 : (target[tk] >= 0);
                 adjustedGain[ch][t] += tmp * dynamicAdjustmentKernel[tBoost][k + kh];
             }
         }

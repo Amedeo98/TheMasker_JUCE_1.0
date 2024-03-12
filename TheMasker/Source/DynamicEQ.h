@@ -26,6 +26,7 @@ using namespace std;
 #include "VolumeMeter.h"
 #include "CustomSmoothedValue.h"
 #include "Constants.h"
+#include "staticEqCorrector.h"
 //#include "SNRCalculator.h"
 
 class DynamicEQ {
@@ -69,6 +70,8 @@ public:
         spectrumPlotter.prepareToPlay(frequencies.data(), fCenters.data(), fs, numSamples);
         ft_out.prepare(frequencies.data(), fCenters.data(), fs);
         //snrCalc.prepare(numChannels, _snrWindow);
+
+        linearityCorrectionEq.prepareToPlay(sampleRate, numSamples, numChannels);
 
         clearDeltas();
     }
@@ -141,6 +144,8 @@ public:
 
             filters.filterBlock(mainBuffer, curves, gains_sm, gains_vs, processFFTresult);
             mainBuffer.applyGain(outGain * _outExtraGain);
+
+            linearityCorrectionEq.processBlock(mainBuffer, currentNumSamples, numInChannels);
 
             out_volumeMeter.setLevel(mainBuffer.getRMSLevel(0, 0, currentNumSamples), mainBuffer.getRMSLevel(numInChannels - 1, 0, currentNumSamples));
             
@@ -305,6 +310,7 @@ private:
 
     Converter conv;
     
+    StaticEqCorrector linearityCorrectionEq;
 
     //SNRCalculator snrCalc;
 

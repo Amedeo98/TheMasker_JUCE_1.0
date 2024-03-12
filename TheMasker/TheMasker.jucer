@@ -32,6 +32,8 @@
         <FILE id="rTJopX" name="Converters.h" compile="0" resource="0" file="Source/Converters.h"/>
         <FILE id="LHzZCJ" name="DynamicEQ.h" compile="0" resource="0" file="Source/DynamicEQ.h"/>
         <FILE id="J5e9Rp" name="FilterBank.h" compile="0" resource="0" file="Source/FilterBank.h"/>
+        <FILE id="DxLBuf" name="staticEqCorrector.h" compile="0" resource="0"
+              file="Source/staticEqCorrector.h"/>
       </GROUP>
       <GROUP id="{A103283F-E046-C838-ECB6-DB2C3B6D1442}" name="GUI">
         <FILE id="Tnu0Yj" name="CustomButton.h" compile="0" resource="0" file="Source/CustomButton.h"/>

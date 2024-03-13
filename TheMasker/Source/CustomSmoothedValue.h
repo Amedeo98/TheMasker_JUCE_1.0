@@ -7,7 +7,7 @@
 
   ==============================================================================
 */
-
+#include <JuceHeader.h>
 #pragma once
 
 namespace juce {
@@ -192,5 +192,8 @@ namespace juce {
         int posStepsToTarget = 0;
         int negStepsToTarget = 0;
         bool isPositive = false;
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomSmoothedValue)
+
     };
+    
 }

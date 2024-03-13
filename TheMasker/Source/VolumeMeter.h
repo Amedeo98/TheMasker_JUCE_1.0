@@ -195,6 +195,6 @@ private:
     
     CustomSmoothedValue<float, ValueSmoothingTypes::Linear> max_lev_L, max_lev_R;
 
-    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VolumeMeter)
 };
 

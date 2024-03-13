@@ -285,5 +285,5 @@ private:
 
     int notYetUsedAudioDataCount = 0;
 
-    JUCE_DECLARE_NON_COPYABLE (OverlappingFFTProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OverlappingFFTProcessor)
 };

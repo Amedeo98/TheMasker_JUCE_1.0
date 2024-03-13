@@ -9,6 +9,7 @@
 */
 
 #pragma once
+#include <JuceHeader.h>
 #include "Converters.h"
 #include "Constants.h"
 #include "FilterBank.h"
@@ -24,6 +25,8 @@
 class DeltaGetter  {
 
 public:
+    DeltaGetter() {}
+    ~DeltaGetter() {}
     void getDelta(AudioBuffer<float>& in, AudioBuffer<float>& sc, auto& deltas, bool& processFFTresult) {
 
         for (int i = 0; i < inCh; i++) {
@@ -122,6 +125,6 @@ private:
             //output[i] = input[i] - rel_thresh[i];
     }
 
-   
+   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeltaGetter)
 
 };

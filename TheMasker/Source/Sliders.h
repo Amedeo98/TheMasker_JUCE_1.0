@@ -31,6 +31,8 @@ public:
                                    const Slider::SliderStyle,
                                    Slider&) override;
     
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LnF)
 };
 
 
@@ -61,6 +63,7 @@ private:
     LnF lnf;
     juce::RangedAudioParameter* param;
     bool displayValue;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomLinearSlider)
     
 };
 
@@ -95,6 +98,7 @@ private:
     LnF lnf;
     juce::RangedAudioParameter* param;
     bool displayValue;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomRotarySlider)
 };
 
 

@@ -289,5 +289,6 @@ private:
 
     array<freq, nfilts> freqs;
 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MultiBandMod)
 
 };

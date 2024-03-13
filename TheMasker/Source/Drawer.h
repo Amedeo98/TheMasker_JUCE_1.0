@@ -50,5 +50,5 @@ public:
     array<float, 2> xVal, yVal;
 
     float scope_step;
-
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Drawer)
 };

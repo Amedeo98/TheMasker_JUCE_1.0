@@ -9,6 +9,7 @@
 */
 
 #pragma once
+#include <JuceHeader.h>
 
 class LinkwitzRileyFilters {
 public:
@@ -62,5 +63,5 @@ private:
     float HC_freq;
     bool isFirstBand = false;
     bool isLastBand = false;
-
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LinkwitzRileyFilters)
 };

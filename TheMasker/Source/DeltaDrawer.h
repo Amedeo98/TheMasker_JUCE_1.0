@@ -11,6 +11,7 @@
 #pragma once
 #include "Drawer.h"
 #include "Converters.h"
+#include <JuceHeader.h>
 //#include <CustomSmoothedValue.h>
 
 class DeltaDrawer : public Drawer {
@@ -107,7 +108,7 @@ public:
 private:
     array<float, npoints> scopeData;
     float smoothSplineAmt = 0.4f;
-
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeltaDrawer)
 };
 
 

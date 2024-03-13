@@ -7,12 +7,14 @@
 
   ==============================================================================
 */
-
+#include <JuceHeader.h>
 #pragma once
 
 class StereoLinked {
 
 public:
+    StereoLinked() {}
+    ~StereoLinked() {}
 
     void setSL(float sl) {
         UIsl = sl;
@@ -41,6 +43,7 @@ private:
         FloatVectorOperations::addWithMultiply(monoValues, l.data(), 0.5f, nfilts);
         FloatVectorOperations::addWithMultiply(monoValues, r.data(), 0.5f, nfilts);
     }
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StereoLinked)
 
 };
 

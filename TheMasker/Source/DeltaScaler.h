@@ -9,9 +9,13 @@
 */
 
 #pragma once
+#include <JuceHeader.h>
 
 class DeltaScaler {
 public:
+
+    DeltaScaler() {}
+    ~DeltaScaler() {}
 
     void prepareToPlay(float* fCenters) {
         getATQ(fCenters, atq);
@@ -106,7 +110,7 @@ private:
     //        rel_t[i] *= atq[i];
     //    }
     //}
-
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeltaScaler)
 };
 
 

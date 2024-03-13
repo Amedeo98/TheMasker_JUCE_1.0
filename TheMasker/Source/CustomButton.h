@@ -9,6 +9,7 @@
 */
 
 #pragma once
+#include <JuceHeader.h>
 
 
 class CustomButton : public juce::Button
@@ -41,5 +42,5 @@ public:
     
 private:
     bool buttonPressed = false;
-    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CustomButton)
 };

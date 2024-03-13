@@ -16,6 +16,8 @@
 
 class BufferDelayer {
 public:
+    BufferDelayer() {}
+    ~BufferDelayer() {}
     void prepareToPlay(int samplesPerBlock, int numSamplesToDelay, double sampleRate, int nCh) {
         numSamples = samplesPerBlock;
         delaySamples = numSamplesToDelay;
@@ -67,5 +69,5 @@ private:
     //dsp::DelayLine<float> scDelayLine;
     juce::dsp::ProcessSpec bufferSpec;
 
-
+   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(BufferDelayer)
 };

@@ -13,6 +13,10 @@
 #pragma once
 class PSY {
 public:
+    
+    PSY() {}
+    ~PSY() {}
+
     void getSpreadingMtx() {
         float fadB = 14.5 + 12;
         float fbdb = 7.5;
@@ -58,5 +62,5 @@ private:
     array<float, nfilts> atq_gated;
     float gateKnee_inv = pow(_gateKnee, 1);
     float gateThresh = _gateThresh;
-
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PSY)
 };

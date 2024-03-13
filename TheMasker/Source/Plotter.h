@@ -17,6 +17,9 @@
 #pragma once
 class Plotter {
 public:
+
+    Plotter() {}
+    ~Plotter() {}
     
     void prepareToPlay(float* frequencies, float* fCenters, double fs, int nSamples) 
     {
@@ -170,5 +173,5 @@ private:
     bool hide_sc = false;
     bool hide_d = false;
     bool hide_out = false;
-
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Plotter)
 };

@@ -108,7 +108,7 @@ private:
     array<CustomSmoothedValue<float, juce::ValueSmoothingTypes::Linear>, npoints> scopeData;
     int numSamples;
     array<float, npoints> yRemapping;
-
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectrumDrawer)
 };
 
 
@@ -194,5 +194,5 @@ private:
     array<CustomSmoothedValue<float, juce::ValueSmoothingTypes::Linear>, npoints> scopeData;
     int numSamples;
     array<float, npoints> yRemapping;
-
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeciSpectrumDrawer)
 };

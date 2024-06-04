@@ -10,9 +10,8 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "Converters.h"
 #include "LinkwitzRileyFilters.h"
-#include "DynamicEQ.h"
+
 
 #define MIDDLEBAND_OFF -0.32f
 #define LPHP_OFF -17.526f
@@ -110,7 +109,9 @@ public:
     void filterBlock(AudioBuffer<float>& buffer, auto& curves, auto& gains_sm, auto& gains_vs, bool& processFFTresult) {
         int numSamples = buffer.getNumSamples();
         //inputBuffer_copy.clear();
+
         inputBuffer_copy.setSize(numCh, numSamples, true, false, true); // This is soooo bad
+        tempOutput.setSize(numCh, numSamples, true, false, true); // This is soooo bad
 
         for (int ch = 0; ch < numCh; ch++) 
         {
@@ -127,8 +128,8 @@ public:
 
         for (int f = 0; f < nfilts; f++) 
         {
-            tempOutput.setSize(numCh, numSamples, true, false, true); // This is soooo bad
-            tempOutput.clear();
+            //tempOutput.setSize(numCh, numSamples, true, false, true); // This is soooo bad
+            //tempOutput.clear();
             filters[f].process(inputBuffer_copy, tempOutput);
 
             for (int ch = 0; ch < numCh; ++ch) {

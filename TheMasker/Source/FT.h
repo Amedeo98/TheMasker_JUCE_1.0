@@ -9,7 +9,8 @@
 */
 
 #include "Analyser.h"
-#include "SpectrumDrawer.h"
+#include "CustomSmoothedValue.h"
+#include "FilterBank.h"
 
 
 

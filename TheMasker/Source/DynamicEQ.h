@@ -11,28 +11,21 @@
 #pragma once
 using namespace std;
 
-//#include <FilterBank.h>
-#include <JuceHeader.h>
-#include "DeltaGetter.h"
-#include "FilterBank.h"
-#include "Converters.h"
-#include "Analyser.h"
-#include "StereoLinked.h"
-#include "DeltaScaler.h"
-#include "MultiBandMod.h"
-#include "BufferDelayer.h"
-#include "DeltaDrawer.h"
-#include "Plotter.h"
-#include "VolumeMeter.h"
-#include "CustomSmoothedValue.h"
-#include "Constants.h"
-#include "staticEqCorrector.h"
-//#include "SNRCalculator.h"
+
+#include "DeltaGetter.h" //
+#include "StereoLinked.h" //
+#include "DeltaScaler.h" //
+#include "MultiBandMod.h" //
+#include "BufferDelayer.h"//
+#include "Plotter.h" //
+#include "VolumeMeter.h" //
+#include "staticEqCorrector.h"//
+
 
 class DynamicEQ {
 public:
     
-    DynamicEQ() {}
+    DynamicEQ(){}
     ~DynamicEQ() {}
 
 
@@ -54,6 +47,7 @@ public:
                 gains_vs[ch][i].reset(fs, atkSmoothingSeconds, relSmoothingSeconds);
             }
         }
+
         
         in_volumeMeter.prepareToPlay(fs, 5.f, true);
         out_volumeMeter.prepareToPlay(fs, 5.f, false);
@@ -81,7 +75,7 @@ public:
         numScChannels = scCh;
         numChannels = max(numInChannels, numScChannels);
 
-        deltaGetter.setNumChannels(numInChannels, numScChannels, numChannels);
+        deltaGetter.setNumChannels(numInChannels, numScChannels/*, numChannels*/);
         deltaScaler.setNumChannels(numChannels);
         bufferDelayer.setNumChannels(numInChannels); // was numChannels
         filters.setNumChannels(numInChannels);       // was numChannels
@@ -109,21 +103,21 @@ public:
     {
         //if (0)
         {
-
             //snrCalc.generateNoise(mainBuffer);
             int currentNumSamples = mainBuffer.getNumSamples();
 
             in_volumeMeter.skip(mainBuffer);
             out_volumeMeter.skip(mainBuffer);
+            
 
             mainBuffer.applyGain(inGain);
             scBuffer.applyGain(scGain);
 
             deltaGetter.getDelta(mainBuffer, scBuffer, curves, processFFTresult);
-
+            
             if (processFFTresult) {
 
-                if (numChannels == 2 && stereoLinkAmt > 0.0f)
+                if (numInChannels == 2 && stereoLinkAmt > 0.0f) // Was numChannels
                 {
                     stereoLinked.process(curves[0].delta, curves[1].delta);
                 }
@@ -134,7 +128,7 @@ public:
 #endif // !fineTuneCoeff
             }
 
-            bufferDelayer.delayBuffer(mainBuffer, curves);
+            bufferDelayer.delayBuffer(mainBuffer/*, curves*/);
 
 
             //snrCalc.pushInput(mainBuffer);
@@ -158,9 +152,10 @@ public:
             }
 
             spectrumPlotter.drawNextFrameOfSpectrum(curves, gains_vs);
-
-            //snrCalc.pushOutput(mainBuffer);
-            //snrCalc.calculateSNR();
+           
+            
+            //dsp::AudioBlock<float> block(mainBuffer.getArrayOfWritePointers(), numInChannels, 0, numSamples);          
+           
         }
     }
 
@@ -311,6 +306,8 @@ private:
     Converter conv;
     
     StaticEqCorrector linearityCorrectionEq;
+
+  
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DynamicEQ)
 

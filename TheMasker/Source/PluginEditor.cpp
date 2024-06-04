@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "DynamicEQ.h"
@@ -36,7 +28,11 @@ TheMaskerComponent::TheMaskerComponent (TheMaskerAudioProcessor& p)
     cleanUpSliderAttachment(audioProcessor.parameters, NAME_ATQ, cleanUpSlider)
 
 {
-    
+    sampleRateInfo.setJustificationType(Justification::centred);
+    sampleRateInfo.setFont(Font(14.0f));
+    sampleRateInfo.setText("Unsupported sampling frequency, an unexpected equalisation may occur", dontSendNotification);
+    addChildComponent(sampleRateInfo);
+
     startTimerHz(_editorRefreshRate);
     
     undoButton.setButtonText("undo");
@@ -48,8 +44,7 @@ TheMaskerComponent::TheMaskerComponent (TheMaskerAudioProcessor& p)
     toggleD.setButtonText("delta");
     toggleOut.setButtonText("out");
     resetInButton.setButtonText("resetIn");
-    resetOutButton.setButtonText("resetOut");
-    
+    resetOutButton.setButtonText("resetOut");    
     
     for(auto* comp : getComponents())
     {
@@ -350,6 +345,12 @@ void TheMaskerComponent::buttonClicked (Button*button)// [2]
     }
 }
 
+bool TheMaskerComponent::isSamplingFrequencySupported()
+{
+    auto apsr = audioProcessor.getSampleRate();
+    return (apsr != 44100.0 && apsr != 48000.0 && apsr != 96000.0 && apsr != 192000.0);
+}
+
 
 void TheMaskerComponent::resized()
 {
@@ -448,6 +449,8 @@ void TheMaskerComponent::resized()
         auto normX = mapFromLog10(f, 20.f, 20000.f);
         xs.add(responseArea.getX() + responseArea.getWidth() * normX);
     }
+
+    sampleRateInfo.setBounds(248, 27, 527, 30);
 }
 
 
@@ -476,14 +479,14 @@ std::vector<CustomButton*> TheMaskerComponent::getButtons()
 Wrapper::Wrapper(TheMaskerAudioProcessor& p) : AudioProcessorEditor(p), theMaskerComponent(p)
 {
     addAndMakeVisible(theMaskerComponent);
-    
+
     if(auto * constrainer = getConstrainer())
     {
         constrainer->setFixedAspectRatio(static_cast<double>(originalWidth)/static_cast<double>(originalHeight));
         constrainer->setSizeLimits(originalWidth/2, originalHeight/2,
                                    originalWidth * 1.5, originalHeight * 1.5);
     }
-    
+
     setResizable(true, true);
     setSize(originalWidth, originalHeight);
 }

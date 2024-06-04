@@ -10,7 +10,6 @@
 
 #include <JuceHeader.h>
 #include "DynamicEQ.h"
-#include "Converters.h"
 
 /*
  Maschera > IN -> IN Masked        ->  MASKED PARTS: -1 = reveal … +1 = bury

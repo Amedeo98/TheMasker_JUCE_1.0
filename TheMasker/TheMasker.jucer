@@ -5,7 +5,7 @@
               pluginManufacturer="Cinemystics" pluginManufacturerCode="Cmyx"
               pluginVST3Category="Analyzer,Dynamics,EQ" pluginAAXCategory="1"
               defines="JUCE_MODAL_LOOPS_PERMITTED = 1" companyName="Cinemystics"
-              version="1.1.0">
+              version="1.3">
   <MAINGROUP id="EtDrka" name="TheMasker">
     <GROUP id="{D0F8B5F3-955C-44AC-04A3-B12E30F491D6}" name="Source">
       <FILE id="U0vB8X" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
@@ -99,6 +99,26 @@
         <MODULEPATH id="juce_gui_extra" path="../../juce"/>
       </MODULEPATHS>
     </XCODE_MAC>
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_dsp" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="C:\Users\Giorgio\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="C:\Users\Giorgio\JUCE\modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

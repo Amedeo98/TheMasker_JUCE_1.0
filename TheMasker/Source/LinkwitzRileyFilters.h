@@ -28,6 +28,7 @@ public:
 
         spec.maximumBlockSize = samplesPerBlock;
         spec.sampleRate = sampleRate;
+
         LC.setType(isFirstBand ? dsp::LinkwitzRileyFilterType::allpass : dsp::LinkwitzRileyFilterType::highpass);
         LC.setCutoffFrequency(LC_freq);
         HC.setType(isLastBand ? dsp::LinkwitzRileyFilterType::allpass : dsp::LinkwitzRileyFilterType::lowpass);
@@ -37,13 +38,29 @@ public:
 
     }
 
-    void process(AudioBuffer<float> inputBuffer, AudioBuffer<float>& outputBuffer) {
-        int numSamples = inputBuffer.getNumSamples();
-        juce::dsp::AudioBlock<float>              ioBlock(inputBuffer);
+    // is inputBuffer not referenced to avoid modification?!
+    //void process(AudioBuffer<float> inputBuffer, AudioBuffer<float>& outputBuffer)
+    //{
+    //    int numSamples = inputBuffer.getNumSamples();
+    //    juce::dsp::AudioBlock<float>              ioBlock(inputBuffer);
+    //    juce::dsp::ProcessContextReplacing<float> context(ioBlock);
+    //    if (!isFirstBand) LC.process(context);
+    //    if (!isLastBand) HC.process(context);
+    //    context.getOutputBlock().copyTo(outputBuffer, 0, 0, numSamples);
+    //}
+
+    void process(AudioBuffer<float>& inputBuffer, AudioBuffer<float>& outputBuffer)
+    {
+        const int numSamples = inputBuffer.getNumSamples();
+
+        for (int ch = inputBuffer.getNumChannels(); --ch>=0;)
+            outputBuffer.copyFrom(ch, 0, inputBuffer, ch, 0, numSamples);
+
+        juce::dsp::AudioBlock<float>              ioBlock(outputBuffer);
         juce::dsp::ProcessContextReplacing<float> context(ioBlock);
         if (!isFirstBand) LC.process(context);
         if (!isLastBand) HC.process(context);
-        context.getOutputBlock().copyTo(outputBuffer, 0, 0, numSamples);
+        //context.getOutputBlock().copyTo(outputBuffer, 0, 0, numSamples);
     }
 
     void setNumChannels(int nCh) {

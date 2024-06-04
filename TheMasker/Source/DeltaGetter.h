@@ -10,17 +10,8 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "Converters.h"
-#include "Constants.h"
-#include "FilterBank.h"
-//#include "PluginProcessor.h"
-#include "DynamicEQ.h"
 #include "FT.h"
 #include "PSY.h"
-#include "DeltaDrawer.h"
-
-
-
 
 class DeltaGetter  {
 
@@ -87,10 +78,10 @@ public:
         ft_sc.setFBank(fb);
     }
 
-    void setNumChannels(int _inCh, int _scCh, int _maxCh) {
+    void setNumChannels(int _inCh, int _scCh/*, int _maxCh*/) {
         scCh = _scCh;
         inCh = _inCh;
-        maxCh = _maxCh;
+        maxCh = jmax(scCh, inCh); // _maxCh;
     }
 
     

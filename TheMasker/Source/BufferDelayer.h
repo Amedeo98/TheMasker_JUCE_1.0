@@ -28,12 +28,12 @@ public:
         bufferDelayLine.setDelay(delaySamples);
     }
 
-    void delayBuffer(AudioBuffer<float>& newBuffer, auto& curves) {
+    void delayBuffer(AudioBuffer<float>& newBuffer/*, auto& curves*/) {
         for(int ch=0; ch < numCh; ch++)
             {
                 auto* channelData = newBuffer.getReadPointer(ch, 0);
-                auto* inSpectrumData = curves[ch].inSpectrum.data();
-                auto* scSpectrumData = curves[ch].scSpectrum.data();
+                //auto* inSpectrumData = curves[ch].inSpectrum.data();
+                //auto* scSpectrumData = curves[ch].scSpectrum.data();
                 for (auto i = 0; i < numSamples; ++i) {
                     bufferDelayLine.pushSample(ch, channelData[i]);
                     /*inDelayLine.pushSample(ch, inSpectrumData[i]);

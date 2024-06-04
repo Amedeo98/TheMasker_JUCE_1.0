@@ -34,7 +34,7 @@ private:
     void scaleChannel(array<float, nfilts>& in) {
         int size = in.size();
         for (int i = 0; i < size; i++) {
-            in[i] = UIsl * monoValues[i] + (1 - UIsl) * in[i];
+            in[i] = UIsl * monoValues[i] + (1.0f - UIsl) * in[i];
         }
     }
 

@@ -10,7 +10,6 @@
 
 #pragma once
 #include"Drawer.h"
-#include "CustomSmoothedValue.h"
 
 
 class SpectrumDrawer : public Drawer {

@@ -11,7 +11,6 @@
 
 
 
-
 TheMaskerAudioProcessor::TheMaskerAudioProcessor()
      : AudioProcessor (BusesProperties()
                        .withInput   ("Input",  juce::AudioChannelSet::stereo(), true)
@@ -56,8 +55,8 @@ TheMaskerAudioProcessor::~TheMaskerAudioProcessor()
 void TheMaskerAudioProcessor::prepareToPlay (double newSampleRate, int newSamplesPerBlock)
 {
     sampleRate = newSampleRate;
-    samplesPerBlock = newSamplesPerBlock;
 
+    samplesPerBlock = newSamplesPerBlock;
     inCh = jmax(getMainBusNumInputChannels(), getMainBusNumOutputChannels());
     scCh = getChannelCountOfBus(true, 1);
 
@@ -115,7 +114,7 @@ void TheMaskerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
     //for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {  
     //    buffer.clear(i, 0, buffer.getNumSamples());
     //}
-
+  
     auto mainBuffer = getBusBuffer(buffer, true, 0);
     auto scBuffer = getBusBuffer(buffer, true, 1);
      
@@ -216,8 +215,8 @@ void TheMaskerAudioProcessor::getFrequencies() {
     for (int i = 0; i < npoints; ++i){
         conv.bark2hz(minbark + step_bark * i, frequencies[i]);
     }
+   
 }
-
 
 
 //==============================================================================

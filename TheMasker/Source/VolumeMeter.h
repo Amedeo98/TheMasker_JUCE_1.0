@@ -8,8 +8,6 @@
   ==============================================================================
 */
 #include <JuceHeader.h>
-#include "Converters.h"
-#include "CustomSmoothedValue.h"
 #include "Constants.h"
 
 #pragma once

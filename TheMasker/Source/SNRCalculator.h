@@ -7,6 +7,10 @@
 
   ==============================================================================
 */
+
+
+//====================================WARNING===================================
+//=======THIS CLASS IS NOT USED IN THE MASKER IF REMOVED NOTHING HAPPENS========
 #include <JuceHeader.h>
 using namespace std;
 

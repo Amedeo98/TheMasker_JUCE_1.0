@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -14,8 +6,7 @@
 #include "Sliders.h"
 
 //==============================================================================
-/**
-*/
+
 class TheMaskerComponent  : public juce::Component, private juce::Timer,
     public juce::Button::Listener
 #ifdef fineTuneCoeff
@@ -30,6 +21,8 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     void buttonClicked (Button*) override;
+
+    bool isSamplingFrequencySupported();
 
 private:
     TheMaskerAudioProcessor& audioProcessor;
@@ -82,9 +75,9 @@ private:
     std::vector<CustomButton*> getButtons();
 
     void timerCallback() final {
-        //repaint(responseArea);
-        //repaint(in_area);
-        //repaint(out_area);
+        if (sampleRateInfo.isVisible() != isSamplingFrequencySupported())
+            sampleRateInfo.setVisible(isSamplingFrequencySupported());
+
         repaint();
     }
     
@@ -105,6 +98,8 @@ private:
     const int fontHeight = 10;
     
     std::unique_ptr<juce::Drawable> svgDrawable;
+
+    Label sampleRateInfo;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TheMaskerComponent)
 };

@@ -13,7 +13,7 @@
 // if defined shows controllers for fine tuning and actual filter gain (instead of delta), 
 // if false tests static correction
 // if true tests dynamic correction
-//#define fineTuneCoeff true
+//#define fineTuneCoeff false
 #define symmetricEdit false
 
 #define ENABLE_CORRECTION true
